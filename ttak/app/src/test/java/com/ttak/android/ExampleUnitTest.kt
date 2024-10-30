@@ -1,4 +1,4 @@
-package com.example.ttak
+package com.ttak.android
 
 import org.junit.Test
 
