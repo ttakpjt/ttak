@@ -19,7 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.ttak.android.ui.theme.TtakTheme
+import com.ttak.android.common.ui.theme.TtakTheme
 import com.ttak.android.R
 
 class MainActivity : ComponentActivity() {
