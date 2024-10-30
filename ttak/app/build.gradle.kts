@@ -56,6 +56,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
     // Room 데이터베이스
     implementation("androidx.room:room-runtime:2.6.1")
+    implementation(libs.androidx.lifecycle.process)
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     // Navigation
