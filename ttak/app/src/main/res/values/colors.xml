@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<!-- 검은색 -->
+    <color name="black">#FF0E181E</color>
+<!-- 흰색 -->
+    <color name="white">#FFFFFFFF</color>
+<!-- 회색 -->
+    <color name="grey">#FFB2B2B4</color>
+<!-- 빨간색 -->
+    <color name="red">#FFFE6767</color>
+<!-- 분홍색 -->
+    <color name="pink">#FFFF99B1</color>
+<!-- 노란색 -->
+    <color name="yellow">#FFF5F378</color>
+<!-- 초록색 -->
+    <color name="green">#FF7FEC93</color>
+<!-- 파란색 -->
+    <color name="blue">#FF8CD5FE</color>
+</resources>
