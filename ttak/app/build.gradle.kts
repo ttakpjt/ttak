@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.ttak"
+    namespace = "com.ttak.android"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.ttak"
+        applicationId = "com.ttak.android"
         minSdk = 28
         targetSdk = 34
         versionCode = 1
