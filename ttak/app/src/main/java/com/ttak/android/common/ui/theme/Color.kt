@@ -1,4 +1,4 @@
-package com.example.ttak.ui.theme
+package com.ttak.android.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
