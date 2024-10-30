@@ -23,6 +23,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.ttak.android.common.monitor.ForegroundAppMonitor
 import com.ttak.android.common.monitor.ForegroundMonitorService
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.ttak.android.ui.theme.TtakTheme
 
 /*
@@ -101,6 +106,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@Preview(showBackground = true)
 @Composable
 fun PermissionDialog(
     onConfirm: () -> Unit,
