@@ -9,21 +9,19 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.rememberNavController
 import com.ttak.android.common.monitor.ForegroundAppMonitor
 import com.ttak.android.common.monitor.ForegroundMonitorService
 import com.ttak.android.common.ui.theme.TtakTheme
+import com.ttak.android.common.navigation.AppNavHost
+import com.ttak.android.common.ui.components.BottomNavigationBar
 
 /*
 1. 앱 실행 시 필요한 권한들을 확인
@@ -41,7 +39,9 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
+            // TtakTheme으로 앱 전체 UI를 감쌈
             TtakTheme {
+                val navController = rememberNavController()
                 val notificationPermissionLauncher = rememberLauncherForActivityResult(
                     ActivityResultContracts.RequestPermission()
                 ) { isGranted ->
@@ -49,9 +49,7 @@ class MainActivity : ComponentActivity() {
                         startForegroundMonitorService()
                     }
                 }
-
                 val showPermissionDialog = remember { mutableStateOf(!foregroundAppMonitor.hasUsageStatsPermission()) }
-
                 LaunchedEffect(Unit) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) !=
@@ -68,12 +66,19 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
                         Text(text = "앱 모니터링 실행 중")
-                    }
 
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            Box(modifier = Modifier.weight(1f)) {
+                                AppNavHost(navController)
+                            }
+                            BottomNavigationBar(navController = navController)  // 네비게이션 바 직접 위치
+                        }
+                    }
                     if (showPermissionDialog.value) {
                         PermissionDialog(
                             onConfirm = {
