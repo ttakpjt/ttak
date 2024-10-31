@@ -16,16 +16,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.ttak.android.common.monitor.ForegroundAppMonitor
 import com.ttak.android.common.monitor.ForegroundMonitorService
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.ttak.android.ui.theme.TtakTheme
+import com.ttak.android.common.ui.theme.TtakTheme
+import com.ttak.android.common.navigation.AppNavHost
+import com.ttak.android.common.ui.components.BottomNavigationBar
 
 /*
 1. 앱 실행 시 필요한 권한들을 확인
@@ -33,13 +29,7 @@ import com.ttak.android.ui.theme.TtakTheme
 3. 모든 권한이 허용되면 모니터링 서비스 시작
 4. 서비스는 백그라운드에서 2초마다 현재 실행 중인 앱을 체크하고 로그 출력
  */
-import com.ttak.android.common.ui.theme.TtakTheme
-import androidx.compose.ui.graphics.Color
-import com.ttak.android.common.ui.components.AppButton
-import com.ttak.android.common.ui.components.AppSearchBar
-import com.ttak.android.common.ui.theme.TtakTheme
-import com.ttak.android.common.navigation.AppNavHost
-import com.ttak.android.common.ui.components.BottomNavigationBar
+
 
 class MainActivity : ComponentActivity() {
     private lateinit var foregroundAppMonitor: ForegroundAppMonitor
@@ -47,7 +37,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         foregroundAppMonitor = ForegroundAppMonitor(application)
-
         enableEdgeToEdge()
         setContent {
             // TtakTheme으로 앱 전체 UI를 감쌈
@@ -60,9 +49,7 @@ class MainActivity : ComponentActivity() {
                         startForegroundMonitorService()
                     }
                 }
-
                 val showPermissionDialog = remember { mutableStateOf(!foregroundAppMonitor.hasUsageStatsPermission()) }
-
                 LaunchedEffect(Unit) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) !=
@@ -84,7 +71,6 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
                         Text(text = "앱 모니터링 실행 중")
-                    }
 
                         Column(modifier = Modifier.fillMaxSize()) {
                             Box(modifier = Modifier.weight(1f)) {
@@ -115,38 +101,11 @@ class MainActivity : ComponentActivity() {
                 startForegroundService(intent)
             } else {
                 startService(intent)
-                AppButton(
-                    text = "보내기",
-                    onClick = { /* 버튼 클릭 시 동작 */ },
-                    backgroundColor = Color.Green,
-                    contentColor = Color.Black
-                )
             }
         }
-    )
-}
-
-@Composable
-fun TestProfileItem() {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_launcher_foreground),
-            contentDescription = "Profile Image",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(48.dp)
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(text = "사용자 이름", style = MaterialTheme.typography.bodyMedium)
     }
 }
 
-@Preview(showBackground = true)
 @Composable
 fun PermissionDialog(
     onConfirm: () -> Unit,
