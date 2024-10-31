@@ -23,7 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.ttak.android.common.monitor.ForegroundAppMonitor
 import com.ttak.android.common.monitor.ForegroundMonitorService
-import com.ttak.android.ui.theme.TtakTheme
+import com.ttak.android.common.ui.theme.TtakTheme
 
 /*
 1. 앱 실행 시 필요한 권한들을 확인
