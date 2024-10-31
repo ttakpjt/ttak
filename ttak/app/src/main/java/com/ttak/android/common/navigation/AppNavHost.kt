@@ -10,7 +10,6 @@ import com.ttak.android.features.history.ui.screens.HistoryScreen
 import com.ttak.android.features.mypage.ui.screens.MyPageScreen
 import com.ttak.android.features.observer.ui.screens.ObserverScreen
 import com.ttak.android.features.screentime.ui.screens.ScreenTimeScreen
-import com.ttak.android.data.model.GoalState
 
 @Composable
 fun AppNavHost(navController: NavHostController) {
@@ -22,7 +21,7 @@ fun AppNavHost(navController: NavHostController) {
         composable(AppScreens.Login.route) { AuthScreen(navController) }
         composable(AppScreens.History.route) { HistoryScreen(navController) }
         composable(AppScreens.MyPage.route) { MyPageScreen(navController) }
-        composable(AppScreens.Observer.route) { ObserverScreen(goalState = GoalState(), navController = navController) }
+//        composable(AppScreens.Observer.route) { ObserverScreen(navController) }
         composable(AppScreens.ScreenTime.route) { ScreenTimeScreen(navController) }
     }
 }
