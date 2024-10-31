@@ -36,6 +36,9 @@ import com.ttak.android.ui.theme.TtakTheme
 3. 모든 권한이 허용되면 모니터링 서비스 시작
 4. 서비스는 백그라운드에서 2초마다 현재 실행 중인 앱을 체크하고 로그 출력
  */
+import com.ttak.android.common.ui.theme.TtakTheme
+import androidx.compose.ui.graphics.Color
+import com.ttak.android.common.ui.components.AppButton
 
 class MainActivity : ComponentActivity() {
     private lateinit var foregroundAppMonitor: ForegroundAppMonitor
@@ -46,6 +49,7 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
+            // TtakTheme으로 앱 전체 UI를 감쌈
             TtakTheme {
                 val notificationPermissionLauncher = rememberLauncherForActivityResult(
                     ActivityResultContracts.RequestPermission()
@@ -101,8 +105,34 @@ class MainActivity : ComponentActivity() {
                 startForegroundService(intent)
             } else {
                 startService(intent)
+                AppButton(
+                    text = "보내기",
+                    onClick = { /* 버튼 클릭 시 동작 */ },
+                    backgroundColor = Color.Green,
+                    contentColor = Color.Black
+                )
             }
         }
+    )
+}
+
+@Composable
+fun TestProfileItem() {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_launcher_foreground),
+            contentDescription = "Profile Image",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(48.dp)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(text = "사용자 이름", style = MaterialTheme.typography.bodyMedium)
     }
 }
 
