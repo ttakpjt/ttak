@@ -4,9 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.ttak.android.common.ui.theme.TtakTheme
-import androidx.compose.ui.graphics.Color
+
 import com.ttak.android.common.ui.components.AppButton
 import com.ttak.android.common.ui.components.AppSearchBar
+import com.ttak.android.common.ui.components.AppProfileItem
+import com.ttak.android.common.ui.theme.Green
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -14,7 +16,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             // TtakTheme으로 앱 전체 UI를 감쌈
             TtakTheme {
-                AppSearchBar(
+                AppProfileItem(
+                    nickName = "벨랄 무하마드",
+                    borderColor = Green
                 )
             }
         }
