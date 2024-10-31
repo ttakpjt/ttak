@@ -12,7 +12,7 @@ import com.ttak.android.common.navigation.NavigationManager
 import com.ttak.android.common.navigation.AppScreens
 
 @Composable
-fun AuthScreen(navController: NavController) {
+fun LoginScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
