@@ -30,13 +30,13 @@ import com.ttak.android.common.ui.components.BottomNavigationBar
 4. 서비스는 백그라운드에서 2초마다 현재 실행 중인 앱을 체크하고 로그 출력
  */
 
-
 class MainActivity : ComponentActivity() {
     private lateinit var foregroundAppMonitor: ForegroundAppMonitor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         foregroundAppMonitor = ForegroundAppMonitor(application)
+
         enableEdgeToEdge()
         setContent {
             // TtakTheme으로 앱 전체 UI를 감쌈
