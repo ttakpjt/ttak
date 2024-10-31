@@ -82,5 +82,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    // Compose Foundation 추가
+    implementation(platform(libs.androidx.compose.bom))
+    implementation("androidx.compose.foundation:foundation")
 
 }
