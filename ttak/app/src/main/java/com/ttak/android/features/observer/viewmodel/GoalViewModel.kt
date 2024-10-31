@@ -1,4 +1,4 @@
-package com.ttak.android.features.observer.ui.viewmodel
+package com.ttak.android.features.observer.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class ObserverViewModel : ViewModel() {
+class GoalViewModel : ViewModel() {
     private val _goalState = MutableStateFlow(GoalState())
     val goalState: StateFlow<GoalState> = _goalState.asStateFlow()
 

@@ -85,5 +85,7 @@ dependencies {
     // Compose Foundation 추가
     implementation(platform(libs.androidx.compose.bom))
     implementation("androidx.compose.foundation:foundation")
+    // Coil 이미지 로딩 라이브러리
+    implementation("io.coil-kt:coil-compose:2.5.0")
 
 }
