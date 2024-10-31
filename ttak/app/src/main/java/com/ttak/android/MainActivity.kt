@@ -39,6 +39,7 @@ import com.ttak.android.ui.theme.TtakTheme
 import com.ttak.android.common.ui.theme.TtakTheme
 import androidx.compose.ui.graphics.Color
 import com.ttak.android.common.ui.components.AppButton
+import com.ttak.android.common.ui.components.AppSearchBar
 
 class MainActivity : ComponentActivity() {
     private lateinit var foregroundAppMonitor: ForegroundAppMonitor
