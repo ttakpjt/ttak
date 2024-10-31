@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import com.ttak.android.common.ui.theme.TtakTheme
 import androidx.compose.ui.graphics.Color
 import com.ttak.android.common.ui.components.AppButton
+import com.ttak.android.common.ui.components.AppSearchBar
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -13,11 +14,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             // TtakTheme으로 앱 전체 UI를 감쌈
             TtakTheme {
-                AppButton(
-                    text = "보내기",
-                    onClick = { /* 버튼 클릭 시 동작 */ },
-                    backgroundColor = Color.Green,
-                    contentColor = Color.Black
+                AppSearchBar(
                 )
             }
         }
