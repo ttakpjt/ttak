@@ -13,8 +13,8 @@ object NavigationManager {
     }
 
     // 화면 이동
-    fun navigateTo(route: String, navOptions: NavOptions? = null) {
-        navController?.navigate(route, navOptions)
+    fun navigateTo(screen: AppScreens, navOptions: NavOptions? = null) {
+        navController?.navigate(screen.route, navOptions)
     }
 
     // 뒤로가기 기능
@@ -23,8 +23,8 @@ object NavigationManager {
     }
 
     // 특정 루트로 이동 (스택 초기화)
-    fun navigateAndClearStack(route: String) {
-        navController?.navigate(route) {
+    fun navigateAndClearStack(screen: AppScreens) {
+        navController?.navigate(screen.route) {
             popUpTo(0) { inclusive = true }
             launchSingleTop = true
         }
