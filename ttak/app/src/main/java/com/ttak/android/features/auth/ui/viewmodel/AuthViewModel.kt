@@ -1,0 +1,1 @@
+package com.ttak.android.features.auth.ui.viewmodel
