@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.ttak.android.features.auth.ui.screens.SplashScreen
-import com.ttak.android.features.auth.ui.screens.AuthScreen
+import com.ttak.android.features.auth.ui.screens.LoginScreen
 import com.ttak.android.features.history.ui.screens.HistoryScreen
 import com.ttak.android.features.mypage.ui.screens.MyPageScreen
 import com.ttak.android.features.observer.ui.screens.ObserverScreen
@@ -18,7 +18,7 @@ fun AppNavHost(navController: NavHostController) {
         startDestination = AppScreens.Home.route
     ) {
         composable(AppScreens.Home.route) { SplashScreen(navController) }
-        composable(AppScreens.Login.route) { AuthScreen(navController) }
+        composable(AppScreens.Login.route) { LoginScreen() }
         composable(AppScreens.History.route) { HistoryScreen(navController) }
         composable(AppScreens.MyPage.route) { MyPageScreen(navController) }
 //        composable(AppScreens.Observer.route) { ObserverScreen(navController) }
