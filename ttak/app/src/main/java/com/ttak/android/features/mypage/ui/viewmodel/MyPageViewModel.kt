@@ -1,1 +1,0 @@
-package com.ttak.android.features.mypage.ui.viewmodel
