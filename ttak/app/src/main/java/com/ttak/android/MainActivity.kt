@@ -9,18 +9,15 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import com.ttak.android.common.monitor.ForegroundAppMonitor
 import com.ttak.android.common.monitor.ForegroundMonitorService
 import androidx.compose.ui.graphics.Color
@@ -40,6 +37,9 @@ import com.ttak.android.common.ui.theme.TtakTheme
 import androidx.compose.ui.graphics.Color
 import com.ttak.android.common.ui.components.AppButton
 import com.ttak.android.common.ui.components.AppSearchBar
+import com.ttak.android.common.ui.theme.TtakTheme
+import com.ttak.android.common.navigation.AppNavHost
+import com.ttak.android.common.ui.components.BottomNavigationBar
 
 class MainActivity : ComponentActivity() {
     private lateinit var foregroundAppMonitor: ForegroundAppMonitor
@@ -52,6 +52,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             // TtakTheme으로 앱 전체 UI를 감쌈
             TtakTheme {
+                val navController = rememberNavController()
                 val notificationPermissionLauncher = rememberLauncherForActivityResult(
                     ActivityResultContracts.RequestPermission()
                 ) { isGranted ->
@@ -78,12 +79,20 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
                         Text(text = "앱 모니터링 실행 중")
                     }
 
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            Box(modifier = Modifier.weight(1f)) {
+                                AppNavHost(navController)
+                            }
+                            BottomNavigationBar(navController = navController)  // 네비게이션 바 직접 위치
+                        }
+                    }
                     if (showPermissionDialog.value) {
                         PermissionDialog(
                             onConfirm = {
