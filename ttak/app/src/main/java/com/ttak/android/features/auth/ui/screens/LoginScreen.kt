@@ -1,7 +1,6 @@
 package com.ttak.android.features.auth.ui.screens
 
 import android.content.Intent
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text

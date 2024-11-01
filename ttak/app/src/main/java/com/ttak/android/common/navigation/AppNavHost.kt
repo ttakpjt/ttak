@@ -19,9 +19,9 @@ fun AppNavHost(navController: NavHostController) {
     ) {
         composable(AppScreens.Home.route) { SplashScreen(navController) }
         composable(AppScreens.Login.route) { LoginScreen() }
-        composable(AppScreens.History.route) { HistoryScreen(navController) }
-        composable(AppScreens.MyPage.route) { MyPageScreen(navController) }
+        composable(AppScreens.History.route) { HistoryScreen() }
+        composable(AppScreens.MyPage.route) { MyPageScreen() }
 //        composable(AppScreens.Observer.route) { ObserverScreen(navController) }
-        composable(AppScreens.ScreenTime.route) { ScreenTimeScreen(navController) }
+        composable(AppScreens.ScreenTime.route) { ScreenTimeScreen() }
     }
 }
