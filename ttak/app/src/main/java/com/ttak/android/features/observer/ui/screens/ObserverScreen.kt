@@ -6,20 +6,27 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ttak.android.data.model.GoalState
 import com.ttak.android.data.model.Time
+import com.ttak.android.data.model.User
 import com.ttak.android.data.repository.PreviewFriendStoryRepository
+import com.ttak.android.data.repository.PreviewUserRepository
+import com.ttak.android.features.observer.domain.repository.UserRepository
 import com.ttak.android.features.observer.ui.components.*
 import com.ttak.android.features.observer.viewmodel.FriendStoryViewModel
+import com.ttak.android.features.observer.viewmodel.UserViewModel
 
 @Composable
 fun ObserverScreen(
-    viewModel: FriendStoryViewModel,
+    friendStoryViewModel: FriendStoryViewModel,
+    userViewModel: UserViewModel,
     goalState: GoalState = GoalState()
 ) {
-    val selectedFilterId by viewModel.selectedFilterId.collectAsState()
-    val filterOptions by viewModel.filterOptions.collectAsState()
-    val friends by viewModel.friends.collectAsState()
+    val selectedFilterId by friendStoryViewModel.selectedFilterId.collectAsState()
+    val filterOptions by friendStoryViewModel.filterOptions.collectAsState()
+    val friends by friendStoryViewModel.friends.collectAsState()
+    val searchResults by userViewModel.searchResults.collectAsState()
 
     var isListExpanded by remember { mutableStateOf(false) }
 
@@ -46,14 +53,20 @@ fun ObserverScreen(
             FriendListFilter(
                 options = filterOptions,
                 selectedOptionId = selectedFilterId,
-                onOptionSelected = viewModel::setSelectedFilter,
+                onOptionSelected = friendStoryViewModel ::setSelectedFilter,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
             // 확장 가능한 친구 목록
             ExpandableFriendListContainer(
                 friends = friends,
-                onAddFriendClick = { /* 친구 추가 처리 */ },
+                onSearchUsers = { query ->
+                    userViewModel.searchUsers(query)
+                    searchResults
+                },
+                onUserSelect = { user ->
+                    userViewModel.addFriend(user)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
@@ -75,11 +88,13 @@ fun ObserverScreenPreview() {
         currentTime = Time(13, 30)
     )
 
-    val previewViewModel = FriendStoryViewModel(PreviewFriendStoryRepository())
-    previewViewModel.loadInitialData()
+    val previewFriendStoryViewModel = FriendStoryViewModel(PreviewFriendStoryRepository())
+    val previewUserViewModel = UserViewModel(PreviewUserRepository())
+    previewFriendStoryViewModel.loadInitialData()
 
     ObserverScreen(
-        viewModel = previewViewModel,
+        friendStoryViewModel = previewFriendStoryViewModel,
+        userViewModel = previewUserViewModel,
         goalState = previewGoalState
     )
 }

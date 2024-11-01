@@ -87,5 +87,9 @@ dependencies {
     implementation("androidx.compose.foundation:foundation")
     // Coil 이미지 로딩 라이브러리
     implementation("io.coil-kt:coil-compose:2.5.0")
-
+    // Retrofit & OkHttp
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.okhttp.core)
+    implementation(libs.okhttp.logging)
 }
