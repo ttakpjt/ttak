@@ -45,7 +45,7 @@ fun ExpandableFriendListContainer(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(40.dp)
+                    .height(8.dp)
                     .pointerInput(Unit) {
                         detectDragGestures(
                             onDragStart = { isDragging = true },

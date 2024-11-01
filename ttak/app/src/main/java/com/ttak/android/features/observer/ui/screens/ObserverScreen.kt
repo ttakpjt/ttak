@@ -6,6 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ttak.android.data.model.GoalState
 import com.ttak.android.data.model.Time
@@ -31,50 +32,61 @@ fun ObserverScreen(
     var isListExpanded by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Column(
+        // Background Content Layer (z-index: 1)
+        Box(
             modifier = Modifier
                 .fillMaxSize()
+                .zIndex(1f)
         ) {
-            // Carousel (리스트가 확장되면 숨김)
-            AnimatedVisibility(
-                visible = !isListExpanded,
-                enter = fadeIn() + slideInVertically(),
-                exit = fadeOut() + slideOutVertically()
+            Column(
+                modifier = Modifier.fillMaxSize()
             ) {
-                CardCarousel(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    goalState = goalState
+                // Carousel
+                AnimatedVisibility(
+                    visible = !isListExpanded,
+                    enter = fadeIn() + slideInVertically(),
+                    exit = fadeOut() + slideOutVertically()
+                ) {
+                    CardCarousel(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp),
+                        goalState = goalState
+                    )
+                }
+
+                // 필터 (z-index: 2)
+                FriendListFilter(
+                    options = filterOptions,
+                    selectedOptionId = selectedFilterId,
+                    onOptionSelected = friendStoryViewModel::setSelectedFilter,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                // 친구 목록 영역 (z-index: 1)
+                ExpandableFriendListContainer(
+                    friends = friends,
+                    onSearchUsers = { query ->
+                        userViewModel.searchUsers(query)
+                        searchResults
+                    },
+                    onUserSelect = { user ->
+                        userViewModel.addFriend(user)
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                    onExpandedChanged = { expanded ->
+                        isListExpanded = expanded
+                    }
                 )
             }
-
-            // 필터
-            FriendListFilter(
-                options = filterOptions,
-                selectedOptionId = selectedFilterId,
-                onOptionSelected = friendStoryViewModel ::setSelectedFilter,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            // 확장 가능한 친구 목록
-            ExpandableFriendListContainer(
-                friends = friends,
-                onSearchUsers = { query ->
-                    userViewModel.searchUsers(query)
-                    searchResults
-                },
-                onUserSelect = { user ->
-                    userViewModel.addFriend(user)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                onExpandedChanged = { expanded ->
-                    isListExpanded = expanded
-                }
-            )
         }
+
+        // PopupLayer (z-index: 100)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(100f)
+        )
     }
 }
 
