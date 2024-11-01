@@ -6,8 +6,14 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import com.ttak.backend.domain.user.dto.reqeust.GoogleUserRequest;
+import com.ttak.backend.domain.user.entity.enumFolder.Role;
+import com.ttak.backend.domain.user.entity.enumFolder.SocialDomain;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,10 +37,73 @@ public class User {
 	@Column(name = "user_id")
 	private Long userId;
 
-	@Column(name = "create_at", nullable = false)
-	private LocalDateTime createAt;
+	@Column(name = "nickname", nullable = false)
+	private String nickname;
+
+	@Column(name="profile_pic")
+	private String profilePic;
+
+	@Column(name = "email", nullable = false)
+	private String email;
 
 	@ColumnDefault("0")
+	@Column(name="point", nullable = false)
+	private int point;
+
+	/**
+	 *  1: 허용
+	 * -1: 비혀용
+	 */
+	@ColumnDefault("1")
+	@Column(name="search_permit", nullable = false)
+	private int searchPermit;
+
+	@ColumnDefault("1")
+	@Column(name="expose_permit", nullable = false)
+	private int exposePermit;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name= "role", nullable = false)
+	private Role role;
+
+
+	//===============여기서부턴 Entity 기본 정보==================
+
+	@Builder.Default
+	@Column(name = "create_at", nullable = false, updatable = false)
+	private LocalDateTime createAt = LocalDateTime.now();
+
+	@Builder.Default
+	@Column(name = "update_at", nullable = false)
+	private LocalDateTime updateAt = LocalDateTime.now();;
+
+	@Column(name = "create_who")
+	private Long createWho;
+
+	@Column(name = "update_who")
+	private Long updateWho;
+
+	@Builder.Default
 	@Column(name = "delete_yn", nullable = false)
-	private boolean deleteYn;
+	private boolean deleteYn = false;
+
+	//===============여기서부턴 OAuth 소셜 인증 정보==================
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "social_domain", nullable = false)
+	private SocialDomain socialDomain;
+
+	@Column(name = "social_identify", nullable = false)
+	private String socialIdentify;
+
+
+	public static User newGoogleEntity(GoogleUserRequest googleUserRequest){
+		return User.builder()
+			.profilePic(googleUserRequest.getProfileImage())
+			.email(googleUserRequest.getEmail())
+			.role(Role.NOT_REGISTERED)
+			.socialDomain(googleUserRequest.getSocialDomain())
+			.socialIdentify(googleUserRequest.getId())
+			.build();
+	}
 }
