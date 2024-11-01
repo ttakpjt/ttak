@@ -26,9 +26,9 @@ fun SplashScreen(
     context: Context,
     isLoggedIn: Boolean
 ) {
-    // 2초 후 다음 화면으로 이동
+    // 1초 후 다음 화면으로 이동
     LaunchedEffect(Unit) {
-        delay(2000)
+        delay(1000)
         val nextActivity = if (isLoggedIn) MainActivity::class.java else LoginActivity::class.java
         context.startActivity(Intent(context, nextActivity))
         (context as? SplashActivity)?.finish()
