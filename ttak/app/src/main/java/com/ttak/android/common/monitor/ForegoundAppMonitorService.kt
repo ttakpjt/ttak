@@ -15,12 +15,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
-/*
-- 실제 백그라운드에서 실행되는 서비스
-- 포그라운드 앱 모니터링 수행
-- 알림 표시 및 로그 출력
- */
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 
 class ForegroundMonitorService : Service() {
     private val serviceScope = CoroutineScope(Dispatchers.Default + Job())
@@ -75,6 +72,7 @@ class ForegroundMonitorService : Service() {
         serviceScope.launch {
             while (isMonitoring) {
                 checkForegroundApp()
+                sendApiRequest() // API 요청 추가
                 delay(2000) // 2초마다 체크
             }
         }
@@ -101,6 +99,25 @@ class ForegroundMonitorService : Service() {
             foregroundApp?.let {
                 Log.d(TAG, "Current foreground app: $it")
             }
+        }
+    }
+
+    // API 요청을 보내는 함수
+    private suspend fun sendApiRequest() {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("http://192.168.137.1:8080/test/1") // 올바른 API URL로 변경
+            .build()
+
+        try {
+            val response: Response = client.newCall(request).execute()
+            if (response.isSuccessful) {
+                Log.d(TAG, "API 요청 성공: ${response.body?.string()}")
+            } else {
+                Log.e(TAG, "API 요청 실패: ${response.code}")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "API 요청 오류: ${e.message}")
         }
     }
 
