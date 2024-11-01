@@ -2,8 +2,6 @@ package com.ttak.backend.domain.observe.entity;
 
 import java.time.LocalDateTime;
 
-import org.hibernate.annotations.ColumnDefault;
-
 import com.ttak.backend.domain.user.entity.User;
 
 import jakarta.persistence.Column;
