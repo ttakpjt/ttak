@@ -15,9 +15,8 @@ import com.ttak.android.features.screentime.ui.screens.ScreenTimeScreen
 fun AppNavHost(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = AppScreens.Home.route
+        startDestination = AppScreens.ScreenTime.route
     ) {
-        composable(AppScreens.Home.route) { SplashScreen(navController) }
         composable(AppScreens.Login.route) { LoginScreen() }
         composable(AppScreens.History.route) { HistoryScreen() }
         composable(AppScreens.MyPage.route) { MyPageScreen() }
