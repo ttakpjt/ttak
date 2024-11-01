@@ -10,6 +10,10 @@ import com.ttak.backend.domain.user.dto.reqeust.GoogleUserRequest;
 import com.ttak.backend.domain.user.entity.enumFolder.Role;
 import com.ttak.backend.domain.user.entity.enumFolder.SocialDomain;
 
+import com.ttak.backend.domain.user.entity.enumFolder.Role;
+import com.ttak.backend.domain.user.entity.enumFolder.SocialDomain;
+import com.ttak.backend.global.auth.dto.OAuth2UserInfo;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,6 +21,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,9 +47,6 @@ public class User {
 
 	@Column(name="profile_pic")
 	private String profilePic;
-
-	@Column(name = "email", nullable = false)
-	private String email;
 
 	@ColumnDefault("0")
 	@Column(name="point", nullable = false)
@@ -96,14 +98,4 @@ public class User {
 	@Column(name = "social_identify", nullable = false)
 	private String socialIdentify;
 
-
-	public static User newGoogleEntity(GoogleUserRequest googleUserRequest){
-		return User.builder()
-			.profilePic(googleUserRequest.getProfileImage())
-			.email(googleUserRequest.getEmail())
-			.role(Role.NOT_REGISTERED)
-			.socialDomain(googleUserRequest.getSocialDomain())
-			.socialIdentify(googleUserRequest.getId())
-			.build();
-	}
 }

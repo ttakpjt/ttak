@@ -13,4 +13,3 @@ public enum SocialDomain {
 
 	private final String providerCode;;
 }
-
