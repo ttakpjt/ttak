@@ -1,56 +1,65 @@
 package com.ttak.android.features.observer.ui.components
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
+import androidx.compose.ui.unit.toSize
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.ttak.android.data.model.FriendStory
-import com.ttak.android.R
 
 @Composable
 fun FriendStoryItem(
     friend: FriendStory,
     modifier: Modifier = Modifier,
-    onWaterBubbleClick: () -> Unit = {},
-    onSpeechBubbleClick: () -> Unit = {}
+    onShowPopup: (FriendStory, Offset) -> Unit = { _, _ -> },
 ) {
-    var showPopup by remember { mutableStateOf(false) }
+    var position by remember { mutableStateOf(Offset.Zero) }
+    var size by remember { mutableStateOf(androidx.compose.ui.geometry.Size.Zero) }
 
     Box(
         modifier = modifier
             .width(80.dp)
-            .wrapContentHeight(),
+            .wrapContentHeight()
+            .onGloballyPositioned { coordinates ->
+                position = coordinates.positionInWindow()
+                size = coordinates.size.toSize()
+            },
         contentAlignment = Alignment.TopCenter
     ) {
-        // Original Content (프로필 이미지와 이름)
         Column(
-            modifier = Modifier
-                .clickable { showPopup = !showPopup },
+            modifier = Modifier.then(
+                if (friend.hasNewStory) {
+                    Modifier.clickable {
+                        onShowPopup(
+                            friend,
+                            Offset(
+                                x = position.x + 10f,
+                                y = position.y - (size.height * 1.5f) - 550f
+                            )
+                        )
+                    }
+                } else {
+                    Modifier
+                }
+            ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(
@@ -88,61 +97,6 @@ fun FriendStoryItem(
                     .fillMaxWidth()
                     .padding(horizontal = 4.dp)
             )
-        }
-
-        // Popup Menu - 별도의 Box로 분리
-        if (showPopup) {
-            androidx.compose.ui.window.Popup(
-                onDismissRequest = { showPopup = false }
-            ) {
-                Box(
-                    modifier = Modifier
-                        .width(100.dp)
-                        .offset(y = (-15).dp)
-                        .shadow(
-                            elevation = 8.dp,
-                            shape = RoundedCornerShape(20.dp)
-                        )
-                        .background(
-                            color = Color(0xFF2C2C2C),
-                            shape = RoundedCornerShape(20.dp)
-                        )
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .padding(horizontal = 12.dp, vertical = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        IconButton(
-                            onClick = {
-                                onWaterBubbleClick()
-                                showPopup = false
-                            },
-                            modifier = Modifier.size(32.dp)
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.water_bubble_icon),
-                                contentDescription = "물방울",
-                                modifier = Modifier.size(32.dp)
-                            )
-                        }
-
-                        IconButton(
-                            onClick = {
-                                onSpeechBubbleClick()
-                                showPopup = false
-                            },
-                            modifier = Modifier.size(32.dp)
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.speech_bubble_icon),
-                                contentDescription = "말풍선",
-                                modifier = Modifier.size(32.dp)
-                            )
-                        }
-                    }
-                }
-            }
         }
     }
 }

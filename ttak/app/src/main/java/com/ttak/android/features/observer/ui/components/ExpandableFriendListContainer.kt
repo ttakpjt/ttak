@@ -28,7 +28,8 @@ fun ExpandableFriendListContainer(
     onSearchUsers: suspend (String) -> List<User>,
     onUserSelect: (User) -> Unit,
     modifier: Modifier = Modifier,
-    onExpandedChanged: (Boolean) -> Unit
+    onExpandedChanged: (Boolean) -> Unit,
+    onShowPopup: (FriendStory, Offset) -> Unit // Signature to handle showing the popup
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     var dragOffset by remember { mutableStateOf(0f) }
@@ -41,7 +42,7 @@ fun ExpandableFriendListContainer(
 
     Box(modifier = modifier) {
         Column {
-            // 드래그 핸들러 영역
+            // Drag handler area
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -68,7 +69,7 @@ fun ExpandableFriendListContainer(
                     }
             )
 
-            // 친구 목록
+            // Friends list
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
                 modifier = Modifier
@@ -95,11 +96,14 @@ fun ExpandableFriendListContainer(
                 }
 
                 items(if (isExpanded) friends else friends.take(8)) { friend ->
-                    FriendStoryItem(friend = friend)
+                    FriendStoryItem(
+                        friend = friend,
+                        onShowPopup = onShowPopup // Pass the popup handler
+                    )
                 }
             }
 
-            // 더보기/접기 버튼
+            // More/Collapse button
             if (friends.size > 8) {
                 TextButton(
                     onClick = { isExpanded = !isExpanded },
