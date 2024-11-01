@@ -4,8 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.ttak.android.features.auth.ui.screens.SplashScreen
-import com.ttak.android.features.auth.ui.screens.LoginScreen
 import com.ttak.android.features.history.ui.screens.HistoryScreen
 import com.ttak.android.features.mypage.ui.screens.MyPageScreen
 import com.ttak.android.features.observer.ui.screens.ObserverScreen
