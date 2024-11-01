@@ -37,8 +37,7 @@ fun SplashScreen(
     // 스플래시 화면 UI
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF0E181E)), // 배경색
+            .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
