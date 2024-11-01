@@ -6,8 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,20 +17,27 @@ import androidx.compose.ui.unit.sp
 import com.ttak.android.R
 import kotlinx.coroutines.delay
 import com.ttak.android.MainActivity
-import com.ttak.android.LoginActivity
-import com.ttak.android.SplashActivity
+import com.ttak.android.features.auth.LoginActivity
+import com.ttak.android.features.auth.SplashActivity
 
 @Composable
 fun SplashScreen(
     context: Context,
-    isLoggedIn: Boolean
+    isLoggedIn: Boolean,
+    hasPermissions: Boolean,
+    onPermissionsConfirmed: () -> Unit
 ) {
-    // 1초 후 다음 화면으로 이동
-    LaunchedEffect(Unit) {
+    // 모든 권한이 승인된 후 다음 화면으로 이동
+    LaunchedEffect(hasPermissions) {
         delay(1000)
-        val nextActivity = if (isLoggedIn) MainActivity::class.java else LoginActivity::class.java
-        context.startActivity(Intent(context, nextActivity))
-        (context as? SplashActivity)?.finish()
+        if (hasPermissions) {
+            val nextActivity = if (isLoggedIn) MainActivity::class.java else LoginActivity::class.java
+            context.startActivity(Intent(context, nextActivity))
+            (context as? SplashActivity)?.finish()
+        } else {
+            // 권한 요청이 필요할 경우 콜백 호출
+            onPermissionsConfirmed()
+        }
     }
 
     // 스플래시 화면 UI

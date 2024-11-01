@@ -1,33 +1,24 @@
 package com.ttak.android
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.ttak.android.common.monitor.ForegroundAppMonitor
 import com.ttak.android.common.monitor.ForegroundMonitorService
 import com.ttak.android.common.ui.theme.TtakTheme
 import com.ttak.android.common.navigation.AppNavHost
 import com.ttak.android.common.ui.components.BottomNavigationBar
-import com.ttak.android.common.ui.theme.Black
-import com.ttak.android.common.ui.theme.Black
-import com.ttak.android.data.worker.ApiRequestWorker // ApiRequestWorker 임포트
+import com.ttak.android.data.worker.ApiRequestWorker
 
 /*
 1. 앱 실행 시 필요한 권한들을 확인
@@ -37,76 +28,33 @@ import com.ttak.android.data.worker.ApiRequestWorker // ApiRequestWorker 임포�
  */
 
 class MainActivity : ComponentActivity() {
-    private lateinit var foregroundAppMonitor: ForegroundAppMonitor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        foregroundAppMonitor = ForegroundAppMonitor(application)
 
-        enableEdgeToEdge()
         setContent {
-            // TtakTheme으로 앱 전체 UI를 감쌈
             TtakTheme {
-                val navController = rememberNavController()
-                val notificationPermissionLauncher = rememberLauncherForActivityResult(
-                    ActivityResultContracts.RequestPermission()
-                ) { isGranted ->
-                    if (isGranted && foregroundAppMonitor.hasUsageStatsPermission()) {
-                        startForegroundMonitorService()
-                        startApiRequestWorker() // ApiRequestWorker 호출
-                    }
-                }
-                val showPermissionDialog = remember { mutableStateOf(!foregroundAppMonitor.hasUsageStatsPermission()) }
-                LaunchedEffect(Unit) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) !=
-                            PackageManager.PERMISSION_GRANTED) {
-                            notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
-                        } else {
-                            if (foregroundAppMonitor.hasUsageStatsPermission()) {
-                                startForegroundMonitorService()
-                                startApiRequestWorker() // ApiRequestWorker 호출
+                val navController = rememberNavController() // 앱 화면을 바꾸는 경로 통제기
+
+                Scaffold(
+                    modifier = Modifier.fillMaxSize()
+                ) { innerPadding ->
+                    Box(modifier = Modifier.padding(innerPadding)) {
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            Box(modifier = Modifier.weight(1f)) {
+                                AppNavHost(navController)
                             }
-                        }
-                    } else {
-                        if (foregroundAppMonitor.hasUsageStatsPermission()) {
-                            startForegroundMonitorService()
-                            startApiRequestWorker() // ApiRequestWorker 호출
+                            BottomNavigationBar(navController = navController)  // 하단 경로 바
                         }
                     }
                 }
-                // 앱 전체에 검은 배경 흰 글씨 적용
-                TtakTheme {
-                    Scaffold(
-                        modifier = Modifier
-                            .fillMaxSize()
-                    ) { innerPadding ->
-                        Box(modifier = Modifier.padding(innerPadding)) {
-                            Column(modifier = Modifier.fillMaxSize()) {
-                                Box(modifier = Modifier.weight(1f)) {
-                                    AppNavHost(navController)
-                                }
-                                BottomNavigationBar(navController = navController)
-                            }
-                        }
-                        if (showPermissionDialog.value) {
-                            PermissionDialog(
-                                onConfirm = {
-                                    foregroundAppMonitor.requestUsageStatsPermission(this@MainActivity)
-                                    showPermissionDialog.value = false
-                                },
-                                onDismiss = {
-                                    showPermissionDialog.value = false
-                                }
-                            )
-                        }
-                    }
-                }
+                startForegroundMonitorService()
+                startApiRequestWorker()
             }
         }
     }
 
-    // Foreground 모니터링 서비스 시작 함수
+    // 포그라운드 구동 앱 감시
     private fun startForegroundMonitorService() {
         Intent(this, ForegroundMonitorService::class.java).also { intent ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -117,31 +65,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // ApiRequestWorker 실행 함수
+    // API 요청을 위한 Worker 시작
     private fun startApiRequestWorker() {
         val apiRequestWork = OneTimeWorkRequestBuilder<ApiRequestWorker>().build()
         WorkManager.getInstance(this).enqueue(apiRequestWork)
     }
-}
-
-@Composable
-fun PermissionDialog(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("권한 필요") },
-        text = { Text("앱 사용 현황 접근 권한이 필요합니다. 설정에서 권한을 허용해주세요.") },
-        confirmButton = {
-            Button(onClick = onConfirm) {
-                Text("설정으로 이동")
-            }
-        },
-        dismissButton = {
-            Button(onClick = onDismiss) {
-                Text("취소")
-            }
-        }
-    )
 }
