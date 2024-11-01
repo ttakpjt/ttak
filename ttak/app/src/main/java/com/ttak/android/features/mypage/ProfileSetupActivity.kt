@@ -18,6 +18,7 @@ class ProfileSetupActivity : ComponentActivity() {
         setContent {
             TtakTheme {
                 // Compose 내에서 상태 정의
+                val nickname = remember { mutableStateOf("") }
                 val profileImageUri = remember { mutableStateOf<Uri?>(null) }
 
                 // 이미지 선택 런처 정의
