@@ -7,27 +7,26 @@ import kotlinx.coroutines.flow.flow
 class PreviewFriendStoryRepository : FriendStoryRepository {
     override fun getAllFriends(): Flow<List<FriendStory>> = flow {
         emit(listOf(
-            FriendStory("1", "탁싸피", "url1", true),
-            FriendStory("2", "황싸피", "url2", false),
-            FriendStory("3", "김싸피", "url3", false),
-            FriendStory("4", "탁싸피", "url1", false),
-            FriendStory("5", "김싸피", "url3", false),
-            FriendStory("6", "탁싸피", "url1", false),
-            FriendStory("7", "김싸피", "url3", false),
-            FriendStory("8", "탁싸피", "url1", false),
-            FriendStory("9", "김싸피", "url3", false),
-            FriendStory("10", "탁싸피", "url1", false),
-            FriendStory("11", "김싸피", "url3", false),
-            FriendStory("12", "탁싸피", "url1", false),
-            FriendStory("13", "김싸피", "url3", false)
+            FriendStory("1", "탁싸피", "https://picsum.photos/seed/ttak1/200", true),
+            FriendStory("2", "황싸피", "https://picsum.photos/seed/hwang2/200", false),
+            FriendStory("3", "김싸피", "https://picsum.photos/seed/kim3/200", false),
+            FriendStory("4", "최싸피", "https://picsum.photos/seed/choi4/200", false),
+            FriendStory("5", "박싸피", "https://picsum.photos/seed/park5/200", false),
+            FriendStory("6", "이싸피", "https://picsum.photos/seed/lee6/200", false),
+            FriendStory("7", "정싸피", "https://picsum.photos/seed/jung7/200", false),
+            FriendStory("8", "강싸피", "https://picsum.photos/seed/kang8/200", false),
+            FriendStory("9", "조싸피", "https://picsum.photos/seed/cho9/200", false),
+            FriendStory("10", "윤싸피", "https://picsum.photos/seed/yoon10/200", false),
+            FriendStory("11", "장싸피", "https://picsum.photos/seed/jang11/200", false),
+            FriendStory("12", "임싸피", "https://picsum.photos/seed/lim12/200", false),
+            FriendStory("13", "한싸피", "https://picsum.photos/seed/han13/200", false)
         ))
     }
 
     override fun getFriendsWithNewStories(): Flow<List<FriendStory>> = flow {
         emit(listOf(
-            FriendStory("1", "탁싸피", "url1", true),
-            FriendStory("3", "김싸피", "url3", true)
-
+            FriendStory("1", "탁싸피", "https://picsum.photos/seed/ttak1/200", true),
+            FriendStory("3", "김싸피", "https://picsum.photos/seed/kim3/200", true)
         ))
     }
 

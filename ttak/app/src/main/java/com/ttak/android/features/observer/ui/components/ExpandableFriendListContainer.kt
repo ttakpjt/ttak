@@ -18,18 +18,22 @@ import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.ttak.android.data.model.FriendStory
+import com.ttak.android.data.model.User
+import kotlinx.coroutines.async
 import kotlin.math.abs
 
 @Composable
 fun ExpandableFriendListContainer(
     friends: List<FriendStory>,
-    onAddFriendClick: () -> Unit = {},
+    onSearchUsers: suspend (String) -> List<User>,
+    onUserSelect: (User) -> Unit,
     modifier: Modifier = Modifier,
     onExpandedChanged: (Boolean) -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     var dragOffset by remember { mutableStateOf(0f) }
     var isDragging by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(isExpanded) {
         onExpandedChanged(isExpanded)
@@ -48,7 +52,7 @@ fun ExpandableFriendListContainer(
                             onDragEnd = {
                                 isDragging = false
                                 if (abs(dragOffset) > 100f) {
-                                    isExpanded = dragOffset < 0 // 위로 드래그하면 펼쳐짐
+                                    isExpanded = dragOffset < 0
                                 }
                                 dragOffset = 0f
                             },
@@ -80,7 +84,14 @@ fun ExpandableFriendListContainer(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 item {
-                    AddFriendItem(onAddFriendClick = onAddFriendClick)
+                    AddFriendItem(
+                        searchUsers = { query ->
+                            scope.async {
+                                onSearchUsers(query)
+                            }.await()
+                        },
+                        onUserSelect = onUserSelect
+                    )
                 }
 
                 items(if (isExpanded) friends else friends.take(8)) { friend ->
@@ -91,9 +102,7 @@ fun ExpandableFriendListContainer(
             // 더보기/접기 버튼
             if (friends.size > 8) {
                 TextButton(
-                    onClick = {
-                        isExpanded = !isExpanded
-                    },
+                    onClick = { isExpanded = !isExpanded },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)

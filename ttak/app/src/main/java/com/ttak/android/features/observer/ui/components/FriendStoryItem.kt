@@ -1,25 +1,36 @@
 package com.ttak.android.features.observer.ui.components
 
+import android.util.Log
+import android.util.Size
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
+import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.ttak.android.data.model.FriendStory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.net.HttpURLConnection
+import java.net.URL
 
 @Composable
 fun FriendStoryItem(
@@ -27,7 +38,7 @@ fun FriendStoryItem(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.width(80.dp),  // 전체 너비를 이미지 크기와 동일하게 설정
+        modifier = modifier.width(80.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
@@ -35,58 +46,34 @@ fun FriendStoryItem(
                 .size(80.dp)
                 .border(
                     width = 2.dp,
-                    color = if (friend.hasNewStory) Color(0xFF4CAF50) else Color.Gray,
+                    color = if (friend.hasNewStory) Color(0xFFFF5E5E) else Color(0xFF7FEC93),
                     shape = CircleShape
-                )
-                .padding(4.dp),
+                ),
             contentAlignment = Alignment.Center
         ) {
-            val painter = rememberAsyncImagePainter(
-                ImageRequest.Builder(LocalContext.current)
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
                     .data(friend.profileImageUrl)
                     .crossfade(true)
-                    .build()
+                    .build(),
+                contentDescription = "${friend.name}의 프로필 이미지",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp)  // 여기에 padding 추가
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop,
+                placeholder = painterResource(id = android.R.drawable.ic_menu_gallery),
+                error = painterResource(id = android.R.drawable.ic_menu_report_image)
             )
-
-            when (painter.state) {
-                is AsyncImagePainter.State.Loading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = Color.Gray
-                    )
-                }
-                is AsyncImagePainter.State.Error -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(CircleShape)
-                            .border(
-                                width = 1.dp,
-                                color = Color.Gray,
-                                shape = CircleShape
-                            )
-                    )
-                }
-                else -> {
-                    Image(
-                        painter = painter,
-                        contentDescription = friend.name,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(CircleShape),
-                        contentScale = ContentScale.Crop
-                    )
-                }
-            }
         }
-        Spacer(modifier = Modifier.height(8.dp))  // 간격을 조금 더 늘림
+        Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = friend.name,
             color = Color.White,
-            fontSize = 16.sp,  // 적절한 텍스트 크기 설정
-            textAlign = TextAlign.Center,  // 텍스트 중앙 정렬
+            fontSize = 16.sp,
+            textAlign = TextAlign.Center,
             modifier = Modifier
-                .fillMaxWidth()  // 전체 너비를 사용
+                .fillMaxWidth()
                 .padding(horizontal = 4.dp)
         )
     }
