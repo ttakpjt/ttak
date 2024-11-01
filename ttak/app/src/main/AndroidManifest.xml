@@ -35,7 +35,7 @@
             android:foregroundServiceType="dataSync" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".features.auth.SplashActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Ttak">
