@@ -34,11 +34,11 @@ fun BottomNavigationBar(navController: NavController) {
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp),
-        color = Black,
         tonalElevation = 8.dp
     ) {
         Row(
             modifier = Modifier
+                .background(Black)
                 .fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceAround

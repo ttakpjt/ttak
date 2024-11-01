@@ -17,7 +17,6 @@ fun AppNavHost(navController: NavHostController) {
         navController = navController,
         startDestination = AppScreens.ScreenTime.route
     ) {
-        composable(AppScreens.Login.route) { LoginScreen() }
         composable(AppScreens.History.route) { HistoryScreen() }
         composable(AppScreens.MyPage.route) { MyPageScreen() }
 //        composable(AppScreens.Observer.route) { ObserverScreen(navController) }
