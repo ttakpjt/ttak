@@ -1,4 +1,4 @@
-package com.ttak.android
+package com.ttak.android.features.auth
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,8 +11,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.ttak.android.R
 import com.ttak.android.features.auth.ui.screens.LoginScreen
 import com.ttak.android.common.ui.theme.TtakTheme
+import com.ttak.android.features.mypage.ProfileSetupActivity
 
 class LoginActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
@@ -36,11 +38,13 @@ class LoginActivity : ComponentActivity() {
         }
     }
 
+    // 로그인
     private fun signIn() {
         val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 
+    // ???
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -56,13 +60,14 @@ class LoginActivity : ComponentActivity() {
         }
     }
 
+    // firebase를 통한 구글 계정 연동 로그인
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    // 로그인 성공 시 MainActivity로 이동
-                    startActivity(Intent(this, MainActivity::class.java))
+                    // 로그인 성공 시 계정이 존재하지 않는다면 프로필을 설정하러 이동(추가)
+                    startActivity(Intent(this, ProfileSetupActivity::class.java))
                     finish()
                 } else {
                     // 로그인 실패 시 처리
@@ -71,6 +76,7 @@ class LoginActivity : ComponentActivity() {
             }
     }
 
+    // 상수
     companion object {
         private const val RC_SIGN_IN = 9001
     }
