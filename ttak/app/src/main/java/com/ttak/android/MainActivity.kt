@@ -26,6 +26,8 @@ import com.ttak.android.common.ui.theme.TtakTheme
 import com.ttak.android.common.navigation.AppNavHost
 import com.ttak.android.common.ui.components.BottomNavigationBar
 import com.ttak.android.common.ui.theme.Black
+import com.ttak.android.common.ui.theme.Black
+import com.ttak.android.data.worker.ApiRequestWorker // ApiRequestWorker 임포트
 
 /*
 1. 앱 실행 시 필요한 권한들을 확인
@@ -33,8 +35,6 @@ import com.ttak.android.common.ui.theme.Black
 3. 모든 권한이 허용되면 모니터링 서비스 시작
 4. 서비스는 백그라운드에서 2초마다 현재 실행 중인 앱을 체크하고 로그 출력
  */
-import com.ttak.android.common.ui.theme.Black
-import com.ttak.android.data.worker.ApiRequestWorker // ApiRequestWorker 임포트
 
 class MainActivity : ComponentActivity() {
     private lateinit var foregroundAppMonitor: ForegroundAppMonitor
@@ -75,28 +75,31 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-                Scaffold(
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) { innerPadding ->
-                    Box(modifier = Modifier.padding(innerPadding)) {
-                        Column(modifier = Modifier.fillMaxSize()) {
-                            Box(modifier = Modifier.weight(1f)) {
-                                AppNavHost(navController)
+                // 앱 전체에 검은 배경 흰 글씨 적용
+                TtakTheme {
+                    Scaffold(
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) { innerPadding ->
+                        Box(modifier = Modifier.padding(innerPadding)) {
+                            Column(modifier = Modifier.fillMaxSize()) {
+                                Box(modifier = Modifier.weight(1f)) {
+                                    AppNavHost(navController)
+                                }
+                                BottomNavigationBar(navController = navController)
                             }
-                            BottomNavigationBar(navController = navController)
                         }
-                    }
-                    if (showPermissionDialog.value) {
-                        PermissionDialog(
-                            onConfirm = {
-                                foregroundAppMonitor.requestUsageStatsPermission(this@MainActivity)
-                                showPermissionDialog.value = false
-                            },
-                            onDismiss = {
-                                showPermissionDialog.value = false
-                            }
-                        )
+                        if (showPermissionDialog.value) {
+                            PermissionDialog(
+                                onConfirm = {
+                                    foregroundAppMonitor.requestUsageStatsPermission(this@MainActivity)
+                                    showPermissionDialog.value = false
+                                },
+                                onDismiss = {
+                                    showPermissionDialog.value = false
+                                }
+                            )
+                        }
                     }
                 }
             }

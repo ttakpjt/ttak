@@ -6,6 +6,8 @@
         <item name="android:windowBackground">@color/black</item>
         <!-- 기본 폰트 설정 -->
         <item name="android:fontFamily">@font/pretendard_regular</item>
+        <!-- 안드로이드 12 이상에서 기본 스플래시 화면이 올라오지 않게 변경 -->
+        <item name="android:windowIsTranslucent">true</item> // 코드 추가
         <!-- 폰트 색 설정 -->
         <item name="android:textColorPrimary">@color/white</item>
     </style>

@@ -38,6 +38,7 @@ fun BottomNavigationBar(navController: NavController) {
     ) {
         Row(
             modifier = Modifier
+                .background(Black)
                 .fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceAround
@@ -67,7 +68,7 @@ fun BottomNavItem(
         modifier = Modifier
             .size(width = 82.dp, height = 48.dp)
             .padding(8.dp)
-//            .background(if (isSelected) Color(0xFF515155) else Color.Transparent, shape = CircleShape)
+            .background(if (isSelected) Color(0xFF515155) else Color.Transparent, shape = CircleShape)
             .clickable {
                 navController.navigate(item.screen.route) {
                     popUpTo(AppScreens.Home.route) { inclusive = false }
