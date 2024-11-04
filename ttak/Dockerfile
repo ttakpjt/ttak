@@ -33,7 +33,7 @@ RUN chmod +x gradlew && ./gradlew dependencies --no-daemon
 COPY app/src src/
 
 # APK 빌드
-RUN ./gradlew assembleRelease --no-daemon
+RUN ./gradlew :app:assembleRelease --no-daemon
 
 # 결과물 스테이지
 FROM alpine:latest
