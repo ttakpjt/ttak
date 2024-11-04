@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ttak.android.utils.formatDuration
+import kotlin.math.absoluteValue
 
 @Composable
 fun ScreenTimeChangeComponent(username: String, hoursDifference: Int) {
@@ -17,7 +18,7 @@ fun ScreenTimeChangeComponent(username: String, hoursDifference: Int) {
         Text(
             text =
             "어제보다 ${if (hoursDifference >= 0) formatDuration(hoursDifference) + " 더" 
-            else formatDuration(hoursDifference) + " 덜" } 보셨네요!",
+            else formatDuration(hoursDifference.absoluteValue) + " 덜" } 보셨네요!",
             fontSize = 14.sp
         )
     }

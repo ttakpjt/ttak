@@ -52,7 +52,7 @@ fun ScreenTimeScreen() {
             Spacer(modifier = Modifier.height(16.dp))
 
             // 5. 요일별 스마트폰 사용량 막대 차트
-            WeeklyUsageBarChartComponent()
+            WeeklyUsageBarChartComponent(data.dailyUsageList)
         }
     } ?: Text("Loading...") // 데이터가 로딩 중일 때 표시
 }
