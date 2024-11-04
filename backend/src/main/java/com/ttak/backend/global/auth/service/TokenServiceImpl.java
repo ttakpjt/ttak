@@ -26,10 +26,10 @@ public class TokenServiceImpl implements TokenService{
 
 	@Override
 	@Transactional
-	public void saveOrUpdate(String memberKey, String refreshToken, String accessToken) {
+	public void saveOrUpdate(Long userId, String refreshToken, String accessToken) {
 		Token token = tokenRepository.findByAccessToken(accessToken)
 			.map(o -> o.updateRefreshToken(refreshToken))
-			.orElseGet(() -> new Token(memberKey, refreshToken, accessToken));
+			.orElseGet(() -> new Token(userId, refreshToken, accessToken));
 
 		tokenRepository.save(token);
 	}

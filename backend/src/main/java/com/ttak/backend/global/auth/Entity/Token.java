@@ -13,11 +13,10 @@ import lombok.Getter;
 public class Token {
 
 	@Id
-	private String id;
+	private Long id;
 
 	private String refreshToken;
 
-	@Indexed
 	private String accessToken;
 
 	public Token updateRefreshToken(String refreshToken) {

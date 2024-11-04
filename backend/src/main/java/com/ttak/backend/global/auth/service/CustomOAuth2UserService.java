@@ -56,7 +56,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 	private User getUser(OAuth2UserInfo oAuth2UserInfo) {
 		User user = userRepository.findBySocialDomainAndSocialIdentify(oAuth2UserInfo.getSocialDomain(), oAuth2UserInfo.getSocialIdentify())
-			.orElseGet(oAuth2UserInfo::toEntity);
-		return userRepository.save(user);
+			.orElseGet(() -> {
+				User newUser = oAuth2UserInfo.toEntity();
+				return userRepository.save(newUser);
+			});
+		System.out.println("userId: " + user.getUserId());
+		return user;
 	}
 }

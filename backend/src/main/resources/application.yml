@@ -1,8 +1,8 @@
 spring:
   jwt:
     expiration:
-      access-token: 60*60*24*365
-      refresh-token: 60*60*24*365*10
+      access-token: 31536000 #60*60*24*365
+      refresh-token: 315360000 #60*60*24*365*10
   data:
     redis:
       host: localhost

@@ -31,6 +31,7 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,9 +42,12 @@ public class JwtUtil {
 
 	@Value("${spring.jwt.secret}")
 	private String key;
+	@Value("${spring.jwt.expiration.access-token}")
+	private int ACCESS_TOKEN_EXPIRE_TIME;
+	@Value("${spring.jwt.expiration.refresh-token}")
+	private int REFRESH_TOKEN_EXPIRE_TIME;;
+
 	private SecretKey secretKey;
-	private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
-	private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7;
 	private static final String KEY_ROLE = "role";
 	private final TokenService tokenService;
 
@@ -56,9 +60,12 @@ public class JwtUtil {
 		return generateToken(authentication, ACCESS_TOKEN_EXPIRE_TIME);
 	}
 
-	public void generateRefreshToken(Authentication authentication, String accessToken) {
+	public void generateRefreshToken(Authentication authentication, String accessToken, HttpServletResponse response) {
 		String refreshToken = generateToken(authentication, REFRESH_TOKEN_EXPIRE_TIME);
-		tokenService.saveOrUpdate(authentication.getName(), refreshToken, accessToken);
+		UserPrincipal userPrincipal = (UserPrincipal)authentication.getPrincipal();
+		tokenService.saveOrUpdate(userPrincipal.getUserId(), refreshToken, accessToken);
+
+		response.addCookie(createCookies("refresh_token", refreshToken));
 		System.out.println("refresh token: " + refreshToken);
 	}
 
@@ -94,13 +101,14 @@ public class JwtUtil {
 			claims.get(KEY_ROLE).toString()));
 	}
 
-	public String reissueAccessToken(String accessToken) {
+	public String reissueAccessToken(String accessToken, HttpServletResponse response) {
 		if (StringUtils.hasText(accessToken)) {
 			Token token = tokenService.findByAccessTokenOrThrow(accessToken);
 			String refreshToken = token.getRefreshToken();
 
 			if (validateToken(refreshToken)) {
 				String reissueAccessToken = generateAccessToken(getAuthentication(refreshToken));
+				generateRefreshToken(getAuthentication(accessToken), reissueAccessToken, response);
 				tokenService.updateToken(reissueAccessToken, token);
 				return reissueAccessToken;
 			}
@@ -173,7 +181,7 @@ public class JwtUtil {
 	//
 	public Cookie createCookies(String key, String value) {
 		Cookie cookie = new Cookie(key, value);
-		cookie.setMaxAge(24 * 60 * 60);
+		cookie.setMaxAge(REFRESH_TOKEN_EXPIRE_TIME); //10년
 		cookie.setSecure(true);
 		cookie.setHttpOnly(true);
 		cookie.setPath("/");

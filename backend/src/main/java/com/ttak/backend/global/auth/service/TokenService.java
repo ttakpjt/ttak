@@ -6,7 +6,7 @@ public interface TokenService {
 
 	void deleteRefreshToken(String memberKey);
 
-	void saveOrUpdate(String memberKey, String refreshToken, String accessToken);
+	void saveOrUpdate(Long userId, String refreshToken, String accessToken);
 
 	Token findByAccessTokenOrThrow(String accessToken);
 
