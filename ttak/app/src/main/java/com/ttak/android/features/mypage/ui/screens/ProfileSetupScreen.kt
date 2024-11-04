@@ -39,6 +39,7 @@ fun ProfileSetupScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // 상단 프로필 소제목
         Text(
             text = "프로필 설정",
             fontSize = 32.sp,
