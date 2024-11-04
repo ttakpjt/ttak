@@ -6,9 +6,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.ttak.android.utils.formatDuration
 
 @Composable
-fun TodayAppUsageChartComponent() {
+fun TodayAppUsageChartComponent(topSixAppsUsage: Map<String, Int>) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(8.dp)
@@ -23,9 +24,9 @@ fun TodayAppUsageChartComponent() {
 
         // 범례
         Column {
-            Text("Chrome: 1시간")
-            Text("Instagram: 2시간")
-            Text("YouTube: 1시간 30분")
+            topSixAppsUsage.map {
+                Text(text = "${it.key}: ${formatDuration(it.value)}")
+            }
         }
     }
 }
