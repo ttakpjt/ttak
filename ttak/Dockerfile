@@ -27,7 +27,7 @@ COPY settings.gradle.kts build.gradle.kts gradle.properties ./
 RUN chmod +x gradlew && ./gradlew dependencies --no-daemon
 
 # 소스 코드 복사
-COPY src/ src/
+COPY app/src src/
 
 # APK 빌드
 RUN ./gradlew assembleRelease --no-daemon
