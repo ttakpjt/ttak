@@ -28,6 +28,8 @@ import com.ttak.android.R
 import com.ttak.android.common.ui.components.AppButton
 import com.ttak.android.common.ui.components.AppSearchBar
 import com.ttak.android.common.ui.theme.Grey
+import coil.compose.rememberAsyncImagePainter
+
 
 @Composable
 fun ProfileSetupScreen(
@@ -61,9 +63,9 @@ fun ProfileSetupScreen(
         ) {
             Image(
                 painter = if (profileImageUri.value != null) {
-                    painterResource(id = R.drawable.default_proflie)
+                    rememberAsyncImagePainter(profileImageUri.value) // URI를 통한 이미지 로딩
                 } else {
-                    painterResource(R.drawable.ic_launcher_foreground)
+                    painterResource(R.drawable.default_proflie)
                 },
                 contentDescription = "프로필 이미지",
                 modifier = Modifier
@@ -79,7 +81,7 @@ fun ProfileSetupScreen(
                     .background(MaterialTheme.colorScheme.primary)
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_check_circle),
+                    painter = painterResource(R.drawable.image),
                     contentDescription = "프로필 이미지 선택",
                     tint = Color.White
                 )
@@ -96,6 +98,7 @@ fun ProfileSetupScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // 이미지를 db에 저장하는 로직도 추가해야 함
         AppButton(
             text = "저장",
             onClick = {
