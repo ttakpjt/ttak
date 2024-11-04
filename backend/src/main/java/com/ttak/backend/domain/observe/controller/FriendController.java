@@ -1,8 +1,13 @@
 package com.ttak.backend.domain.observe.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ttak.backend.domain.observe.entity.CreateFriendRequest;
 import com.ttak.backend.domain.observe.entity.StatusUpdateMessage;
 import com.ttak.backend.domain.observe.service.FriendService;
 
@@ -10,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-public class FriendStatusController {
+public class FriendController {
 
 	private final FriendService friendService;
 
@@ -20,4 +25,9 @@ public class FriendStatusController {
 		friendService.broadcastStatusUpdate(message);
 	}
 
+	@PostMapping
+	public ResponseEntity<?> createFriend(@RequestBody CreateFriendRequest createFriendRequest) {
+		friendService.addFriend(createFriendRequest);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
+	}
 }

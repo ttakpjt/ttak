@@ -16,10 +16,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Friend {
@@ -32,6 +33,10 @@ public class Friend {
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User userId;
+
+	@ManyToOne
+	@JoinColumn(name = "following_id")
+	private User followingId;
 
 	@Column(name = "create_at", nullable = false)
 	private LocalDateTime createAt;
