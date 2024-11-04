@@ -21,7 +21,10 @@ RUN echo "org.gradle.jvmargs=-Xmx6g -XX:MaxPermSize=1024m -XX:+HeapDumpOnOutOfMe
 # Gradle 캐싱을 위한 레이어 최적화
 COPY gradle/ gradle/
 COPY gradlew ./gradlew
-COPY settings.gradle.kts build.gradle.kts gradle.properties ./
+COPY settings.gradle.kts .
+COPY build.gradle.kts .
+COPY app/build.gradle.kts app/
+COPY gradle.properties .
 
 # Gradle Wrapper 및 의존성 설치
 RUN chmod +x gradlew && ./gradlew dependencies --no-daemon
