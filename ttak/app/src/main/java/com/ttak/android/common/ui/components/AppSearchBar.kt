@@ -35,7 +35,7 @@ fun AppSearchBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(48.dp)
+                .height(60.dp)
                 .background(White, shape = MaterialTheme.shapes.medium)
                 .padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -51,12 +51,13 @@ fun AppSearchBar(
                     .weight(1f)
                     .padding(end = 8.dp),
                 singleLine = true,
-                textStyle = TextStyle(color = Black),
+                textStyle = MaterialTheme.typography.bodyLarge.copy(color = Black),
                 decorationBox = { innerTextField ->
                     if (searchText.text.isEmpty()) {
                         Text(
                             text = "닉네임을 입력해 주세요.",
-                            style = TextStyle(color = Grey)
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Grey
                         )
                     }
                     innerTextField()
@@ -66,7 +67,7 @@ fun AppSearchBar(
             // 검색 아이콘 버튼
             IconButton(
                 onClick = {
-                    onIconClick()  // 아이콘 클릭 시 동작
+                    onIconClick()  // 아이콘 클릭 시 동작 매번 다르니까 이거 수정도 해야 할 듯
                     // 예시 로직: False 반환 시 에러 표시
                     if (/* 검색 결과가 없는 경우 */ false) {
                         isError = true
