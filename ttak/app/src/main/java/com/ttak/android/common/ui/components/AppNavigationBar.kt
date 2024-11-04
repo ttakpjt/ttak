@@ -19,7 +19,6 @@ import com.ttak.android.R
 import com.ttak.android.common.navigation.AppScreens
 import com.ttak.android.common.ui.theme.Black
 import com.ttak.android.common.ui.theme.Grey
-import com.ttak.android.common.ui.theme.Red
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
@@ -71,7 +70,7 @@ fun BottomNavItem(
             .background(if (isSelected) Color(0xFF515155) else Color.Transparent, shape = CircleShape)
             .clickable {
                 navController.navigate(item.screen.route) {
-                    popUpTo(AppScreens.Home.route) { inclusive = false }
+                    popUpTo(AppScreens.ScreenTime.route) { inclusive = false }
                     launchSingleTop = true
                 }
             }
