@@ -60,59 +60,63 @@ class ScreenTimeViewModel(
     }
 
     // 오늘 사용 시간 계산 (분 단위)
-    private suspend fun getForegroundUsageDurationForToday(): Int = withContext(Dispatchers.IO) {
-        val usageStatsManager =
-            context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-        val calendar = Calendar.getInstance().apply {
-            timeZone = TimeZone.getTimeZone("Asia/Seoul")
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-        val startTime = calendar.timeInMillis
-        val endTime = System.currentTimeMillis()
+    private suspend fun getForegroundUsageDurationForToday(): Int {
+        return withContext(Dispatchers.IO) {
+            // UsageStatsManager를 통해 오늘 사용 기록을 불러옵니다.
+            val usageStatsManager =
+                context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
 
-        val events = usageStatsManager.queryEvents(startTime, endTime)
-        var totalForegroundTime = 0L
-        var lastEventTime = 0L
-        var isForeground = false
+            // 오늘의 시작 시각과 현재 시각을 계산
+            val calendar = Calendar.getInstance().apply {
+                timeInMillis = System.currentTimeMillis()
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            val startTime = calendar.timeInMillis
+            val endTime = System.currentTimeMillis()
 
-        while (events.hasNextEvent()) {
+            // 오늘 하루의 이벤트를 조회
+            val usageEvents = usageStatsManager.queryEvents(startTime, endTime)
+            var totalForegroundTime = 0L
+            var lastForegroundStartTime = 0L
+
+            // 이벤트 순회
             val event = UsageEvents.Event()
-            events.getNextEvent(event)
+            while (usageEvents.hasNextEvent()) {
+                usageEvents.getNextEvent(event)
 
-            when (event.eventType) {
-                UsageEvents.Event.MOVE_TO_FOREGROUND -> {
-                    lastEventTime = event.timeStamp
-                    isForeground = true
-                }
+                when (event.eventType) {
+                    UsageEvents.Event.MOVE_TO_FOREGROUND -> {
+                        // 포그라운드 전환 시간 기록
+                        lastForegroundStartTime = event.timeStamp
+                    }
 
-                UsageEvents.Event.MOVE_TO_BACKGROUND -> {
-                    if (isForeground) {
-                        val usageTime = event.timeStamp - lastEventTime
-                        totalForegroundTime += usageTime
-                        isForeground = false
+                    UsageEvents.Event.MOVE_TO_BACKGROUND -> {
+                        // 백그라운드로 전환된 경우 포그라운드 시간을 합산
+                        if (lastForegroundStartTime != 0L) {
+                            totalForegroundTime += event.timeStamp - lastForegroundStartTime
+                            lastForegroundStartTime = 0L // 초기화
+                        }
                     }
                 }
             }
+            // 초 단위로 변환하여 반환
+            (totalForegroundTime / 60000).toInt()
         }
-
-        if (isForeground) {
-            val usageTime = endTime - lastEventTime
-            totalForegroundTime += usageTime
-        }
-
-        (totalForegroundTime / 60000).toInt() // 분 단위로 반환
     }
 
     // 어제 사용 시간 계산 (분 단위)
-    private suspend fun getForegroundUsageDurationForYesterday(): Int =
-        withContext(Dispatchers.IO) {
+    private suspend fun getForegroundUsageDurationForYesterday(): Int {
+        return withContext(Dispatchers.IO) {
+            // UsageStatsManager를 통해 사용 기록을 불러옵니다.
             val usageStatsManager =
                 context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+
+            // 어제 시간 계산
             val calendar = Calendar.getInstance().apply {
-                timeZone = TimeZone.getTimeZone("Asia/Seoul")
+                timeInMillis = System.currentTimeMillis()
                 add(Calendar.DAY_OF_YEAR, -1)
                 set(Calendar.HOUR_OF_DAY, 0)
                 set(Calendar.MINUTE, 0)
@@ -123,38 +127,35 @@ class ScreenTimeViewModel(
             calendar.add(Calendar.DAY_OF_YEAR, 1)
             val endTime = calendar.timeInMillis
 
-            val events = usageStatsManager.queryEvents(startTime, endTime)
+            // 오늘 하루의 이벤트를 조회
+            val usageEvents = usageStatsManager.queryEvents(startTime, endTime)
             var totalForegroundTime = 0L
-            var lastEventTime = 0L
-            var isForeground = false
+            var lastForegroundStartTime = 0L
 
-            while (events.hasNextEvent()) {
-                val event = UsageEvents.Event()
-                events.getNextEvent(event)
+            // 이벤트 순회
+            val event = UsageEvents.Event()
+            while (usageEvents.hasNextEvent()) {
+                usageEvents.getNextEvent(event)
 
                 when (event.eventType) {
                     UsageEvents.Event.MOVE_TO_FOREGROUND -> {
-                        lastEventTime = event.timeStamp
-                        isForeground = true
+                        // 포그라운드 전환 시간 기록
+                        lastForegroundStartTime = event.timeStamp
                     }
 
                     UsageEvents.Event.MOVE_TO_BACKGROUND -> {
-                        if (isForeground) {
-                            val usageTime = event.timeStamp - lastEventTime
-                            totalForegroundTime += usageTime
-                            isForeground = false
+                        // 백그라운드로 전환된 경우 포그라운드 시간을 합산
+                        if (lastForegroundStartTime != 0L) {
+                            totalForegroundTime += event.timeStamp - lastForegroundStartTime
+                            lastForegroundStartTime = 0L // 초기화
                         }
                     }
                 }
             }
-
-            if (isForeground) {
-                val usageTime = endTime - lastEventTime
-                totalForegroundTime += usageTime
-            }
-
-            (totalForegroundTime / 60000).toInt() // 분 단위로 반환
+            // 초 단위로 변환하여 반환
+            (totalForegroundTime / 60000).toInt()
         }
+    }
 
     // 가장 많이 사용한 6개의 앱과 사용 시간 (분 단위)
     private suspend fun getTopSixAppsUsageForToday(): Map<String, Int> =
@@ -205,126 +206,141 @@ class ScreenTimeViewModel(
         }
 
     // 이번 주 (일요일부터 토요일까지) 요일별 사용 시간을 분 단위로 반환
-    private suspend fun getDailyUsageForCurrentWeek(): List<Int> = withContext(Dispatchers.IO) {
-        val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-        val calendar = Calendar.getInstance().apply {
-            timeZone = TimeZone.getTimeZone("Asia/Seoul")
-            set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY) // 이번 주 일요일로 설정
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
+    private suspend fun getDailyUsageForCurrentWeek(): List<Int> {
+        return withContext(Dispatchers.IO) {
+            val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+            val dailyUsage = mutableListOf<Int>()
+            val calendar = Calendar.getInstance().apply {
+                firstDayOfWeek = Calendar.SUNDAY
+                set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
 
-        val dailyUsage = mutableListOf<Int>()
-        repeat(7) {
+            // 일주일 동안 매일의 사용 시간을 계산
+            for (i in 0..6) {
+                val startTime = calendar.timeInMillis
+                calendar.add(Calendar.DAY_OF_MONTH, 1)
+                val endTime = calendar.timeInMillis
+
+                // 하루의 모든 앱 사용 시간을 `queryUsageStats`로 가져옴
+                val usageStatsList = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, startTime, endTime)
+                var totalForegroundTimeForDay = 0L
+
+                // 각 앱의 포그라운드 시간만 합산
+                for (usageStats in usageStatsList) {
+                    totalForegroundTimeForDay += usageStats.totalTimeInForeground
+                }
+
+                // 현재 값에서 이전 값을 빼서 리스트에 추가
+                val usageInMinutes = (totalForegroundTimeForDay / 60000).toInt()
+                dailyUsage.add(usageInMinutes)
+            }
+            dailyUsage
+        }
+    }
+
+
+
+    // 지난 주 전체 사용 시간 (전주의 일요일부터 토요일까지)을 분 단위로 반환
+    private suspend fun getUsageDurationForLastWeek(): Int {
+        return withContext(Dispatchers.IO) {
+            // UsageStatsManager를 통해 사용 기록을 불러옵니다.
+            val usageStatsManager =
+                context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+
+            // 지난 주 일요일로 설정
+            val calendar = Calendar.getInstance().apply {
+                timeInMillis = System.currentTimeMillis()
+                set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
+                add(Calendar.WEEK_OF_YEAR, -1)
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
             val startTime = calendar.timeInMillis
-            calendar.add(Calendar.DAY_OF_YEAR, 1)
+            calendar.add(Calendar.DAY_OF_YEAR, 7) // 지난 주 토요일까지 범위를 설정
             val endTime = calendar.timeInMillis
 
-            val events = usageStatsManager.queryEvents(startTime, endTime)
+            // 오늘 하루의 이벤트를 조회
+            val usageEvents = usageStatsManager.queryEvents(startTime, endTime)
             var totalForegroundTime = 0L
-            var lastEventTime = 0L
-            var isForeground = false
+            var lastForegroundStartTime = 0L
 
-            while (events.hasNextEvent()) {
-                val event = UsageEvents.Event()
-                events.getNextEvent(event)
+            // 이벤트 순회
+            val event = UsageEvents.Event()
+            while (usageEvents.hasNextEvent()) {
+                usageEvents.getNextEvent(event)
 
                 when (event.eventType) {
                     UsageEvents.Event.MOVE_TO_FOREGROUND -> {
-                        lastEventTime = event.timeStamp
-                        isForeground = true
+                        // 포그라운드 전환 시간 기록
+                        lastForegroundStartTime = event.timeStamp
                     }
+
                     UsageEvents.Event.MOVE_TO_BACKGROUND -> {
-                        if (isForeground) {
-                            val usageTime = event.timeStamp - lastEventTime
-                            totalForegroundTime += usageTime
-                            isForeground = false
+                        // 백그라운드로 전환된 경우 포그라운드 시간을 합산
+                        if (lastForegroundStartTime != 0L) {
+                            totalForegroundTime += event.timeStamp - lastForegroundStartTime
+                            lastForegroundStartTime = 0L // 초기화
                         }
                     }
                 }
             }
-
-            if (isForeground) {
-                val usageTime = endTime - lastEventTime
-                totalForegroundTime += usageTime
-            }
-
-            dailyUsage.add((totalForegroundTime / 60000).toInt()) // 분 단위로 변환
+            // 초 단위로 변환하여 반환
+            (totalForegroundTime / 60000).toInt()
         }
-        dailyUsage
-    }
-
-    // 지난 주 전체 사용 시간 (전주의 일요일부터 토요일까지)을 분 단위로 반환
-    private suspend fun getUsageDurationForLastWeek(): Int = withContext(Dispatchers.IO) {
-        val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-        val calendar = Calendar.getInstance().apply {
-            timeZone = TimeZone.getTimeZone("Asia/Seoul")
-            set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
-            add(Calendar.WEEK_OF_YEAR, -1) // 지난 주 일요일로 설정
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-
-        val startTime = calendar.timeInMillis
-        calendar.add(Calendar.DAY_OF_YEAR, 7) // 지난 주 토요일까지 범위를 설정
-        val endTime = calendar.timeInMillis
-
-        val stats = usageStatsManager.queryUsageStats(
-            UsageStatsManager.INTERVAL_DAILY,
-            startTime,
-            endTime
-        )
-        val totalForegroundTime = stats.sumOf { it.totalTimeInForeground }
-        (totalForegroundTime / (1000 * 60)).toInt() // 분 단위로 변환
     }
 
     // 이번 달 사용 시간을 분 단위로 반환 (1일부터 오늘까지)
-    private suspend fun getUsageDurationForCurrentMonth(): Int = withContext(Dispatchers.IO) {
-        val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-        val calendar = Calendar.getInstance().apply {
-            timeZone = TimeZone.getTimeZone("Asia/Seoul")
-            set(Calendar.DAY_OF_MONTH, 1) // 이번 달 1일로 설정
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-        val startTime = calendar.timeInMillis
-        val endTime = System.currentTimeMillis()
+    private suspend fun getUsageDurationForCurrentMonth(): Int {
+        return withContext(Dispatchers.IO) {
+            // UsageStatsManager를 통해 사용 기록을 불러옵니다.
+            val usageStatsManager =
+                context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
 
-        val events = usageStatsManager.queryEvents(startTime, endTime)
-        var totalForegroundTime = 0L
-        var lastEventTime = 0L
-        var isForeground = false
+            // 지난 주 일요일로 설정
+            val calendar = Calendar.getInstance().apply {
+                timeInMillis = System.currentTimeMillis()
+                set(Calendar.DAY_OF_MONTH, 1)
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            val startTime = calendar.timeInMillis
+            val endTime = System.currentTimeMillis()
 
-        while (events.hasNextEvent()) {
+            // 오늘 하루의 이벤트를 조회
+            val usageEvents = usageStatsManager.queryEvents(startTime, endTime)
+            var totalForegroundTime = 0L
+            var lastForegroundStartTime = 0L
+
+            // 이벤트 순회
             val event = UsageEvents.Event()
-            events.getNextEvent(event)
+            while (usageEvents.hasNextEvent()) {
+                usageEvents.getNextEvent(event)
 
-            when (event.eventType) {
-                UsageEvents.Event.MOVE_TO_FOREGROUND -> {
-                    lastEventTime = event.timeStamp
-                    isForeground = true
-                }
-                UsageEvents.Event.MOVE_TO_BACKGROUND -> {
-                    if (isForeground) {
-                        val usageTime = event.timeStamp - lastEventTime
-                        totalForegroundTime += usageTime
-                        isForeground = false
+                when (event.eventType) {
+                    UsageEvents.Event.MOVE_TO_FOREGROUND -> {
+                        // 포그라운드 전환 시간 기록
+                        lastForegroundStartTime = event.timeStamp
+                    }
+
+                    UsageEvents.Event.MOVE_TO_BACKGROUND -> {
+                        // 백그라운드로 전환된 경우 포그라운드 시간을 합산
+                        if (lastForegroundStartTime != 0L) {
+                            totalForegroundTime += event.timeStamp - lastForegroundStartTime
+                            lastForegroundStartTime = 0L // 초기화
+                        }
                     }
                 }
             }
+            // 초 단위로 변환하여 반환
+            (totalForegroundTime / 60000).toInt()
         }
-
-        if (isForeground) {
-            val usageTime = endTime - lastEventTime
-            totalForegroundTime += usageTime
-        }
-
-        (totalForegroundTime / 60000).toInt() // 분 단위로 변환
     }
-    }
+}

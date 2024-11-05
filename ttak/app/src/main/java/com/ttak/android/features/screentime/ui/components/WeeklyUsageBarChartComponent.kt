@@ -50,8 +50,8 @@ fun WeeklyUsageBarChartComponent(dailyUsageList: List<Int>) {
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-//                        text = daysOfWeek[index],
-                        text = usage.toString(),
+                        text = daysOfWeek[index],
+//                        text = usage.toString(),
                         fontSize = 12.sp
                     )
                 }
