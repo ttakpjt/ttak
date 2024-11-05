@@ -1,6 +1,9 @@
 package com.ttak.android.features.goal.viewmodel
 
 import android.app.Application
+import android.app.usage.UsageStatsManager
+import android.content.Context
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import androidx.lifecycle.AndroidViewModel
@@ -38,19 +41,9 @@ class SetGoalViewModel(application: Application) : AndroidViewModel(application)
     }
 
     private fun loadInstalledApps() {
-        viewModelScope.launch {
-            val packageManager = getApplication<Application>().packageManager
-            val apps = packageManager.getInstalledApplications(0)
-                .filter { it.flags and ApplicationInfo.FLAG_SYSTEM == 0 }
-                .map { appInfo ->
-                    AppInfo(
-                        packageName = appInfo.packageName,
-                        appName = packageManager.getApplicationLabel(appInfo).toString(),
-                        iconPath = "" // 아이콘은 drawable resource로 저장
-                    )
-                }
-            _installedApps.value = apps
-        }
+
+        // 스크린타임으로 리스트 가져오기
+
     }
 
     fun updateStartTime(hour: Int, minute: Int) {
