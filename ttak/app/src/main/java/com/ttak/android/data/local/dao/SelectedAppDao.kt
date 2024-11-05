@@ -6,9 +6,12 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SelectedAppDao {
-    @Query("SELECT * FROM selected_apps WHERE goalId = :goalId")
-    fun getSelectedApps(goalId: Long): Flow<List<SelectedAppEntity>>
-
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(apps: List<SelectedAppEntity>)
+
+    @Query("SELECT * FROM selected_apps WHERE goalId = :goalId")
+    suspend fun getAppsByGoalId(goalId: Long): List<SelectedAppEntity>
+
+    @Query("DELETE FROM selected_apps WHERE goalId = :goalId")
+    suspend fun deleteByGoalId(goalId: Long)
 }

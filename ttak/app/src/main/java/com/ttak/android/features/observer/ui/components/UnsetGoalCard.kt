@@ -47,12 +47,12 @@ fun UnsetGoalCard() {
                 containerColor = Color(0xFFF5F378)
             ),
             modifier = Modifier
-                .fillMaxWidth(0.7f)
+                .fillMaxWidth(0.5f)
         ) {
             Text(
                 "설정하기",
                 color = Color.Black,
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(vertical = 4.dp),
                 fontWeight = FontWeight.Bold
             )

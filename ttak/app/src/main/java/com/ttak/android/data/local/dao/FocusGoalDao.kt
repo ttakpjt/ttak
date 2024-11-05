@@ -6,12 +6,12 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FocusGoalDao {
-    @Query("SELECT * FROM focus_goals")
-    fun getFocusGoals(): Flow<List<FocusGoalEntity>>
-
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(focusGoal: FocusGoalEntity): Long
 
-    @Update
-    suspend fun update(focusGoal: FocusGoalEntity)
+    @Query("SELECT * FROM focus_goals WHERE id = :goalId")
+    suspend fun getGoalById(goalId: Long): FocusGoalEntity?
+
+    @Query("SELECT * FROM focus_goals")
+    fun getAllGoals(): Flow<List<FocusGoalEntity>>
 }

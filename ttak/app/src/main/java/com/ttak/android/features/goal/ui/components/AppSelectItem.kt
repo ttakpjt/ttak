@@ -1,5 +1,6 @@
 package com.ttak.android.features.goal.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,8 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.ttak.android.domain.model.AppInfo
+import com.google.accompanist.drawablepainter.rememberDrawablePainter
 
 @Composable
 fun AppSelectItem(
@@ -30,10 +31,10 @@ fun AppSelectItem(
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // App icon using Coil
-        AsyncImage(
-            model = app.iconPath,
-            contentDescription = null,
+        // App icon using DrawablePainter
+        Image(
+            painter = rememberDrawablePainter(drawable = app.icon),
+            contentDescription = "${app.appName} icon",
             modifier = Modifier.size(40.dp)
         )
 
