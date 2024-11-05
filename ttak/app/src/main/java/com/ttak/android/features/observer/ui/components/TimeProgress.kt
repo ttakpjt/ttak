@@ -22,7 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ttak.android.R
-import com.ttak.android.data.model.Time
+import com.ttak.android.domain.model.Time
 
 
 fun formatTimeRange(startTime: Time, endTime: Time): String {

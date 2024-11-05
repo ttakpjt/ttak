@@ -2,8 +2,8 @@ package com.ttak.android.features.observer.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ttak.android.data.model.GoalState
-import com.ttak.android.data.model.Time
+import com.ttak.android.domain.model.GoalState
+import com.ttak.android.domain.model.Time
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

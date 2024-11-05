@@ -11,21 +11,45 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.ttak.android.data.model.FriendStory
-import com.ttak.android.data.model.GoalState
-import com.ttak.android.data.model.Time
-import com.ttak.android.data.model.User
+import com.ttak.android.data.repository.FriendStoryRepositoryImpl
+import com.ttak.android.domain.model.FriendStory
+import com.ttak.android.domain.model.GoalState
+import com.ttak.android.domain.model.Time
 import com.ttak.android.data.repository.PreviewFriendStoryRepository
 import com.ttak.android.data.repository.PreviewUserRepository
-import com.ttak.android.features.observer.domain.repository.UserRepository
+import com.ttak.android.data.repository.UserRepositoryImpl
 import com.ttak.android.features.observer.ui.components.*
 import com.ttak.android.features.observer.viewmodel.FriendStoryViewModel
+import com.ttak.android.features.observer.viewmodel.FriendStoryViewModelFactory
 import com.ttak.android.features.observer.viewmodel.UserViewModel
+import com.ttak.android.features.observer.viewmodel.UserViewModelFactory
+import com.ttak.android.network.PreviewUserApi
+import com.ttak.android.network.UserApi
 
 @Composable
-fun ObserverScreen(
+fun ObserverScreen() {
+    // 목업 API와 Repository 사용
+    val userRepository = UserRepositoryImpl(PreviewUserApi())
+    val friendStoryRepository = PreviewFriendStoryRepository()
+
+    // ViewModel Factory 생성
+    val userViewModel: UserViewModel = viewModel(
+        factory = UserViewModelFactory(userRepository)
+    )
+    val friendStoryViewModel: FriendStoryViewModel = viewModel(
+        factory = FriendStoryViewModelFactory(friendStoryRepository)
+    )
+
+    ObserverScreenContent(
+        friendStoryViewModel = friendStoryViewModel,
+        userViewModel = userViewModel
+    )
+}
+
+
+@Composable
+private fun ObserverScreenContent(
     friendStoryViewModel: FriendStoryViewModel,
     userViewModel: UserViewModel,
     goalState: GoalState = GoalState()
@@ -157,7 +181,7 @@ fun ObserverScreenPreview() {
     val previewUserViewModel = UserViewModel(PreviewUserRepository())
     previewFriendStoryViewModel.loadInitialData()
 
-    ObserverScreen(
+    ObserverScreenContent(
         friendStoryViewModel = previewFriendStoryViewModel,
         userViewModel = previewUserViewModel,
         goalState = previewGoalState

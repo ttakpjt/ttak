@@ -2,8 +2,7 @@ package com.ttak.android.features.observer.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ttak.android.data.model.User
-import com.ttak.android.data.repository.UserRepositoryImpl
+import com.ttak.android.domain.model.User
 import com.ttak.android.features.observer.domain.repository.UserRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

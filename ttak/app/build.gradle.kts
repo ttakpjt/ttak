@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")  // Room 등을 위한 어노테이션 처리
     id("com.google.gms.google-services")    // Add the Google services Gradle plugin
+    id("com.google.dagger.hilt.android") // Hilt plugin
 }
 
 android {
@@ -101,4 +102,8 @@ dependencies {
     implementation(libs.retrofit.converter.gson)
     implementation(libs.okhttp.core)
     implementation(libs.okhttp.logging)
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.50")
+    kapt("com.google.dagger:hilt-android-compiler:2.50")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 }

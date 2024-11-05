@@ -1,6 +1,5 @@
 package com.ttak.android.features.observer.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
-import com.ttak.android.data.model.User
+import com.ttak.android.domain.model.User
 import kotlinx.coroutines.*
 import com.ttak.android.R
 

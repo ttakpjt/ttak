@@ -1,6 +1,6 @@
 package com.ttak.android.network
 
-import com.ttak.android.data.model.User
+import com.ttak.android.domain.model.User
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.POST

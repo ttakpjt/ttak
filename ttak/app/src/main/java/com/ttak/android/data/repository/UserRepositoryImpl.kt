@@ -1,7 +1,7 @@
 // data/repository/UserRepositoryImpl.kt
 package com.ttak.android.data.repository
 
-import com.ttak.android.data.model.User
+import com.ttak.android.domain.model.User
 import com.ttak.android.features.observer.domain.repository.UserRepository
 import com.ttak.android.network.UserApi
 import kotlinx.coroutines.Dispatchers

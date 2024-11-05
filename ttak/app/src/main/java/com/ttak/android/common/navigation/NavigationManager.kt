@@ -1,5 +1,7 @@
 package com.ttak.android.common.navigation
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 
@@ -14,6 +16,13 @@ object NavigationManager {
 
     // 화면 이동
     fun navigateTo(screen: AppScreens, navOptions: NavOptions? = null) {
+
+        Log.d(TAG, "Attempting to navigate to: ${screen.route}")
+        if (navController == null) {
+            Log.e(TAG, "NavController is null!")
+            return
+        }
+
         navController?.navigate(screen.route, navOptions)
     }
 
@@ -28,5 +37,10 @@ object NavigationManager {
             popUpTo(0) { inclusive = true }
             launchSingleTop = true
         }
+    }
+
+    fun clearController() {
+        Log.d(TAG, "Clearing NavController")
+        navController = null
     }
 }

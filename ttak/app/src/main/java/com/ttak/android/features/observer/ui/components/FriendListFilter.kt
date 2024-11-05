@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ttak.android.R
-import com.ttak.android.data.model.FilterOption
+import com.ttak.android.domain.model.FilterOption
 
 @Composable
 fun FriendListFilter(

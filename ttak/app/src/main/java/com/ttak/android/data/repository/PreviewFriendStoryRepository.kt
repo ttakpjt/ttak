@@ -1,6 +1,6 @@
 package com.ttak.android.data.repository
 
-import com.ttak.android.data.model.FriendStory
+import com.ttak.android.domain.model.FriendStory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

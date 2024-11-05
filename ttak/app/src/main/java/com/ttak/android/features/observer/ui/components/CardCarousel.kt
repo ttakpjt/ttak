@@ -9,7 +9,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.ttak.android.data.model.GoalState
+import com.ttak.android.domain.model.GoalState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.Color
 fun CardCarousel(
     modifier: Modifier = Modifier,
     goalState: GoalState = GoalState(),
-    onSetGoal: () -> Unit = {}
 ) {
     val pagerState = rememberPagerState(pageCount = { 2 })
 
@@ -41,11 +40,11 @@ fun CardCarousel(
             Box(modifier = Modifier.fillMaxSize()) {
                 when (page) {
                     0 -> {
-                        if (!goalState.isSet) {
-                            UnsetGoalCard(onSetGoal)
-                        } else {
-                            SetGoalCard(goalState)
-                        }
+//                        if (!goalState.isSet) {
+                            UnsetGoalCard()
+//                        } else {
+//                            SetGoalCard(goalState)
+//                        }
                     }
                     1 -> {
                         Column(

@@ -3,6 +3,7 @@ package com.ttak.android
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import androidx.work.OneTimeWorkRequestBuilder
@@ -17,6 +20,7 @@ import androidx.work.WorkManager
 import com.ttak.android.common.monitor.ForegroundMonitorService
 import com.ttak.android.common.ui.theme.TtakTheme
 import com.ttak.android.common.navigation.AppNavHost
+import com.ttak.android.common.navigation.NavigationManager
 import com.ttak.android.common.ui.components.BottomNavigationBar
 import com.ttak.android.data.worker.ApiRequestWorker
 
@@ -28,23 +32,30 @@ import com.ttak.android.data.worker.ApiRequestWorker
  */
 
 class MainActivity : ComponentActivity() {
+    private val TAG = "MainActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             TtakTheme {
-                val navController = rememberNavController() // 앱 화면을 바꾸는 경로 통제기
+                val navController = rememberNavController()
 
                 Scaffold(
                     modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
+                    // NavigationManager 초기화를 여기로 이동
+                    LaunchedEffect(navController) {
+                        Log.d(TAG, "Setting NavController in MainActivity")
+                        NavigationManager.setNavController(navController)
+                    }
+
                     Box(modifier = Modifier.padding(innerPadding)) {
                         Column(modifier = Modifier.fillMaxSize()) {
                             Box(modifier = Modifier.weight(1f)) {
                                 AppNavHost(navController)
                             }
-                            BottomNavigationBar(navController = navController)  // 하단 경로 바
+                            BottomNavigationBar(navController = navController)
                         }
                     }
                 }
