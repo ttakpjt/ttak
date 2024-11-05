@@ -27,6 +27,13 @@ public class FriendController {
 		friendService.broadcastStatusUpdate(message);
 	}
 
+	//상태 변경 알림
+	@PostMapping("/friends/status")
+	public ResponseEntity<?>  sendStatusChange(@RequestBody StatusUpdateMessage message) {
+		friendService.broadcastStatusUpdate(message);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
+	}
+
 	@PostMapping("/friends")
 	public ResponseEntity<?> createFriend(@RequestBody CreateFriendRequest createFriendRequest) {
 		friendService.addFriend(createFriendRequest);
