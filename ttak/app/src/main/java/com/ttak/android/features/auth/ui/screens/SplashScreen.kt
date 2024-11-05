@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,6 +18,8 @@ import androidx.compose.ui.unit.sp
 import com.ttak.android.R
 import kotlinx.coroutines.delay
 import com.ttak.android.MainActivity
+import com.ttak.android.common.ui.theme.Grey
+import com.ttak.android.common.ui.theme.White
 import com.ttak.android.features.auth.LoginActivity
 import com.ttak.android.features.auth.SplashActivity
 import com.ttak.android.features.mypage.ProfileSetupActivity
@@ -64,16 +67,15 @@ fun SplashScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "앱 이름",  // 앱 이름 텍스트
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
+                text = "King of Anyang",
+                style = MaterialTheme.typography.titleLarge,
+                color = White
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "로딩 중...",  // 로딩 텍스트
-                fontSize = 16.sp,
-                color = Color.LightGray
+                text = "로딩 중..",
+                style = MaterialTheme.typography.labelSmall,
+                color = Grey
             )
         }
     }

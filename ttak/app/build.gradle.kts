@@ -53,12 +53,11 @@ android {
 }
 
 dependencies {
-    // Import the Firebase BoM
+    // firebase의 라이브러리 버전을 관리하는 역할
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
-    // Add the dependency for the Firebase Authentication library
-    // When using the BoM, you don't specify versions in Firebase library dependencies
+    // firebase를 통해 사용자 인증을 처리하는 역할
     implementation("com.google.firebase:firebase-auth-ktx")
-    // Also add the dependency for the Google Play services library and specify its version
+    // google 계정을 통한 인증 처리
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
     // ViewModel과 LiveData

@@ -39,7 +39,7 @@
             android:foregroundServiceType="dataSync" />
 
         <activity
-            android:name="com.ttak.android.MainActivity"
+            android:name="com.ttak.android.features.auth.SplashActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Ttak">
@@ -51,7 +51,7 @@
         </activity>
 
         <!-- MainActivity는 네비게이션이 필요한 주요 화면만 관리 -->
-<!--        <activity android:name=".MainActivity" />-->
+        <activity android:name=".MainActivity" />
 
         <!-- LoginActivity는 로그인 관련 화면 관리 -->
         <activity android:name=".features.auth.LoginActivity" />
