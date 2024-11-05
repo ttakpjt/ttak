@@ -6,7 +6,6 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
-import com.ttak.backend.domain.user.dto.reqeust.GoogleUserRequest;
 import com.ttak.backend.domain.user.entity.enumFolder.Role;
 import com.ttak.backend.domain.user.entity.enumFolder.SocialDomain;
 
@@ -42,9 +41,6 @@ public class User {
 
 	@Column(name="profile_pic")
 	private String profilePic;
-
-	@Column(name = "email", nullable = false)
-	private String email;
 
 	@ColumnDefault("0")
 	@Column(name="point", nullable = false)
@@ -96,14 +92,4 @@ public class User {
 	@Column(name = "social_identify", nullable = false)
 	private String socialIdentify;
 
-
-	public static User newGoogleEntity(GoogleUserRequest googleUserRequest){
-		return User.builder()
-			.profilePic(googleUserRequest.getProfileImage())
-			.email(googleUserRequest.getEmail())
-			.role(Role.NOT_REGISTERED)
-			.socialDomain(googleUserRequest.getSocialDomain())
-			.socialIdentify(googleUserRequest.getId())
-			.build();
-	}
 }

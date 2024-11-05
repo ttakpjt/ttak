@@ -6,5 +6,4 @@ public interface UserService {
 
 	Long getUserId(Long id);
 
-	void moveInfo(GoogleUserRequest googleUserRequest);
 }
