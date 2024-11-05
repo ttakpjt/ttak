@@ -2,6 +2,7 @@ package com.ttak.backend.domain.observe.entity;
 
 import java.time.LocalDateTime;
 
+
 import com.ttak.backend.domain.user.entity.User;
 
 import jakarta.persistence.Column;
@@ -38,8 +39,9 @@ public class Friend {
 	@JoinColumn(name = "following_id")
 	private User followingId;
 
-	@Column(name = "create_at", nullable = false)
-	private LocalDateTime createAt;
+	@Builder.Default
+	@Column(name = "create_at", nullable = false, updatable = false)
+	private LocalDateTime createAt = LocalDateTime.now();
 
 }
 
