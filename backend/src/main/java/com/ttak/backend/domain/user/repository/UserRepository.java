@@ -10,7 +10,7 @@ import com.ttak.backend.domain.user.entity.enumFolder.SocialDomain;
 import com.ttak.backend.domain.user.repository.customRepository.CustomUserRepository;
 
 public interface UserRepository extends JpaRepository<User, Long>, CustomUserRepository {
-	Optional<User> findBySocialDomainAndSocialIdentify(SocialDomain socialDomain, Long socialIdentify);
+	Optional<User> findBySocialDomainAndSocialIdentify(SocialDomain socialDomain, String socialIdentify);
 
 	Optional<User> findByEmail(String email);
 

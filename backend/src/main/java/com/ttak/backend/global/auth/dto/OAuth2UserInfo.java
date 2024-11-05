@@ -22,7 +22,7 @@ public class OAuth2UserInfo {
 	private final String name;
 	private final String profile;
 	private final SocialDomain socialDomain;
-	private final Long socialIdentify;
+	private final String socialIdentify;
 
 	// registrationId에 따라 OAuth2UserInfo 객체를 생성하는 정적 팩토리 메서드
 	public static OAuth2UserInfo of(String registrationId, Map<String, Object> attributes) {
@@ -39,7 +39,7 @@ public class OAuth2UserInfo {
 			.name((String) attributes.get("name"))
 			.profile((String) attributes.get("picture"))
 			.socialDomain(GOOGLE)
-			.socialIdentify((Long) attributes.get(GOOGLE.getProviderCode()))
+			.socialIdentify((String) attributes.get(GOOGLE.getProviderCode()))
 			.build();
 	}
 
@@ -52,7 +52,7 @@ public class OAuth2UserInfo {
 			.name((String) profile.get("nickname"))
 			.profile((String) profile.get("profile_image_url"))
 			.socialDomain(KAKAO)
-			.socialIdentify((Long) attributes.get(KAKAO.getProviderCode()))
+			.socialIdentify((String) attributes.get(KAKAO.getProviderCode()))
 			.build();
 	}
 
