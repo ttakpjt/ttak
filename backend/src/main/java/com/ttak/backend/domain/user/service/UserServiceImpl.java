@@ -26,11 +26,4 @@ public class UserServiceImpl implements UserService{
 		return id;
 	}
 
-	@Override
-	public void moveInfo(GoogleUserRequest googleUserRequest) {
-		User user = userRepository.findByEmail(googleUserRequest.getEmail())
-			.orElseGet(() -> User.newGoogleEntity(googleUserRequest));
-
-		userRepository.save(user);
-	}
 }

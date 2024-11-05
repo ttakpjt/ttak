@@ -6,13 +6,8 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
-import com.ttak.backend.domain.user.dto.reqeust.GoogleUserRequest;
 import com.ttak.backend.domain.user.entity.enumFolder.Role;
 import com.ttak.backend.domain.user.entity.enumFolder.SocialDomain;
-
-import com.ttak.backend.domain.user.entity.enumFolder.Role;
-import com.ttak.backend.domain.user.entity.enumFolder.SocialDomain;
-import com.ttak.backend.global.auth.dto.OAuth2UserInfo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,7 +16,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
