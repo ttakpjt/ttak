@@ -9,7 +9,7 @@ class PreviewFriendStoryRepository : FriendStoryRepository {
         emit(listOf(
             FriendStory("1", "탁싸피", "https://picsum.photos/seed/ttak1/200", true),
             FriendStory("2", "황싸피", "https://picsum.photos/seed/hwang2/200", false),
-            FriendStory("3", "김싸피", "https://picsum.photos/seed/kim3/200", false),
+            FriendStory("3", "김싸피", "https://picsum.photos/seed/kim3/200", true),
             FriendStory("4", "최싸피", "https://picsum.photos/seed/choi4/200", false),
             FriendStory("5", "박싸피", "https://picsum.photos/seed/park5/200", false),
             FriendStory("6", "이싸피", "https://picsum.photos/seed/lee6/200", false),
