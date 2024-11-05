@@ -2,6 +2,7 @@ package com.ttak.android.features.screentime.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,7 +17,7 @@ fun PromiseAppTimeComponent(appIconResId: Int, startTime: String, endTime: Strin
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(8.dp)
     ) {
-        Text(text = "⛔ $startTime ~ $endTime", fontSize = 14.sp)
+        Text(text = "⛔ $startTime ~ $endTime", style = MaterialTheme.typography.labelSmall)
         Spacer(modifier = Modifier.width(8.dp))
         Image(
             painter = painterResource(id = appIconResId),
