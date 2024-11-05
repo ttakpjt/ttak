@@ -1,5 +1,6 @@
 package com.ttak.android.features.observer.ui.screens
 
+import MessageDialog
 import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.foundation.clickable
@@ -38,6 +39,7 @@ fun ObserverScreen(
     var showPopup by remember { mutableStateOf(false) }
     var selectedFriend by remember { mutableStateOf<FriendStory?>(null) }
     var popupOffset by remember { mutableStateOf(Offset.Zero) }
+    var showMessageDialog by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -102,16 +104,39 @@ fun ObserverScreen(
                 if (showPopup && selectedFriend != null) {
                     Box(modifier = Modifier.fillMaxSize()) {
                         PopupMenu(
-                            onDismiss = { showPopup = false },
+                            onDismiss = {
+                                Log.d("ObserverScreen", "PopupMenu dismissed")
+                                showPopup = false
+                            },
                             offset = popupOffset,
                             onWaterBubbleClick = {
+                                Log.d("ObserverScreen", "Water bubble clicked")
                                 showPopup = false
                             },
                             onSpeechBubbleClick = {
+                                Log.d("ObserverScreen", "Speech bubble clicked")
                                 showPopup = false
+                                showMessageDialog = true
                             }
                         )
                     }
+                }
+
+                // Message Dialog
+                if (showMessageDialog && selectedFriend != null) {
+                    Log.d("ObserverScreen", "Showing MessageDialog for friend: ${selectedFriend?.name}")
+                    MessageDialog(
+                        friendStory = selectedFriend!!,
+                        onDismiss = {
+                            Log.d("ObserverScreen", "MessageDialog dismissed")
+                            showMessageDialog = false
+                        },
+                        onSend = { message ->
+                            Log.d("ObserverScreen", "Sending message to ${selectedFriend!!.name}: $message")
+                            // TODO: 메시지 전송 로직 구현
+                            showMessageDialog = false
+                        }
+                    )
                 }
             }
         }
