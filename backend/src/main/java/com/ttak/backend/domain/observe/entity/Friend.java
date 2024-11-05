@@ -1,8 +1,8 @@
 package com.ttak.backend.domain.observe.entity;
 
-import java.time.LocalDateTime;
 
 import com.ttak.backend.domain.user.entity.User;
+import com.ttak.backend.global.common.TimeBaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,16 +13,16 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class Friend {
+public class Friend extends TimeBaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,8 +33,9 @@ public class Friend {
 	@JoinColumn(name = "user_id")
 	private User userId;
 
-	@Column(name = "create_at", nullable = false)
-	private LocalDateTime createAt;
+	@ManyToOne
+	@JoinColumn(name = "following_id")
+	private User followingId;
 
 }
 
