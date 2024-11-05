@@ -210,6 +210,8 @@ class ScreenTimeViewModel(
         return withContext(Dispatchers.IO) {
             val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
             val dailyUsage = mutableListOf<Int>()
+
+            // 현재 주의 일요일부터 시작하여 매일의 사용 시간을 계산
             val calendar = Calendar.getInstance().apply {
                 firstDayOfWeek = Calendar.SUNDAY
                 set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
@@ -225,18 +227,34 @@ class ScreenTimeViewModel(
                 calendar.add(Calendar.DAY_OF_MONTH, 1)
                 val endTime = calendar.timeInMillis
 
-                // 하루의 모든 앱 사용 시간을 `queryUsageStats`로 가져옴
-                val usageStatsList = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, startTime, endTime)
+                // 하루 동안의 이벤트 조회
+                val usageEvents = usageStatsManager.queryEvents(startTime, endTime)
                 var totalForegroundTimeForDay = 0L
+                var lastForegroundStartTime = 0L
 
-                // 각 앱의 포그라운드 시간만 합산
-                for (usageStats in usageStatsList) {
-                    totalForegroundTimeForDay += usageStats.totalTimeInForeground
+                // 이벤트 순회
+                val event = UsageEvents.Event()
+                while (usageEvents.hasNextEvent()) {
+                    usageEvents.getNextEvent(event)
+
+                    when (event.eventType) {
+                        UsageEvents.Event.MOVE_TO_FOREGROUND -> {
+                            // 포그라운드 전환 시간 기록
+                            lastForegroundStartTime = event.timeStamp
+                        }
+
+                        UsageEvents.Event.MOVE_TO_BACKGROUND -> {
+                            // 백그라운드로 전환된 경우 포그라운드 시간을 합산
+                            if (lastForegroundStartTime != 0L) {
+                                totalForegroundTimeForDay += event.timeStamp - lastForegroundStartTime
+                                lastForegroundStartTime = 0L // 초기화
+                            }
+                        }
+                    }
                 }
 
-                // 현재 값에서 이전 값을 빼서 리스트에 추가
-                val usageInMinutes = (totalForegroundTimeForDay / 60000).toInt()
-                dailyUsage.add(usageInMinutes)
+                // 초 단위를 분 단위로 변환하여 리스트에 추가
+                dailyUsage.add((totalForegroundTimeForDay / 60000).toInt())
             }
             dailyUsage
         }
