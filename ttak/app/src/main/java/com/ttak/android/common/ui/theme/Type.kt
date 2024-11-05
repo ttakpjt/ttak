@@ -26,14 +26,14 @@ val Typography = Typography(
     titleLarge = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.Bold,
-        fontSize = 44.sp,
+        fontSize = 40.sp,
         lineHeight = 28.sp,
         letterSpacing = 0.sp
     ),
     labelSmall = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 28.sp,
+        fontSize = 26.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     )

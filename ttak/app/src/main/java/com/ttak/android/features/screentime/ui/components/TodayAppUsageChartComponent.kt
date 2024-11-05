@@ -3,6 +3,7 @@ package com.ttak.android.features.screentime.ui.components
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -11,6 +12,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.ttak.android.common.ui.theme.Green
+import com.ttak.android.common.ui.theme.Pink
+import com.ttak.android.common.ui.theme.White
+import com.ttak.android.common.ui.theme.Red
+import com.ttak.android.common.ui.theme.Blue
+import com.ttak.android.common.ui.theme.Yellow
 import com.ttak.android.utils.formatDuration
 import com.ttak.android.utils.getAppNameFromPackageName
 
@@ -18,7 +25,7 @@ import com.ttak.android.utils.getAppNameFromPackageName
 fun TodayAppUsageChartComponent(topSixAppsUsage: Map<String, Int>) {
     val context = LocalContext.current
     val totalUsage = topSixAppsUsage.values.sum()
-    val appColors = listOf(Color.Red, Color.Green, Color.Blue, Color.Yellow, Color.Cyan, Color.Magenta)
+    val appColors = listOf(Pink, Blue, White, Green, Red, Yellow)
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -35,14 +42,14 @@ fun TodayAppUsageChartComponent(topSixAppsUsage: Map<String, Int>) {
                         startAngle = startAngle,
                         sweepAngle = sweepAngle,
                         useCenter = false,
-                        style = Stroke(width = 20.dp.toPx())
+                        style = Stroke(width = 50.dp.toPx())
                     )
                     startAngle += sweepAngle
                 }
             }
         }
 
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.width(40.dp))
 
         // 범례
         Column {
@@ -56,7 +63,7 @@ fun TodayAppUsageChartComponent(topSixAppsUsage: Map<String, Int>) {
                             .background(color)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "$appName: ${formatDuration(usage)}")
+                    Text(text = "$appName: ${formatDuration(usage)}", style = MaterialTheme.typography.bodyLarge)
                 }
             }
         }
