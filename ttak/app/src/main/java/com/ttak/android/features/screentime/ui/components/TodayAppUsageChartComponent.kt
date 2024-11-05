@@ -29,7 +29,7 @@ fun TodayAppUsageChartComponent(topSixAppsUsage: Map<String, Int>) {
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(8.dp)
+        modifier = Modifier.padding(16.dp)
     ) {
         // 도넛 차트
         Box(modifier = Modifier.size(100.dp)) {
