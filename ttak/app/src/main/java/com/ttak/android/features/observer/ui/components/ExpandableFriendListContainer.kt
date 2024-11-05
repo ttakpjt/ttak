@@ -17,8 +17,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import com.ttak.android.data.model.FriendStory
-import com.ttak.android.data.model.User
+import com.ttak.android.domain.model.FriendStory
+import com.ttak.android.domain.model.User
 import kotlinx.coroutines.async
 import kotlin.math.abs
 

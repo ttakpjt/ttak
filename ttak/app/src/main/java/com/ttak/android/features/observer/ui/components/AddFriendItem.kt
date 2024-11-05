@@ -20,9 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.ttak.android.R
-import com.ttak.android.data.model.User
-import kotlinx.coroutines.job
-import kotlinx.coroutines.launch
+import com.ttak.android.domain.model.User
 
 @Composable
 fun AddFriendItem(

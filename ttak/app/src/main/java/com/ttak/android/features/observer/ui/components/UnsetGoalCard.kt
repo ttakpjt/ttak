@@ -15,13 +15,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.ttak.android.common.navigation.AppScreens
+import com.ttak.android.common.navigation.NavigationManager
 
 @Composable
-fun UnsetGoalCard(
-    onSetGoal: () -> Unit = {}
-) {
+fun UnsetGoalCard() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -39,13 +40,22 @@ fun UnsetGoalCard(
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = onSetGoal,
+            onClick = {
+                NavigationManager.navigateTo(AppScreens.SetGoal)
+            },
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFFFD700)
+                containerColor = Color(0xFFF5F378)
             ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth(0.5f)
         ) {
-            Text("설정하기", color = Color.Black)
+            Text(
+                "설정하기",
+                color = Color.Black,
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.padding(vertical = 4.dp),
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }

@@ -2,8 +2,8 @@ package com.ttak.android.features.observer.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ttak.android.data.model.FilterOption
-import com.ttak.android.data.model.FriendStory
+import com.ttak.android.domain.model.FilterOption
+import com.ttak.android.domain.model.FriendStory
 import com.ttak.android.data.repository.FriendStoryRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

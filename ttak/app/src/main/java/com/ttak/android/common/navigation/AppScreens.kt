@@ -5,4 +5,5 @@ sealed class AppScreens(val route: String) {
     object MyPage : AppScreens("my_page")
     object Observer : AppScreens("observer")
     object ScreenTime : AppScreens("screen_time")
+    object SetGoal : AppScreens("set_goal")
 }

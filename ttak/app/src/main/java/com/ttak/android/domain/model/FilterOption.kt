@@ -1,4 +1,4 @@
-package com.ttak.android.data.model
+package com.ttak.android.domain.model
 
 data class FilterOption(
     val id: Int,

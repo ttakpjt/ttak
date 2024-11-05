@@ -1,9 +1,9 @@
-package com.ttak.android.data.local
+package com.ttak.android.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.ttak.android.data.model.User
+import com.ttak.android.domain.model.User
 
 @Dao
 interface UserDao {
