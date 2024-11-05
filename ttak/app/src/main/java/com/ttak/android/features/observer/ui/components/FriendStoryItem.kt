@@ -51,7 +51,7 @@ fun FriendStoryItem(
                         onShowPopup(
                             friend,
                             Offset(
-                                x = position.x + 10f,
+                                x = position.x + 15f,
                                 y = position.y - (size.height * 1.5f) - 550f
                             )
                         )

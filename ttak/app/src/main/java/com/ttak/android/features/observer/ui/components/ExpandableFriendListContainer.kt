@@ -104,7 +104,7 @@ fun ExpandableFriendListContainer(
             }
 
             // More/Collapse button
-            if (friends.size > 8) {
+//            if (friends.size > 8) {
                 TextButton(
                     onClick = { isExpanded = !isExpanded },
                     modifier = Modifier
@@ -116,7 +116,7 @@ fun ExpandableFriendListContainer(
                         style = MaterialTheme.typography.labelLarge
                     )
                 }
-            }
+//            }
         }
     }
 }

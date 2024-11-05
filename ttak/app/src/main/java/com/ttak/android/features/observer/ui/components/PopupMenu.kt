@@ -66,7 +66,7 @@ fun PopupMenu(
                 Image(
                     painter = painterResource(id = R.drawable.speech_bubble_icon),
                     contentDescription = "말풍선",
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(26.dp)
                 )
             }
         }

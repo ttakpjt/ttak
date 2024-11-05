@@ -1,5 +1,6 @@
 package com.ttak.android.features.observer.ui.screens
 
+import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -93,6 +94,7 @@ fun ObserverScreen(
                         selectedFriend = friend
                         popupOffset = offset
                         showPopup = true
+                        Log.d("ObserverScreen", "Clicked Friend: ${friend}")
                     }
                 )
 
