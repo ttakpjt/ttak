@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ttak.android.common.ui.theme.Yellow
 import com.ttak.android.common.ui.theme.Black
+import com.ttak.android.common.ui.theme.Red
 import com.ttak.android.utils.formatDuration
 
 @Composable
@@ -63,7 +64,7 @@ fun TimeUsageSummaryComponent(monthUsage: Int, weekUsage: Int, todayUsage: Int) 
                 modifier = Modifier.weight(1f)
             ) {
                 Text(text = "오늘", style = MaterialTheme.typography.bodyLarge, color = Black, fontSize = 16.sp)
-                Text(text = formatDuration(todayUsage), style = MaterialTheme.typography.bodyLarge, color = Black)
+                Text(text = formatDuration(todayUsage), style = MaterialTheme.typography.bodyLarge, color = Red)
             }
         }
     }

@@ -51,19 +51,34 @@ fun TodayAppUsageChartComponent(topSixAppsUsage: Map<String, Int>) {
 
         Spacer(modifier = Modifier.width(40.dp))
 
-        // 범례
         Column {
             topSixAppsUsage.entries.forEachIndexed { index, (packageName, usage) ->
                 val appName = getAppNameFromPackageName(context, packageName)
                 val color = appColors.getOrElse(index) { Color.Gray }
-                Row(verticalAlignment = Alignment.CenterVertically) {
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                ) {
+                    // 앱 이름 (왼쪽 정렬)
                     Box(
                         modifier = Modifier
                             .size(10.dp)
                             .background(color)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "$appName: ${formatDuration(usage)}", style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        text = appName,
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.weight(1f) // 왼쪽 정렬
+                    )
+
+                    // 앱 사용 시간 (오른쪽 정렬)
+                    Text(
+                        text = formatDuration(usage),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
                 }
             }
         }
