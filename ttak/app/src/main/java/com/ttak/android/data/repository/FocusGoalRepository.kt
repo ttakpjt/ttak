@@ -9,11 +9,13 @@ import com.ttak.android.data.local.entity.SelectedAppEntity
 import com.ttak.android.domain.model.AppInfo
 import com.ttak.android.domain.model.FocusGoal
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.time.LocalTime
 
 class FocusGoalRepository(
     private val focusGoalDao: FocusGoalDao,
-    private val selectedAppDao: SelectedAppDao
+    private val selectedAppDao: SelectedAppDao,
+    private val packageManager: PackageManager
 ) {
     // FocusGoalRepository.kt에서
     suspend fun saveFocusGoal(focusGoal: FocusGoal) {
@@ -68,5 +70,33 @@ class FocusGoalRepository(
             isEnabled = goalEntity.isEnabled,
             selectedApps = selectedApps
         )
+    }
+
+    // 모든 목표 조회 메서드
+    fun getAllGoals(): Flow<List<FocusGoal>> = flow {
+        focusGoalDao.getAllGoals().collect { goalEntities ->
+            val goals = goalEntities.map { entity ->
+                val selectedApps = selectedAppDao.getAppsByGoalId(entity.id).map { appEntity ->
+                    try {
+                        AppInfo(
+                            packageName = appEntity.packageName,
+                            appName = appEntity.appName,
+                            icon = packageManager.getApplicationInfo(appEntity.packageName, 0)
+                                .loadIcon(packageManager)
+                        )
+                    } catch (e: PackageManager.NameNotFoundException) {
+                        null
+                    }
+                }.filterNotNull()
+
+                FocusGoal(
+                    startTime = LocalTime.ofNanoOfDay(entity.startTimeMillis * 1_000_000),
+                    endTime = LocalTime.ofNanoOfDay(entity.endTimeMillis * 1_000_000),
+                    isEnabled = entity.isEnabled,
+                    selectedApps = selectedApps
+                )
+            }
+            emit(goals)
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.ttak.android.features.observer.ui.screens
 
+import CardCarousel
 import MessageDialog
 import android.util.Log
 import androidx.compose.animation.*
@@ -12,10 +13,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.ttak.android.data.repository.FriendStoryRepositoryImpl
 import com.ttak.android.domain.model.FriendStory
 import com.ttak.android.domain.model.GoalState
-import com.ttak.android.domain.model.Time
 import com.ttak.android.data.repository.PreviewFriendStoryRepository
 import com.ttak.android.data.repository.PreviewUserRepository
 import com.ttak.android.data.repository.UserRepositoryImpl
@@ -25,7 +24,6 @@ import com.ttak.android.features.observer.viewmodel.FriendStoryViewModelFactory
 import com.ttak.android.features.observer.viewmodel.UserViewModel
 import com.ttak.android.features.observer.viewmodel.UserViewModelFactory
 import com.ttak.android.network.PreviewUserApi
-import com.ttak.android.network.UserApi
 
 @Composable
 fun ObserverScreen() {
@@ -88,8 +86,7 @@ private fun ObserverScreenContent(
                 CardCarousel(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    goalState = goalState
+                        .padding(vertical = 16.dp)
                 )
             }
 
@@ -170,20 +167,12 @@ private fun ObserverScreenContent(
 @Preview(showBackground = true)
 @Composable
 fun ObserverScreenPreview() {
-    val previewGoalState = GoalState(
-        isSet = true,
-        startTime = Time(9, 0),
-        endTime = Time(18, 0),
-        currentTime = Time(13, 30)
-    )
-
     val previewFriendStoryViewModel = FriendStoryViewModel(PreviewFriendStoryRepository())
     val previewUserViewModel = UserViewModel(PreviewUserRepository())
     previewFriendStoryViewModel.loadInitialData()
 
     ObserverScreenContent(
         friendStoryViewModel = previewFriendStoryViewModel,
-        userViewModel = previewUserViewModel,
-        goalState = previewGoalState
+        userViewModel = previewUserViewModel
     )
 }

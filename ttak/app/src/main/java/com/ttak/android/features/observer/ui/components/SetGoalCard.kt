@@ -1,6 +1,8 @@
 package com.ttak.android.features.observer.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -20,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.ttak.android.R
 import com.ttak.android.domain.model.GoalState
 
@@ -27,16 +31,22 @@ import com.ttak.android.domain.model.GoalState
 fun SetGoalCard(
     goalState: GoalState
 ) {
+    // 로그 추가
+    Log.d("SetGoalCard", "GoalState: isSet=${goalState.isSet}")
+    Log.d("SetGoalCard", "Observer Count: ${goalState.observerCount}")
+    Log.d("SetGoalCard", "Selected Apps: ${goalState.selectedApps.map { it.appName }}")
+    Log.d("SetGoalCard", "Start Time: ${goalState.startTime.hour}:${goalState.startTime.minute}")
+    Log.d("SetGoalCard", "End Time: ${goalState.endTime.hour}:${goalState.endTime.minute}")
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally  // 전체 가운데 정렬
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row(  // Row로 감싸서 가로 배치
+        Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center // 가로 방향 가운데 정렬 추가
-//            modifier = Modifier.fillMaxWidth()
+            horizontalArrangement = Arrangement.Center
         ) {
             Image(
                 painter = painterResource(id = R.drawable.friends_icon),
@@ -56,20 +66,27 @@ fun SetGoalCard(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Image(
-            painter = painterResource(id = R.drawable.app_icon),
-            contentDescription = "App Icon",
-            modifier = Modifier
-                .size(64.dp)
-                .clip(RoundedCornerShape(8.dp))
-        )
+        // 선택된 앱 아이콘들을 가로로 표시
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.horizontalScroll(rememberScrollState()) // 앱이 많을 경우 스크롤 가능하도록
+        ) {
+            goalState.selectedApps.forEach { app ->
+                Image(
+                    painter = rememberDrawablePainter(drawable = app.icon),
+                    contentDescription = "App Icon - ${app.appName}",
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         TimeProgress(
             startTime = goalState.startTime,
             endTime = goalState.endTime,
-            currentTime = goalState.currentTime
         )
     }
 }

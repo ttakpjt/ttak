@@ -14,4 +14,5 @@ interface FocusGoalDao {
 
     @Query("SELECT * FROM focus_goals")
     fun getAllGoals(): Flow<List<FocusGoalEntity>>
+
 }

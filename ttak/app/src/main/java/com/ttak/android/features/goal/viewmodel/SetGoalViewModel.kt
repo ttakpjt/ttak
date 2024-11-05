@@ -28,7 +28,8 @@ class SetGoalViewModel(application: Application) : AndroidViewModel(application)
     private val database = AppDatabase.getDatabase(application)
     private val repository = FocusGoalRepository(
         focusGoalDao = database.focusGoalDao(),
-        selectedAppDao = database.selectedAppDao()
+        selectedAppDao = database.selectedAppDao(),
+        packageManager = application.packageManager
     )
 
     private val _startTime = MutableStateFlow(LocalTime.of(9, 0))

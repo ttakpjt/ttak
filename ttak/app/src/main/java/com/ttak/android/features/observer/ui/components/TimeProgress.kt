@@ -1,5 +1,6 @@
 package com.ttak.android.features.observer.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,8 +22,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.ttak.android.R
 import com.ttak.android.domain.model.Time
+import java.util.Calendar
 
 
 fun formatTimeRange(startTime: Time, endTime: Time): String {
@@ -51,8 +54,9 @@ private fun timeToMinutes(time: Time): Int {
 fun TimeProgress(
     startTime: Time,
     endTime: Time,
-    currentTime: Time
+    currentTime: Time = getCurrentTime()
 ) {
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -70,22 +74,24 @@ fun TimeProgress(
 
             Text(
                 text = formatTimeRange(startTime, endTime),
-                style = MaterialTheme.typography.titleLarge,
+                fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))  // 간격 조정
+        Spacer(modifier = Modifier.height(16.dp))
 
-        val startMinutes = timeToMinutes(startTime)
-        val endMinutes = timeToMinutes(endTime)
-        val currentMinutes = timeToMinutes(currentTime)
+        // calculateProgress 함수 사용
+        val progress = calculateProgress(startTime, endTime, currentTime)
 
-        val progress = (currentMinutes - startMinutes).toFloat() / (endMinutes - startMinutes).toFloat()
+        Log.d("TimeProgress", "Progress: $progress")
+        Log.d("TimeProgress", "Start Time: ${formatTime(startTime)}")
+        Log.d("TimeProgress", "End Time: ${formatTime(endTime)}")
+        Log.d("TimeProgress", "Current Time: ${formatTime(currentTime)}")
 
         LinearProgressIndicator(
-            progress = progress.coerceIn(0f, 1f),
+            progress = progress,  // 직접 계산하지 않고 calculateProgress 결과 사용
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .height(12.dp)
@@ -94,4 +100,54 @@ fun TimeProgress(
             trackColor = Color(0xFFEAEAEA)
         )
     }
+}
+
+private fun calculateProgress(start: Time, end: Time, current: Time): Float {
+    // 모든 시간을 분으로 변환
+    val startMinutes = start.hour * 60 + start.minute
+    val endMinutes = end.hour * 60 + end.minute
+    val currentMinutes = current.hour * 60 + current.minute
+
+    // 전체 기간 계산
+    val totalMinutes = if (endMinutes > startMinutes) {
+        endMinutes - startMinutes
+    } else {
+        (24 * 60) - startMinutes + endMinutes
+    }
+
+    // 경과 시간 계산
+    val elapsedMinutes = when {
+        // 현재 시간이 시작 시간과 종료 시간 사이에 있는 경우
+        currentMinutes in startMinutes..endMinutes ->
+            currentMinutes - startMinutes
+        // 자정을 넘어가는 경우
+        endMinutes < startMinutes && (currentMinutes >= startMinutes || currentMinutes <= endMinutes) ->
+            if (currentMinutes >= startMinutes)
+                currentMinutes - startMinutes
+            else
+                (24 * 60 - startMinutes) + currentMinutes
+        // 그 외의 경우
+        else -> 0
+    }
+
+    Log.d("TimeProgress", """
+        계산 결과:
+        전체 기간: $totalMinutes 분
+        경과 시간: $elapsedMinutes 분
+        진행률: ${(elapsedMinutes.toFloat() / totalMinutes)}
+    """.trimIndent())
+
+    return (elapsedMinutes.toFloat() / totalMinutes).coerceIn(0f, 1f)
+}
+fun getCurrentTime(): Time {
+    val calendar = Calendar.getInstance()
+    val hour = calendar.get(Calendar.HOUR_OF_DAY)  // HOUR_OF_DAY를 사용하여 24시간 형식으로 가져옴
+    val minute = calendar.get(Calendar.MINUTE)
+
+    Log.d("TimeProgress", "getCurrentTime: $hour:$minute")
+
+    return Time(
+        hour = hour,
+        minute = minute
+    )
 }
