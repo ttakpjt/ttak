@@ -9,7 +9,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ttak.android.utils.formatDuration
 import com.ttak.android.common.ui.theme.Red
 import com.ttak.android.common.ui.theme.Green
