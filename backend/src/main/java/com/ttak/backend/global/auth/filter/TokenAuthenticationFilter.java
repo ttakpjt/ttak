@@ -34,7 +34,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 		// accessToken 검증
 		if (jwtUtil.validateToken(accessToken)) {
 			Authentication authentication = jwtUtil.getAuthentication(accessToken);
-			System.out.println("authentication.getPrincipal(): " + authentication.getPrincipal());
+			System.out.println("정상처리된 accessToken: " + authentication.getPrincipal());
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 			setAuthentication(accessToken);
 		} else {
@@ -45,7 +45,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 				setAuthentication(reissueAccessToken);
 
 				Authentication authentication = jwtUtil.getAuthentication(reissueAccessToken);
-				System.out.println("authentication.getPrincipal(): " + authentication.getPrincipal());
+				System.out.println("만료된 accessToken: " + authentication.getPrincipal());
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 				// 재발급된 accessToken 다시 전달
 				response.setHeader(AUTHORIZATION, TokenKey.TOKEN_PREFIX + reissueAccessToken);
