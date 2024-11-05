@@ -52,7 +52,7 @@ public class OAuth2UserInfo {
 			.name((String) profile.get("nickname"))
 			.profile((String) profile.get("profile_image_url"))
 			.socialDomain(KAKAO)
-			.socialIdentify((String) attributes.get(KAKAO.getProviderCode()))
+			.socialIdentify(attributes.get(KAKAO.getProviderCode()).toString())
 			.build();
 	}
 

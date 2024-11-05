@@ -12,6 +12,7 @@ import com.ttak.backend.domain.user.repository.customRepository.CustomUserReposi
 public interface UserRepository extends JpaRepository<User, Long>, CustomUserRepository {
 	Optional<User> findBySocialDomainAndSocialIdentify(SocialDomain socialDomain, String socialIdentify);
 
+	Optional<User> findByUserId(Long userId);
 	Optional<User> findByEmail(String email);
 
 }

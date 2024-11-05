@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ttak.backend.domain.user.dto.reqeust.GoogleUserRequest;
+import com.ttak.backend.domain.user.entity.User;
 import com.ttak.backend.domain.user.service.UserService;
+import com.ttak.backend.global.auth.annotation.authUser;
 import com.ttak.backend.global.common.CommonResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,12 +39,16 @@ public class UserController {
 		return ResponseEntity.ok(CommonResponse.success(userIds));
 	}
 
-	@Operation(summary = "[완료] 구글 로그인 유저 정보 DB이관", description = "OAuth2 Google로그인 유저의 정보를 MySql DB로 이관한다.")
-	@PostMapping("/transfer")
-	public ResponseEntity<CommonResponse<?>> transferDB(@RequestBody final GoogleUserRequest googleUserRequest){
-		log.info("========== User 정보 이관 시작 ==========");
-		userService.moveInfo(googleUserRequest);
-		log.info("========== User 정보 이관 종료 ==========");
+	@Operation(summary = "[완료] Annotation 테스트 api", description = "Custom Annotation 확인")
+	@GetMapping("/test/annotation")
+	public ResponseEntity<CommonResponse<?>> annotationTest(@authUser User user) {
+		log.info("========== 테스트 시작 ==========");
+		if (user != null) {
+			log.info("로그인한 userID: " + user.getUserId());
+		} else {
+			log.warn("User 객체가 null입니다.");
+		}
+		log.info("========== 테스트 종료 ==========");
 		return ResponseEntity.ok(CommonResponse.success());
 	}
 }

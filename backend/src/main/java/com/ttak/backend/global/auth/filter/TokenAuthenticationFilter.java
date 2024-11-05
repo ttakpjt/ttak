@@ -20,8 +20,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @Component
+@RequiredArgsConstructor
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtUtil jwtUtil;
@@ -33,6 +33,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
 		// accessToken 검증
 		if (jwtUtil.validateToken(accessToken)) {
+			Authentication authentication = jwtUtil.getAuthentication(accessToken);
+			System.out.println("authentication.getPrincipal(): " + authentication.getPrincipal());
+			SecurityContextHolder.getContext().setAuthentication(authentication);
 			setAuthentication(accessToken);
 		} else {
 			// 만료되었을 경우 accessToken 재발급
@@ -41,6 +44,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 			if (StringUtils.hasText(reissueAccessToken)) {
 				setAuthentication(reissueAccessToken);
 
+				Authentication authentication = jwtUtil.getAuthentication(reissueAccessToken);
+				System.out.println("authentication.getPrincipal(): " + authentication.getPrincipal());
+				SecurityContextHolder.getContext().setAuthentication(authentication);
 				// 재발급된 accessToken 다시 전달
 				response.setHeader(AUTHORIZATION, TokenKey.TOKEN_PREFIX + reissueAccessToken);
 			}

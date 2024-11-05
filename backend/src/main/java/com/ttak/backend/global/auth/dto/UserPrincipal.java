@@ -18,9 +18,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public class UserPrincipal implements OAuth2User, UserDetails {
 
+	// User 객체 반환
 	private final User user;
 	private final Map<String, Object> attributes;
-	private final String attributeKey;
 
 	public Long getUserId(){
 		return user.getUserId();
@@ -49,6 +49,6 @@ public class UserPrincipal implements OAuth2User, UserDetails {
 
 	@Override
 	public String getName() {
-		return attributes.get(attributeKey).toString();
+		return attributes.get(attributes).toString();
 	}
 }

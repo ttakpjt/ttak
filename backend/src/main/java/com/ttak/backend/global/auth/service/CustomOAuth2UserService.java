@@ -51,7 +51,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		User user = getUser(oAuth2UserInfo);
 
 		// Security context에 저장할 객체 생성
-		return new UserPrincipal(user, oAuth2UserAttributes, userNameAttributeName);
+		return new UserPrincipal(user, oAuth2UserAttributes);
 	}
 
 	private User getUser(OAuth2UserInfo oAuth2UserInfo) {

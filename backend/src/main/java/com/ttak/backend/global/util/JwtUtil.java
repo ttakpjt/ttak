@@ -14,13 +14,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.ttak.backend.domain.user.entity.User;
+import com.ttak.backend.domain.user.repository.UserRepository;
 import com.ttak.backend.global.auth.Entity.Token;
 import com.ttak.backend.global.auth.dto.UserPrincipal;
 import com.ttak.backend.global.auth.service.TokenService;
+import com.ttak.backend.global.exception.NotFoundException;
 import com.ttak.backend.global.exception.UnAuthorizedException;
 
 import io.jsonwebtoken.Claims;
@@ -40,6 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class JwtUtil {
 
+	private final UserRepository userRepository;
 	@Value("${spring.jwt.secret}")
 	private String key;
 	@Value("${spring.jwt.expiration.access-token}")
@@ -91,9 +94,12 @@ public class JwtUtil {
 	public Authentication getAuthentication(String token) {
 		Claims claims = parseClaims(token);
 		List<SimpleGrantedAuthority> authorities = getAuthorities(claims);
+		User user = userRepository.findByUserId(Long.valueOf(claims.get("userId").toString()))
+			.orElseThrow(() -> new NotFoundException(A007));
 
-		User principal = new User(claims.getSubject(), "", authorities);
-		return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+
+		UserPrincipal userPrincipal = new UserPrincipal(user, claims);
+		return new UsernamePasswordAuthenticationToken(userPrincipal, token, authorities);
 	}
 
 	private List<SimpleGrantedAuthority> getAuthorities(Claims claims) {
