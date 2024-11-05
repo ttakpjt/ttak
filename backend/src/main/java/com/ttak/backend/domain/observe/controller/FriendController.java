@@ -3,6 +3,8 @@ package com.ttak.backend.domain.observe.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,5 +31,11 @@ public class FriendController {
 	public ResponseEntity<?> createFriend(@RequestBody CreateFriendRequest createFriendRequest) {
 		friendService.addFriend(createFriendRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
+	}
+
+	@DeleteMapping("/friends/{userId}/{followingId}")
+	public ResponseEntity<?> removeFriend(@PathVariable Long followingId, @PathVariable Long userId) {
+		friendService.deleteFriend(userId, followingId);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 }

@@ -4,6 +4,7 @@ import static com.ttak.backend.global.common.ErrorCode.*;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ttak.backend.domain.observe.entity.CreateFriendRequest;
 import com.ttak.backend.domain.observe.entity.Friend;
@@ -31,6 +32,7 @@ public class FriendService{
 		messagingTemplate.convertAndSend("/topic/friend-status", message);
 	}
 
+	@Transactional
 	public void addFriend(CreateFriendRequest createFriendRequest) {
 		Long userId = createFriendRequest.getUserId();
 		Long followingId = createFriendRequest.getFollowingId();
@@ -49,4 +51,10 @@ public class FriendService{
 
 
 	}
+
+	@Transactional
+	public void deleteFriend(Long userId, Long followingId) {
+		friendRepository.deleteByUserId_UserIdAndFollowingId_UserId(userId, followingId);
+	}
+
 }
