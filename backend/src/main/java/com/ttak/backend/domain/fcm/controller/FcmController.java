@@ -30,16 +30,16 @@ public class FcmController {
 
 	@Operation(summary = "Fcm Token 저장", description = "클라우드 -> 서버 들어오는 fcm토큰 DB저장")
 	@PostMapping("/save")
-	public ResponseEntity<CommonResponse<?>> saveFcmToken (@authUser User user, final String token){
+	public ResponseEntity<CommonResponse<?>> saveFcmToken (@authUser User user, @RequestBody final FcmToken fcmToken){
 		log.info("========== Fcm Token 저장 시작 ==========");
-		fcmService.saveFcmToken(user.getUserId(), token);
+		fcmService.saveFcmToken(user.getUserId(), fcmToken.getToken());
 		log.info("========== Fcm Token 저장 종료 ==========");
 		return ResponseEntity.ok(CommonResponse.success());
 	}
 
 	@Operation(summary = "Fcm 메세지 전송 (메세지)", description = "아이템과 메세지 중 메세지 전송을 위한 fcm사용")
 	@PostMapping("/send/message")
-	public ResponseEntity<CommonResponse<?>> sendMessageFcmToken (@RequestBody FcmMessageReq fcmMessageReq){
+	public ResponseEntity<CommonResponse<?>> sendMessageFcmToken (@RequestBody final FcmMessageReq fcmMessageReq){
 		log.info("========== Fcm 메세지 전송 시작 ==========");
 		fcmService.sendMessage(fcmMessageReq.getData(), fcmMessageReq.getUserId());
 		log.info("========== Fcm 메세지 전송 종료 ==========");
@@ -48,7 +48,7 @@ public class FcmController {
 
 	@Operation(summary = "Fcm 메세지 전송 (아이템)", description = "아이템과 메세지 중 아이템 전송을 위한 fcm사용")
 	@PostMapping("/send/item")
-	public ResponseEntity<CommonResponse<?>> sendItemFcmToken (@RequestBody FcmMessageReq fcmMessageReq){
+	public ResponseEntity<CommonResponse<?>> sendItemFcmToken (@RequestBody final FcmMessageReq fcmMessageReq){
 		log.info("========== Fcm Item 전송 시작 ==========");
 		fcmService.sendEffect(fcmMessageReq.getData(), fcmMessageReq.getUserId());
 		log.info("========== Fcm Item 전송 종료 ==========");
