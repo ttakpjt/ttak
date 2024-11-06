@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,16 +21,15 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import com.ttak.android.common.monitor.ForegroundAppMonitor
 import com.ttak.android.common.monitor.ForegroundMonitorService
 import com.ttak.android.common.ui.theme.TtakTheme
 import com.ttak.android.common.navigation.AppNavHost
 import com.ttak.android.common.navigation.NavigationManager
 import com.ttak.android.common.ui.components.BottomNavigationBar
 import com.ttak.android.data.worker.ApiRequestWorker
-import android.Manifest
-import android.util.Log
-import android.widget.Toast
-import com.google.firebase.messaging.FirebaseMessaging
+import com.ttak.android.network.SocketEvent
+import com.ttak.android.network.WebSocketManager
 
 /*
 1. 앱 실행 시 필요한 권한들을 확인
@@ -41,6 +41,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 class MainActivity : ComponentActivity() {
     private val TAG = "MainActivity"
 
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
     ) { isGranted: Boolean ->
@@ -50,6 +51,9 @@ class MainActivity : ComponentActivity() {
             Toast.makeText(this, "알림 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
         }
     }
+
+    private val webSocketManager = WebSocketManager.getInstance()
+    private lateinit var foregroundAppMonitor: ForegroundAppMonitor
 
     private fun askNotificationPermission() {
         // This is only necessary for API level >= 33 (TIRAMISU)
@@ -76,9 +80,17 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // ForegroundAppMonitor 초기화
+        foregroundAppMonitor = ForegroundAppMonitor(application)
+
         setContent {
             TtakTheme {
                 val navController = rememberNavController()
+
+                // 권한 체크 및 서비스 시작
+                LaunchedEffect(Unit) {
+                    checkPermissionAndStartService()
+                }
 
                 Scaffold(
                     modifier = Modifier.fillMaxSize()
@@ -98,9 +110,58 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+
+                // 웹소켓 이벤트 수신 처리
+                LaunchedEffect(Unit) {
+                    webSocketManager.socketEvents.collect { event ->
+                        when (event) {
+                            is SocketEvent.Connected -> {
+                                Log.d(TAG, "WebSocket connected")
+                            }
+                            is SocketEvent.MessageReceived -> {
+                                Log.d(TAG, "WebSocket message: ${event.data}")  // data로 수정
+                            }
+                            is SocketEvent.Disconnected -> {
+                                Log.d(TAG, "WebSocket disconnected")
+                            }
+                            is SocketEvent.Error -> {
+                                Log.e(TAG, "WebSocket error", event.error)  // error로 수정
+                            }
+                        }
+                    }
+                }
+
                 startForegroundMonitorService()
                 startApiRequestWorker()
             }
+        }
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Activity가 완전히 종료될 때도 연결 해제
+        webSocketManager.disconnect()
+    }
+
+    private fun checkPermissionAndStartService() {
+        if (!foregroundAppMonitor.hasUsageStatsPermission()) {
+            Log.d(TAG, "Usage stats permission not granted, requesting...")
+            foregroundAppMonitor.requestUsageStatsPermission(this)
+        } else {
+            Log.d(TAG, "Usage stats permission granted, starting service...")
+            startForegroundMonitorService()
+            startApiRequestWorker()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        webSocketManager.connect()
+
+        // 권한 체크 다시 수행
+        if (foregroundAppMonitor.hasUsageStatsPermission()) {
+            startForegroundMonitorService()
         }
 
         // 알림 권환 확인 및 요청
@@ -135,5 +196,4 @@ class MainActivity : ComponentActivity() {
         val apiRequestWork = OneTimeWorkRequestBuilder<ApiRequestWorker>().build()
         WorkManager.getInstance(this).enqueue(apiRequestWork)
     }
-
 }

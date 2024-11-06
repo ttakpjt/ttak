@@ -113,5 +113,10 @@ dependencies {
     kapt("com.google.dagger:hilt-android-compiler:2.50")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
     implementation("com.google.accompanist:accompanist-drawablepainter:0.32.0")
+    // WebSocket (STOMP)
+    implementation("com.github.NaikSoftware:StompProtocolAndroid:1.6.6")
+    // WebSocket 클라이언트
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
 }
