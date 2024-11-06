@@ -22,6 +22,8 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 
 class SetGoalViewModel(application: Application) : AndroidViewModel(application) {
@@ -114,13 +116,34 @@ class SetGoalViewModel(application: Application) : AndroidViewModel(application)
 
     fun saveGoal() {
         viewModelScope.launch {
+            // 현재 날짜 가져오기
+            val today = LocalDate.now()
+
+            // LocalTime을 LocalDateTime으로 변환
+            val startDateTime = LocalDateTime.of(
+                today,
+                startTime.value
+            )
+
+            val endDateTime = LocalDateTime.of(
+                today,
+                endTime.value
+            )
+
+            // 만약 종료 시간이 시작 시간보다 이르다면 다음날로 설정
+            val adjustedEndDateTime = if (endDateTime.isBefore(startDateTime)) {
+                endDateTime.plusDays(1)
+            } else {
+                endDateTime
+            }
+
             // 저장 시 로그
-            Log.d("SetGoalViewModel", "Saving goal - Start time: ${startTime.value}, End time: ${endTime.value}")
+            Log.d("SetGoalViewModel", "Saving goal - Start DateTime: $startDateTime, End DateTime: $adjustedEndDateTime")
             Log.d("SetGoalViewModel", "Selected apps: ${selectedApps.value}")
 
             val focusGoal = FocusGoal(
-                startTime = startTime.value,
-                endTime = endTime.value,
+                startDateTime = startDateTime,
+                endDateTime = adjustedEndDateTime,
                 selectedApps = installedApps.value.filter {
                     selectedApps.value.contains(it.packageName)
                 }
