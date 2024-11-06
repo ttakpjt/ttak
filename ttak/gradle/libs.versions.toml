@@ -10,7 +10,8 @@ activityCompose = "1.9.3"
 composeBom = "2024.04.01"
 lifecycleProcess = "2.8.6"
 retrofit = "2.9.0"  # Retrofit 추가
-okhttp = "4.11.0"  # OkHttp 추가
+okhttp = "4.11.0"
+firebaseMessagingKtx = "24.0.3"  # OkHttp 추가
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -32,6 +33,7 @@ retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.r
 retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 okhttp-core = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessagingKtx" }
 
 
 [plugins]

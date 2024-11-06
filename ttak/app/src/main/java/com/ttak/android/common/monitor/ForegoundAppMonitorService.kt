@@ -106,7 +106,7 @@ class ForegroundMonitorService : Service() {
     private suspend fun sendApiRequest() {
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("http://192.168.137.1:8080/test/1") // 올바른 API URL로 변경
+            .url("http://10.0.2.2:8080/test/1") // 올바른 API URL로 변경
             .build()
 
         try {

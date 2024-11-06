@@ -29,13 +29,15 @@ fun SplashScreen(
     context: Context,
     isLoggedIn: Boolean,
     hasPermissions: Boolean,
-    onPermissionsConfirmed: () -> Unit
+    hasOverlayPermission: Boolean,
+    onPermissionsConfirmed: () -> Unit,
+    onOverlayPermissionConfirmed: () -> Unit
 ) {
     // 모든 권한이 승인된 후 다음 화면으로 이동
-    LaunchedEffect(hasPermissions) {
+    LaunchedEffect(hasPermissions, hasOverlayPermission) {
         delay(1000)
 
-        if (hasPermissions) {
+        if (hasPermissions && hasOverlayPermission) {
             val sharedPreferences = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
             val isProfileSetupComplete = sharedPreferences.getBoolean("isProfileSetupComplete", false)
 
@@ -49,7 +51,12 @@ fun SplashScreen(
             (context as? SplashActivity)?.finish()
         } else {
             // 권한 요청이 필요할 경우 콜백 호출
-            onPermissionsConfirmed()
+            if (!hasPermissions) {
+                onPermissionsConfirmed()
+            }
+            if (!hasOverlayPermission) {
+                onOverlayPermissionConfirmed()
+            }
         }
     }
 
