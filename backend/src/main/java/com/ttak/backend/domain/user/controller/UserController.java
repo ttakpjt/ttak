@@ -34,22 +34,22 @@ public class UserController {
 	@Operation(summary = "[완료] 테스트 api", description = "테스트를 위한 임시 api 생성")
 	@GetMapping("/test/{userId}")
 	public ResponseEntity<CommonResponse<?>> test(@PathVariable final Long userId) {
-		log.info("========== 거래내역 조회 시작 ==========");
+		log.info("========== 테스트 시작 ==========");
 		Long userIds = userService.getUserId(userId);
-		log.info("========== 거래내역 조회 시작 ==========");
+		log.info("========== 테스트 종료 ==========");
 		return ResponseEntity.ok(CommonResponse.success(userIds));
 	}
 
 	@Operation(summary = "[완료] Annotation 테스트 api", description = "Custom Annotation 확인")
 	@GetMapping("/test/annotation")
 	public ResponseEntity<CommonResponse<?>> annotationTest(@authUser User user) {
-		log.info("========== 테스트 시작 ==========");
+		log.info("========== 테스트 2 시작 ==========");
 		if (user != null) {
 			log.info("로그인한 userID: " + user.getUserId());
 		} else {
 			log.warn("User 객체가 null입니다.");
 		}
-		log.info("========== 테스트 종료 ==========");
+		log.info("========== 테스트 2 종료 ==========");
 		return ResponseEntity.ok(CommonResponse.success());
 	}
 

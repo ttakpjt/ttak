@@ -20,11 +20,16 @@ public enum ErrorCode {
 
 
 	// Friend 관련 예외 코드
-	F000("이미 존재하는 친구입니다.");
+	F000("이미 존재하는 친구입니다."),
+
+
+	// FCM 관련 예외 코드
+	FCM000("FcmToken이 등록되지 않는 사용자입니다."),
+	FCM001("Fcm Message 발송 중 오류가 발생했습니다."),
 
 	// Global 예외
 
-
+	;
 	private final String message;
 
 	ErrorCode(final String message) {
