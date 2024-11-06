@@ -19,6 +19,10 @@ public class CreateFriendRequest {
 		this.followingId = followingId;
 	}
 
+	public static CreateFriendRequest of(Long userId, Long followingId){
+		return new CreateFriendRequest(userId, followingId);
+	}
+
 	// DTO -> Entity
 	public static Friend toFriend(User userId, User followingId){
 		return Friend.builder().userId(userId).followingId(followingId).build();
