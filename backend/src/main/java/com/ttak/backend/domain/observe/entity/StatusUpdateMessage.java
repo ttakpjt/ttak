@@ -12,5 +12,9 @@ public class StatusUpdateMessage {
 		this.status = status;
 	}
 
+	public static StatusUpdateMessage of(Long userId, int status) {
+		return new StatusUpdateMessage(userId, status);
+	}
+
 }
 
