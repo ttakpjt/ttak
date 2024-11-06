@@ -1,13 +1,17 @@
 package com.ttak.backend.domain.user.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ttak.backend.domain.user.entity.User;
+import com.ttak.backend.domain.user.entity.UserInfoResponse;
 import com.ttak.backend.domain.user.service.UserService;
 import com.ttak.backend.global.auth.annotation.authUser;
 import com.ttak.backend.global.common.CommonResponse;
@@ -48,4 +52,11 @@ public class UserController {
 		log.info("========== 테스트 종료 ==========");
 		return ResponseEntity.ok(CommonResponse.success());
 	}
+
+	@GetMapping("/search")
+	public ResponseEntity<?> userSearch(@RequestParam("nickname") String nickname) {
+		List<UserInfoResponse> users = userService.searchUsersByNickname(nickname);
+		return ResponseEntity.ok(users);
+	}
+
 }
