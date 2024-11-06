@@ -1,7 +1,9 @@
 package com.ttak.android.features.auth
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,6 +16,7 @@ import com.ttak.android.common.monitor.ForegroundAppMonitor
 class SplashActivity : ComponentActivity() {
     private lateinit var foregroundAppMonitor: ForegroundAppMonitor
     private var isPermissionRequested = false   // 권한 설정 요청 여부를 확인하는 변수
+    private var isOverlayPermissionRequested = false // 오버레이 권한 요청 여부 확인
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,11 +28,19 @@ class SplashActivity : ComponentActivity() {
                     context = this,
                     isLoggedIn = checkLoginStatus(),
                     hasPermissions = foregroundAppMonitor.hasUsageStatsPermission(),
+                    hasOverlayPermission = checkOverlayPermission(),
                     onPermissionsConfirmed = {
                         // 권한 설정이 필요할 경우 실행할 동작
                         if (!foregroundAppMonitor.hasUsageStatsPermission()) {
                             isPermissionRequested = true
                             foregroundAppMonitor.requestUsageStatsPermission(this@SplashActivity)
+                        }
+                    },
+                    onOverlayPermissionConfirmed = {
+                        // 오버레이 권한 요청
+                        if (!checkOverlayPermission()) {
+                            isOverlayPermissionRequested = true
+                            requestOverlayPermission()
                         }
                     }
                 )
@@ -41,6 +52,21 @@ class SplashActivity : ComponentActivity() {
     private fun checkLoginStatus(): Boolean {
         return FirebaseAuth.getInstance().currentUser != null
     }
+
+    // 오버레이 권환 확인
+    private fun checkOverlayPermission(): Boolean {
+        return Settings.canDrawOverlays(this)
+    }
+
+    // 오버레이 권한 요청
+    private fun requestOverlayPermission() {
+        val intent = Intent(
+            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+            Uri.parse("package:$packageName")
+        )
+        startActivityForResult(intent, REQUEST_OVERLAY_PERMISSION)
+    }
+
     override fun onResume() {
         super.onResume()
         // 권한을 요청하고 설정 화면을 나왔을 때 확인
@@ -54,7 +80,18 @@ class SplashActivity : ComponentActivity() {
                 finishAffinity()  // 앱 종료
             }
         }
+        // 오버레이 권한 확인
+        if (isOverlayPermissionRequested) {
+            isOverlayPermissionRequested = false
+            if (checkOverlayPermission()) {
+                navigateToNextScreen()
+            } else {
+                Toast.makeText(this, "오버레이 권한이 없어 일부 기능이 제한됩니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
+
+
 
     // 권한을 얻었으면 화면 이동
     private fun navigateToNextScreen() {
@@ -62,5 +99,9 @@ class SplashActivity : ComponentActivity() {
             if (checkLoginStatus()) MainActivity::class.java else LoginActivity::class.java
         startActivity(Intent(this, nextActivity))
         finish()
+    }
+
+    companion object {
+        private const val REQUEST_OVERLAY_PERMISSION = 1001
     }
 }

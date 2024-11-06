@@ -56,8 +56,14 @@ dependencies {
     // firebase의 라이브러리 버전을 관리하는 역할
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     // firebase를 통해 사용자 인증을 처리하는 역할
+
+    // Add the dependency for the Firebase SDK for Google Analytics
+    implementation("com.google.firebase:firebase-analytics")
+
     implementation("com.google.firebase:firebase-auth-ktx")
     // google 계정을 통한 인증 처리
+    implementation("com.google.firebase:firebase-firestore")
+    // Also add the dependency for the Google Play services library and specify its version
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
     // ViewModel과 LiveData
@@ -66,6 +72,7 @@ dependencies {
     // Room 데이터베이스
     implementation("androidx.room:room-runtime:2.6.1")
     implementation(libs.androidx.lifecycle.process)
+    implementation(libs.firebase.messaging.ktx)
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     // Navigation
