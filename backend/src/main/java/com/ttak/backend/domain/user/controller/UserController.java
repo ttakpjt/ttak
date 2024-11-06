@@ -6,10 +6,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ttak.backend.domain.user.dto.reqeust.LonginInfoReq;
 import com.ttak.backend.domain.user.entity.User;
 import com.ttak.backend.domain.user.entity.UserInfoResponse;
 import com.ttak.backend.domain.user.service.UserService;
@@ -18,6 +21,7 @@ import com.ttak.backend.global.common.CommonResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.Column;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController {
 
 	private final UserService userService;
+
 
 	@Operation(summary = "[완료] 테스트 api", description = "테스트를 위한 임시 api 생성")
 	@GetMapping("/test/{userId}")
@@ -57,6 +62,15 @@ public class UserController {
 	public ResponseEntity<?> userSearch(@RequestParam("nickname") String nickname) {
 		List<UserInfoResponse> users = userService.searchUsersByNickname(nickname);
 		return ResponseEntity.ok(users);
+	}
+
+	@Operation(summary = "로그인한 유저 정보 DB이관", description = "")
+	@PostMapping("/save")
+	public ResponseEntity<CommonResponse<?>> saveUser(@RequestBody final LonginInfoReq longinInfoReq) {
+		log.info("========== 테스트 시작 ==========");
+		Long userIds = userService.saveId(longinInfoReq);
+		log.info("========== 테스트 종료 ==========");
+		return ResponseEntity.ok(CommonResponse.success(userIds));
 	}
 
 }

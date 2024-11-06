@@ -52,16 +52,6 @@ public class SecurityConfig {
 			.sessionManagement(c ->
 				c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-			// .authorizeHttpRequests(request ->
-			// 	request.requestMatchers(
-			// 			new AntPathRequestMatcher("/login"),
-			// 			new AntPathRequestMatcher("/"),
-			// 			new AntPathRequestMatcher("/auth/success"),
-			// 			new AntPathRequestMatcher("/funding-products/**", "GET"),
-			// 			new AntPathRequestMatcher("/notification/subscribe")
-			// 		).permitAll()
-			// 		.anyRequest().authenticated()
-			// )
 			.authorizeHttpRequests((auth) -> auth
 				.anyRequest().permitAll())
 
