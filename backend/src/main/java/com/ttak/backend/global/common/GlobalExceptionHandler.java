@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.ttak.backend.global.exception.DuplicateException;
+import com.ttak.backend.global.exception.FirebaseMessagingException;
 import com.ttak.backend.global.exception.NotFoundException;
 import com.ttak.backend.global.exception.UnAuthorizedException;
 
@@ -42,6 +43,16 @@ public class GlobalExceptionHandler {
 		ErrorCode errorCode = e.getErrorCode();
 
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+			.body(CommonResponse.of(
+				errorCode.getMessage(),
+				errorCode.name()
+			));
+	}
+	@ExceptionHandler(FirebaseMessagingException.class)
+	public final ResponseEntity<CommonResponse> handleFirebaseMessagingException(final FirebaseMessagingException e) {
+		ErrorCode errorCode = e.getErrorCode();
+
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 			.body(CommonResponse.of(
 				errorCode.getMessage(),
 				errorCode.name()

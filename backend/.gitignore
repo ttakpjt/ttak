@@ -41,6 +41,7 @@ out/
 ### VS Code ###
 .vscode/
 
+.ttak-440401-firebase-adminsdk-a7dv0-b4b7563f3b
 .env
 .DS_Store
 ._.DS_Store

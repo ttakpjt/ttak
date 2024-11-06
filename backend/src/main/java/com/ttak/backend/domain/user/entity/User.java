@@ -6,16 +6,20 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import com.ttak.backend.domain.fcm.entity.Fcm;
 import com.ttak.backend.domain.user.entity.enumFolder.Role;
 import com.ttak.backend.domain.user.entity.enumFolder.SocialDomain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -61,6 +65,9 @@ public class User {
 	@Enumerated(EnumType.STRING)
 	@Column(name= "role", nullable = false)
 	private Role role;
+
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
+	private Fcm fcm;
 
 
 	//===============여기서부턴 Entity 기본 정보==================
