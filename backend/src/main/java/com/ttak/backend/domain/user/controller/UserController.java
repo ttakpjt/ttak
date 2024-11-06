@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ttak.backend.domain.user.dto.reqeust.LonginInfoReq;
+import com.ttak.backend.domain.user.dto.reqeust.GoogleUserRequest;
 import com.ttak.backend.domain.user.entity.User;
 import com.ttak.backend.domain.user.entity.UserInfoResponse;
 import com.ttak.backend.domain.user.service.UserService;
@@ -21,7 +21,6 @@ import com.ttak.backend.global.common.CommonResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.persistence.Column;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -64,12 +63,12 @@ public class UserController {
 		return ResponseEntity.ok(users);
 	}
 
-	@Operation(summary = "로그인한 유저 정보 DB이관", description = "")
+	@Operation(summary = "로그인한 유저 정보 DB이관", description = "google로그인 유저 정보 받아오면 UserId 반환")
 	@PostMapping("/save")
-	public ResponseEntity<CommonResponse<?>> saveUser(@RequestBody final LonginInfoReq longinInfoReq) {
-		log.info("========== 테스트 시작 ==========");
-		Long userIds = userService.saveId(longinInfoReq);
-		log.info("========== 테스트 종료 ==========");
+	public ResponseEntity<CommonResponse<?>> saveUser(@RequestBody final GoogleUserRequest googleUserRequest) {
+		log.info("========== 유저정보 DB 이관 시작 ==========");
+		Long userIds = userService.saveId(googleUserRequest);
+		log.info("========== 유저정보 DB 이관 종료 ==========");
 		return ResponseEntity.ok(CommonResponse.success(userIds));
 	}
 

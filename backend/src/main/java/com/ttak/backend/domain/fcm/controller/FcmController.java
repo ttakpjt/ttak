@@ -31,9 +31,9 @@ public class FcmController {
 
 	@Operation(summary = "Fcm Token 저장", description = "클라우드 -> 서버 들어오는 fcm토큰 DB저장")
 	@PostMapping("/save")
-	public ResponseEntity<CommonResponse<?>> saveFcmToken (@authUser User user, @RequestBody final FcmTokenReq fcmTokenReq){
+	public ResponseEntity<CommonResponse<?>> saveFcmToken (/**@authUser User user, */@RequestBody final FcmTokenReq fcmTokenReq){
 		log.info("========== Fcm Token 저장 시작 ==========");
-		fcmService.saveFcmToken(user.getUserId(), fcmTokenReq.getToken());
+		fcmService.saveFcmToken(fcmTokenReq.getUserId(), fcmTokenReq.getToken());
 		log.info("========== Fcm Token 저장 종료 ==========");
 		return ResponseEntity.ok(CommonResponse.success());
 	}
