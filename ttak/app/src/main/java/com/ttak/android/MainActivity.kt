@@ -29,6 +29,8 @@ import com.ttak.android.common.ui.components.BottomNavigationBar
 import com.ttak.android.data.worker.ApiRequestWorker
 import com.ttak.android.network.socket.SocketEvent
 import com.ttak.android.network.socket.WebSocketManager
+import android.Manifest
+import com.google.firebase.messaging.FirebaseMessaging
 
 /*
 1. 앱 실행 시 필요한 권한들을 확인
