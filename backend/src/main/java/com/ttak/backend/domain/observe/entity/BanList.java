@@ -1,6 +1,6 @@
 package com.ttak.backend.domain.observe.entity;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import com.ttak.backend.domain.user.entity.User;
 import com.ttak.backend.global.common.TimeBaseEntity;
@@ -34,8 +34,8 @@ public class BanList extends TimeBaseEntity {
 	@JoinColumn(name="user_id")
 	private User user;
 
-	private LocalDateTime startTime;
+	private LocalTime startTime;
 
-	private LocalDateTime endTime;
+	private LocalTime endTime;
 
 }

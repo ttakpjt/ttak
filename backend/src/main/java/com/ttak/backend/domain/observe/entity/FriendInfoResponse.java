@@ -1,17 +1,28 @@
 package com.ttak.backend.domain.observe.entity;
+import com.querydsl.core.annotations.QueryProjection;
+
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 @Getter
 @ToString
 public class FriendInfoResponse {
 	private String friendName;
-	private String friendId;
+	private Long friendId;
 	private String friendImg;
+	private int status;
 
-	public FriendInfoResponse(String friendName, String friendId, String friendImg) {
+
+	@QueryProjection
+	public FriendInfoResponse(String friendName, Long friendId, String friendImg) {
 		this.friendName = friendName;
 		this.friendId = friendId;
 		this.friendImg = friendImg;
+	}
+
+	public void updateStatus(Integer status) {
+		this.status = status;
 	}
 }
