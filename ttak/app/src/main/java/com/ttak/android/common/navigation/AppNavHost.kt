@@ -14,7 +14,7 @@ import com.ttak.android.features.goal.ui.screens.SetGoalScreen
 fun AppNavHost(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = AppScreens.ScreenTime.route
+        startDestination = AppScreens.History.route
     ) {
         composable(AppScreens.History.route) { HistoryScreen() }
         composable(AppScreens.MyPage.route) { MyPageScreen() }
