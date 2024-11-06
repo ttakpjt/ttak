@@ -1,6 +1,5 @@
 package com.ttak.backend.domain.observe.controller;
 
-import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

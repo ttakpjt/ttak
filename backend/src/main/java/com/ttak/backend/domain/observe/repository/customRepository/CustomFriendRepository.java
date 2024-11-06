@@ -7,6 +7,6 @@ import com.ttak.backend.domain.observe.entity.FriendInfoResponse;
 import com.ttak.backend.domain.user.entity.User;
 
 public interface CustomFriendRepository {
-	public List<FriendInfoResponse> findBannedFriends(User user, LocalTime currentTime);
+	List<FriendInfoResponse> findBannedFriends(User user, LocalTime currentTime);
 
 }

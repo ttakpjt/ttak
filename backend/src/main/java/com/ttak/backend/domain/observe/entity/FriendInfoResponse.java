@@ -2,8 +2,6 @@ package com.ttak.backend.domain.observe.entity;
 import com.querydsl.core.annotations.QueryProjection;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 @Getter
