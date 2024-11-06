@@ -1,4 +1,4 @@
-package com.ttak.backend.global.auth.controller;
-
-public class AuthController {
-}
+// package com.ttak.backend.global.auth.controller;
+//
+// public class AuthController {
+// }

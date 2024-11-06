@@ -16,7 +16,6 @@ import com.ttak.backend.domain.user.dto.reqeust.GoogleUserRequest;
 import com.ttak.backend.domain.user.entity.User;
 import com.ttak.backend.domain.user.entity.UserInfoResponse;
 import com.ttak.backend.domain.user.service.UserService;
-import com.ttak.backend.global.auth.annotation.authUser;
 import com.ttak.backend.global.common.CommonResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,18 +43,18 @@ public class UserController {
 		return ResponseEntity.ok(CommonResponse.success(userIds));
 	}
 
-	@Operation(summary = "[완료] Annotation 테스트 api", description = "Custom Annotation 확인")
-	@GetMapping("/test/annotation")
-	public ResponseEntity<CommonResponse<?>> annotationTest(@authUser User user) {
-		log.info("========== 테스트 2 시작 ==========");
-		if (user != null) {
-			log.info("로그인한 userID: " + user.getUserId());
-		} else {
-			log.warn("User 객체가 null입니다.");
-		}
-		log.info("========== 테스트 2 종료 ==========");
-		return ResponseEntity.ok(CommonResponse.success());
-	}
+	// @Operation(summary = "[완료] Annotation 테스트 api", description = "Custom Annotation 확인")
+	// @GetMapping("/test/annotation")
+	// public ResponseEntity<CommonResponse<?>> annotationTest(/*@authUser User user*/) {
+	// 	log.info("========== 테스트 2 시작 ==========");
+	// 	if (user != null) {
+	// 		log.info("로그인한 userID: " + user.getUserId());
+	// 	} else {
+	// 		log.warn("User 객체가 null입니다.");
+	// 	}
+	// 	log.info("========== 테스트 2 종료 ==========");
+	// 	return ResponseEntity.ok(CommonResponse.success());
+	// }
 
 	@GetMapping("/search")
 	public ResponseEntity<?> userSearch(@RequestParam("nickname") String nickname) {

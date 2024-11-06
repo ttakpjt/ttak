@@ -11,7 +11,6 @@ import com.ttak.backend.domain.fcm.dto.request.FcmMessageReq;
 import com.ttak.backend.domain.fcm.dto.request.FcmTokenReq;
 import com.ttak.backend.domain.fcm.service.FcmService;
 import com.ttak.backend.domain.user.entity.User;
-import com.ttak.backend.global.auth.annotation.authUser;
 import com.ttak.backend.global.common.CommonResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
