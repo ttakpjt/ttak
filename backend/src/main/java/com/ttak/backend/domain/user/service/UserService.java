@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.ttak.backend.domain.user.entity.User;
@@ -48,6 +49,7 @@ public class UserService{
 	}
 
 	@PostConstruct
+	@Scheduled(cron = "0 0 0 * * *") // 매일 정오 00시 00분에 실행
 	public void initializeAllUsers() {
 		// 모든 사용자 ID를 가져와 초기화
 		List<User> allUserIds = getAllUsers();
