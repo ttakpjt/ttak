@@ -11,7 +11,7 @@ import com.ttak.android.data.local.entity.SelectedAppEntity
 
 @Database(
     entities = [FocusGoalEntity::class, SelectedAppEntity::class],
-    version = 1
+    version = 2  // 1에서 2로 변경
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun focusGoalDao(): FocusGoalDao
@@ -27,7 +27,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "ttak_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()  // 스키마 변경 시 데이터베이스를 새로 생성
+                    .build()
                 INSTANCE = instance
                 instance
             }

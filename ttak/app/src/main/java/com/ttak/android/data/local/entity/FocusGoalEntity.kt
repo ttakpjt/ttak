@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class FocusGoalEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val startTimeMillis: Long,
-    val endTimeMillis: Long,
+    val startDateTimeMillis: Long,
+    val endDateTimeMillis: Long,
     val isEnabled: Boolean
 )
