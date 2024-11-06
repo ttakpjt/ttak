@@ -10,19 +10,30 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.ttak.android.data.local.AppDatabase
+import com.ttak.android.data.repository.FocusGoalRepository
+import com.ttak.android.network.implementation.ObserverApiImpl
+import com.ttak.android.network.socket.WebSocketManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import java.time.LocalDateTime
 
 class ForegroundMonitorService : Service() {
     private val serviceScope = CoroutineScope(Dispatchers.Default + Job())
     private lateinit var usageStatsManager: UsageStatsManager
     private var isMonitoring = false
+    private val webSocketManager = WebSocketManager.getInstance()
+    private lateinit var repository: FocusGoalRepository
+    private var previousStatus: Int? = null // 이전 상태를 저장하는 변수
+    private var lastEventTime: Long = 0L
+    private val observerApi = ObserverApiImpl.getInstance()
 
     companion object {
         private const val NOTIFICATION_ID = 1
@@ -33,6 +44,15 @@ class ForegroundMonitorService : Service() {
     override fun onCreate() {
         super.onCreate()
         usageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+
+        // Initialize Repository
+        val database = AppDatabase.getDatabase(applicationContext)
+        repository = FocusGoalRepository(
+            focusGoalDao = database.focusGoalDao(),
+            selectedAppDao = database.selectedAppDao(),
+            packageManager = applicationContext.packageManager
+        )
+
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, createNotification())
     }
@@ -51,7 +71,7 @@ class ForegroundMonitorService : Service() {
                 "Foreground App Monitor",
                 NotificationManager.IMPORTANCE_LOW
             ).apply {
-                description = "모니터링 서비스 실행 중"
+                description = "Monitoring Service Running"
             }
             val notificationManager = getSystemService(NotificationManager::class.java)
             notificationManager.createNotificationChannel(channel)
@@ -59,30 +79,72 @@ class ForegroundMonitorService : Service() {
     }
 
     private fun createNotification() = NotificationCompat.Builder(this, CHANNEL_ID)
-        .setContentTitle("앱 모니터링")
-        .setContentText("백그라운드에서 실행 중")
+        .setContentTitle("App Monitoring")
+        .setContentText("Running in background")
         .setSmallIcon(android.R.drawable.ic_menu_info_details)
         .setPriority(NotificationCompat.PRIORITY_LOW)
         .build()
 
+//    private fun startMonitoring() {
+//        if (isMonitoring) return
+//        isMonitoring = true
+//
+//        serviceScope.launch {
+//            while (isMonitoring) {
+//                checkForegroundApp()
+////                sendApiRequest()
+//                delay(2000) // 2초마다 체크
+//            }
+//        }
+//    }
+
+    // 이벤트 기반 모니터링
     private fun startMonitoring() {
         if (isMonitoring) return
         isMonitoring = true
 
         serviceScope.launch {
             while (isMonitoring) {
-                checkForegroundApp()
-                sendApiRequest() // API 요청 추가
-                delay(2000) // 2초마다 체크
+                checkForNewEvents()
+                delay(500) // 0.5초 간격으로 새로운 이벤트 체크
             }
         }
     }
 
+    private fun checkForNewEvents() {
+        if (!hasUsageStatsPermission()) {
+            Log.e(TAG, "Usage stats permission not granted!")
+            return
+        }
+
+        val currentTime = System.currentTimeMillis()
+        val events = usageStatsManager.queryEvents(lastEventTime, currentTime)
+        val event = android.app.usage.UsageEvents.Event()
+
+        while (events.hasNextEvent()) {
+            events.getNextEvent(event)
+            if (event.eventType == android.app.usage.UsageEvents.Event.MOVE_TO_FOREGROUND) {
+                // 이벤트 발생 시간 업데이트
+                lastEventTime = event.timeStamp
+                Log.d(TAG, "App switch detected: ${event.packageName}")
+                checkFocusGoalAndUpdateStatus(event.packageName)
+            }
+        }
+    }
+
+
+
     private fun checkForegroundApp() {
+        // 권한 체크 추가
+        if (!hasUsageStatsPermission()) {
+            Log.e(TAG, "Usage stats permission not granted!")
+            return
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val time = System.currentTimeMillis()
             val usageEvents = usageStatsManager.queryEvents(
-                time - 1000 * 60, // 1분 전부터
+                time - 1000 * 60,
                 time
             )
 
@@ -96,8 +158,62 @@ class ForegroundMonitorService : Service() {
                 }
             }
 
-            foregroundApp?.let {
-                Log.d(TAG, "Current foreground app: $it")
+            foregroundApp?.let { packageName ->
+                Log.d(TAG, "Current foreground app: $packageName")
+                checkFocusGoalAndUpdateStatus(packageName)
+            } ?: Log.d(TAG, "No foreground app detected")
+        }
+    }
+
+    private fun hasUsageStatsPermission(): Boolean {
+        val time = System.currentTimeMillis()
+        val stats = usageStatsManager.queryUsageStats(
+            UsageStatsManager.INTERVAL_DAILY,
+            time - 1000 * 60,  // 1분 전부터
+            time
+        )
+        return stats != null && stats.isNotEmpty()
+    }
+
+    private fun checkFocusGoalAndUpdateStatus(packageName: String) {
+        serviceScope.launch {
+            val currentTime = LocalDateTime.now()
+            Log.d(TAG, "Checking focus goals at: $currentTime")
+
+            repository.getAllGoals().collect { goals ->
+                val activeGoal = goals.firstOrNull { goal ->
+                    goal.isEnabled &&
+                            currentTime.isAfter(goal.startDateTime) &&
+                            currentTime.isBefore(goal.endDateTime)
+                }
+
+                if (activeGoal == null) {
+                    Log.d(TAG, "No active goal found")
+                    // 이전에 제한 앱을 사용 중이었다면 상태 변경
+                    if (previousStatus == 1) {
+                        previousStatus = 0
+                        observerApi.updateMyStatus(0)
+                        Log.d(TAG, "Changed from restricted to normal app")
+                    }
+                    return@collect
+                }
+
+                val isSelectedApp = activeGoal.selectedApps.any { it.packageName == packageName }
+                if (isSelectedApp) {
+                    // 일반 앱 -> 제한 앱으로 변경된 경우
+                    if (previousStatus == 0 || previousStatus == null) {
+                        Log.d(TAG, "Switched to restricted app: $packageName")
+                        previousStatus = 1
+                        observerApi.updateMyStatus(1)
+                    }
+                } else {
+                    // 제한 앱 -> 일반 앱으로 변경된 경우
+                    if (previousStatus == 1) {
+                        Log.d(TAG, "Switched to normal app: $packageName")
+                        previousStatus = 0
+                        observerApi.updateMyStatus(0)
+                    }
+                }
             }
         }
     }
@@ -106,7 +222,7 @@ class ForegroundMonitorService : Service() {
     private suspend fun sendApiRequest() {
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("http://10.0.2.2:8080/test/1") // 올바른 API URL로 변경
+            .url("http://192.168.137.1:8080/test/1") // 올바른 API URL로 변경
             .build()
 
         try {
@@ -124,5 +240,6 @@ class ForegroundMonitorService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         isMonitoring = false
+        serviceScope.cancel() // 코루틴 스코프 정리
     }
 }

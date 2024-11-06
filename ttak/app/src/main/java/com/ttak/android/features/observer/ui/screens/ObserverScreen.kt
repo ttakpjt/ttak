@@ -23,7 +23,7 @@ import com.ttak.android.features.observer.viewmodel.FriendStoryViewModel
 import com.ttak.android.features.observer.viewmodel.FriendStoryViewModelFactory
 import com.ttak.android.features.observer.viewmodel.UserViewModel
 import com.ttak.android.features.observer.viewmodel.UserViewModelFactory
-import com.ttak.android.network.PreviewUserApi
+import com.ttak.android.network.api.PreviewUserApi
 
 @Composable
 fun ObserverScreen() {

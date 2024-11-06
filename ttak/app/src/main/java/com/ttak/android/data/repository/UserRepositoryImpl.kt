@@ -3,7 +3,7 @@ package com.ttak.android.data.repository
 
 import com.ttak.android.domain.model.User
 import com.ttak.android.features.observer.domain.repository.UserRepository
-import com.ttak.android.network.UserApi
+import com.ttak.android.network.api.UserApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

@@ -1,4 +1,4 @@
-package com.ttak.android.network
+package com.ttak.android.network.api
 
 import com.ttak.android.domain.model.User
 import retrofit2.Response
