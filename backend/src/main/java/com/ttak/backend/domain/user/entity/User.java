@@ -1,14 +1,14 @@
 package com.ttak.backend.domain.user.entity;
 
-import java.time.LocalDateTime;
-
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import com.ttak.backend.domain.fcm.entity.Fcm;
+import com.ttak.backend.domain.user.dto.reqeust.GoogleUserRequest;
 import com.ttak.backend.domain.user.entity.enumFolder.Role;
 import com.ttak.backend.domain.user.entity.enumFolder.SocialDomain;
+import com.ttak.backend.global.common.TimeBaseEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -23,22 +23,27 @@ import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Cleanup;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Entity
-@Data
-@Builder
+@Getter
+@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE user SET delete_yn = true WHERE user_id = ?")
 @SQLRestriction("delete_yn = false")
-public class User {
+public class User extends TimeBaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
 	private Long userId;
+
+	@Column(name = "email")
+	private String email;
 
 	@Column(name = "nickname", nullable = false)
 	private String nickname;
@@ -72,19 +77,19 @@ public class User {
 
 	//===============여기서부턴 Entity 기본 정보==================
 
-	@Builder.Default
-	@Column(name = "create_at", nullable = false, updatable = false)
-	private LocalDateTime createAt = LocalDateTime.now();
-
-	@Builder.Default
-	@Column(name = "update_at", nullable = false)
-	private LocalDateTime updateAt = LocalDateTime.now();;
-
-	@Column(name = "create_who")
-	private Long createWho;
-
-	@Column(name = "update_who")
-	private Long updateWho;
+	// @Builder.Default
+	// @Column(name = "create_at", nullable = false, updatable = false)
+	// private LocalDateTime createAt = LocalDateTime.now();
+	//
+	// @Builder.Default
+	// @Column(name = "update_at", nullable = false)
+	// private LocalDateTime updateAt = LocalDateTime.now();;
+	//
+	// @Column(name = "create_who")
+	// private Long createWho;
+	//
+	// @Column(name = "update_who")
+	// private Long updateWho;
 
 	@Builder.Default
 	@Column(name = "delete_yn", nullable = false)
@@ -98,5 +103,18 @@ public class User {
 
 	@Column(name = "social_identify", nullable = false)
 	private String socialIdentify;
+
+
+	public static User toGoogleEntity(GoogleUserRequest googleUserRequest){
+		return User.builder()
+			.userId(System.currentTimeMillis())
+			.email(googleUserRequest.getEmail())
+			.nickname(googleUserRequest.getName())
+			.role(Role.USER)
+			.profilePic(googleUserRequest.getProfileImage())
+			.socialDomain(SocialDomain.KAKAO)
+			.socialIdentify(googleUserRequest.getId())
+			.build();
+	}
 
 }

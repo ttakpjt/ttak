@@ -11,7 +11,6 @@ import com.ttak.backend.domain.fcm.dto.request.FcmMessageReq;
 import com.ttak.backend.domain.fcm.dto.request.FcmTokenReq;
 import com.ttak.backend.domain.fcm.service.FcmService;
 import com.ttak.backend.domain.user.entity.User;
-import com.ttak.backend.global.auth.annotation.authUser;
 import com.ttak.backend.global.common.CommonResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,9 +30,9 @@ public class FcmController {
 
 	@Operation(summary = "Fcm Token 저장", description = "클라우드 -> 서버 들어오는 fcm토큰 DB저장")
 	@PostMapping("/save")
-	public ResponseEntity<CommonResponse<?>> saveFcmToken (@authUser User user, @RequestBody final FcmTokenReq fcmTokenReq){
+	public ResponseEntity<CommonResponse<?>> saveFcmToken (/**@authUser User user, */@RequestBody final FcmTokenReq fcmTokenReq){
 		log.info("========== Fcm Token 저장 시작 ==========");
-		fcmService.saveFcmToken(user.getUserId(), fcmTokenReq.getToken());
+		fcmService.saveFcmToken(fcmTokenReq.getUserId(), fcmTokenReq.getToken());
 		log.info("========== Fcm Token 저장 종료 ==========");
 		return ResponseEntity.ok(CommonResponse.success());
 	}

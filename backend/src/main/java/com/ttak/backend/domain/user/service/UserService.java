@@ -10,8 +10,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.ttak.backend.domain.user.dto.reqeust.GoogleUserRequest;
 import com.ttak.backend.domain.user.entity.User;
 import com.ttak.backend.domain.user.entity.UserInfoResponse;
+import com.ttak.backend.domain.user.entity.enumFolder.SocialDomain;
 import com.ttak.backend.domain.user.repository.UserRepository;
 import com.ttak.backend.global.exception.NotFoundException;
 
@@ -63,6 +65,16 @@ public class UserService{
 	private void setUserStatus(Long userId, int status, long ttlInSeconds) {
 		// Redis에 상태 저장 로직
 		redisTemplate.opsForValue().set("user:status:" + userId, String.valueOf(status), Duration.ofSeconds(ttlInSeconds));
+	}
+
+
+	public Long saveId(final GoogleUserRequest googleUserRequest){
+		User user = userRepository.findBySocialDomainAndSocialIdentify(SocialDomain.KAKAO, googleUserRequest.getId())
+				.orElseGet(() -> User.toGoogleEntity(googleUserRequest));
+
+		userRepository.save(user);
+
+		return user.getUserId();
 	}
 
 
