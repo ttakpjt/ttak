@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
@@ -28,8 +27,8 @@ import com.ttak.android.common.navigation.AppNavHost
 import com.ttak.android.common.navigation.NavigationManager
 import com.ttak.android.common.ui.components.BottomNavigationBar
 import com.ttak.android.data.worker.ApiRequestWorker
-import com.ttak.android.network.SocketEvent
-import com.ttak.android.network.WebSocketManager
+import com.ttak.android.network.socket.SocketEvent
+import com.ttak.android.network.socket.WebSocketManager
 
 /*
 1. 앱 실행 시 필요한 권한들을 확인

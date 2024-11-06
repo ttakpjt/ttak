@@ -1,4 +1,4 @@
-package com.ttak.android.network
+package com.ttak.android.network.socket
 
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope

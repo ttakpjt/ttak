@@ -4,7 +4,7 @@ import android.util.Log
 import com.google.gson.Gson
 import com.ttak.android.domain.model.FriendStatus
 import com.ttak.android.domain.model.SocketMessage
-import com.ttak.android.network.WebSocketManager
+import com.ttak.android.network.socket.WebSocketManager
 
 class WebSocketRepository private constructor() {
     private val TAG = "WebSocketRepository"

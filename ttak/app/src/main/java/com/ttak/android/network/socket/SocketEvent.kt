@@ -1,4 +1,4 @@
-package com.ttak.android.network
+package com.ttak.android.network.socket
 
 sealed class SocketEvent {
     object Connected : SocketEvent()
