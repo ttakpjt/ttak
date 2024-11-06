@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.ttak.backend.domain.user.entity.User;
 import com.ttak.backend.domain.user.entity.enumFolder.SocialDomain;
@@ -17,4 +18,7 @@ public interface UserRepository extends JpaRepository<User, Long>, CustomUserRep
 	// 닉네임을 포함하는 사용자 검색
 	List<User> findByNicknameContainingIgnoreCase(String nickname);
 
+	//사용자 아이디만 조회
+	@Query("SELECT u.userId FROM User u")
+	List<Long> findAllUserIds();
 }
