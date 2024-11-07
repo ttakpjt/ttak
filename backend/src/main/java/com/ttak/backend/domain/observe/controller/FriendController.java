@@ -16,6 +16,7 @@ import com.ttak.backend.domain.observe.dto.StatusUpdateMessage;
 import com.ttak.backend.domain.observe.service.FriendService;
 import com.ttak.backend.domain.user.entity.User;
 import com.ttak.backend.domain.user.repository.UserRepository;
+import com.ttak.backend.global.auth.annotation.UserPk;
 import com.ttak.backend.global.common.ErrorCode;
 import com.ttak.backend.global.exception.NotFoundException;
 
@@ -30,11 +31,8 @@ public class FriendController {
 	private final UserRepository userRepository;
 
 	//상태 변경 알림
-	// @PostMapping("/status")
-	@PostMapping("/status/{userId}")
-	// public ResponseEntity<?>  sendStatusChange(@RequestParam int state, @authUser User user) {
-	public ResponseEntity<?>  sendStatusChange(@RequestParam int state, @PathVariable Long userId) {
-		// StatusUpdateMessage message = StatusUpdateMessage.of(user.getUserId(), state);
+	@PostMapping("/status")
+	public ResponseEntity<?>  sendStatusChange(@RequestParam int state, @UserPk Long userId) {
 		StatusUpdateMessage message = StatusUpdateMessage.of(userId, state);
 		// 1. Redis에 상태 업데이트
 		friendService.updateUserStatusInRedis(message.getUserId(), message.getStatus());
@@ -43,29 +41,21 @@ public class FriendController {
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
-	// @PostMapping("/{followingId}")
-	@PostMapping("/{followingId}/{userId}")
-	// public ResponseEntity<?> createFriend(@PathVariable Long followingId, @authUser User user) {
-	public ResponseEntity<?> createFriend(@PathVariable Long followingId, @PathVariable Long userId) {
+	@PostMapping("/{followingId}")
+	public ResponseEntity<?> createFriend(@PathVariable Long followingId, @UserPk Long userId) {
 		CreateFriendRequest createFriendRequest = CreateFriendRequest.of(userId, followingId);
-			// CreateFriendRequest createFriendRequest = CreateFriendRequest.of(user.getUserId(), followingId);
 		friendService.addFriend(createFriendRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
-	// @DeleteMapping("/{followingId}")
-	@DeleteMapping("/{followingId}/{userId}")
-	// public ResponseEntity<?> removeFriend(@PathVariable Long followingId, @authUser User user) {
-	public ResponseEntity<?> removeFriend(@PathVariable Long followingId, @PathVariable Long userId) {
-		// friendService.deleteFriend(user.getUserId(), followingId);
+	@DeleteMapping("/{followingId}")
+	public ResponseEntity<?> removeFriend(@PathVariable Long followingId, @UserPk Long userId) {
 		friendService.deleteFriend(userId, followingId);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
-	// @GetMapping("/live")
-	@GetMapping("/live/{userId}")
-	// public ResponseEntity<?> getLiveFriends(@authUser User user) {
-	public ResponseEntity<?> getLiveFriends(@PathVariable Long userId) {
+	@GetMapping("/live")
+	public ResponseEntity<?> getLiveFriends(@UserPk Long userId) {
 		User user = userRepository.findByUserId(userId)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.U001));
 		return ResponseEntity.ok(friendService.getBannedFriends(user));
