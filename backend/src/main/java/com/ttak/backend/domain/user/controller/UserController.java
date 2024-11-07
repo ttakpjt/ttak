@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ttak.backend.domain.user.dto.reqeust.GoogleUserRequest;
 import com.ttak.backend.domain.user.dto.response.UserInfoResponse;
+import com.ttak.backend.domain.user.dto.response.UserRegistRes;
 import com.ttak.backend.domain.user.service.UserService;
 import com.ttak.backend.global.auth.annotation.UserPk;
 import com.ttak.backend.global.common.CommonResponse;
@@ -65,9 +66,9 @@ public class UserController {
 	@PostMapping("/save")
 	public ResponseEntity<CommonResponse<?>> saveUser(@RequestBody final GoogleUserRequest googleUserRequest) {
 		log.info("========== 유저정보 DB 이관 시작 ==========");
-		Long userIds = userService.saveId(googleUserRequest);
+		UserRegistRes result = UserRegistRes.toEntity(userService.saveId(googleUserRequest));
 		log.info("========== 유저정보 DB 이관 종료 ==========");
-		return ResponseEntity.ok(CommonResponse.success(userIds));
+		return ResponseEntity.ok(CommonResponse.success(result));
 	}
 
 }
