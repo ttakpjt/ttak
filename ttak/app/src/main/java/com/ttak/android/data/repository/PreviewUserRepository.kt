@@ -1,7 +1,6 @@
 package com.ttak.android.data.repository
 
 import com.ttak.android.domain.model.User
-import com.ttak.android.features.observer.domain.repository.UserRepository
 
 class PreviewUserRepository : UserRepository {
     override suspend fun searchUsers(query: String): List<User> {

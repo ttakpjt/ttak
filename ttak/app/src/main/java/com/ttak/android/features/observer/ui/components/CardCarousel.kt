@@ -71,6 +71,7 @@ fun CardCarousel(
                                 .fillMaxSize()
                                 .padding(24.dp)
                         ) {
+                            // 계기판                                                                                                                                                                                                                                                                                                                                                                                                                                                컴포넌트 만들기
                             Text(
                                 "두 번째 카드",
                                 color = Color.White

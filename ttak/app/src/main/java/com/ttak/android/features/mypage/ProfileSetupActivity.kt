@@ -14,7 +14,6 @@ import com.ttak.android.features.mypage.ui.screens.ProfileSetupScreen
 class ProfileSetupActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContent {
             TtakTheme {
                 // Compose 내에서 상태 정의
