@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.ttak.backend.domain.user.dto.reqeust.GoogleUserRequest;
 import com.ttak.backend.domain.user.entity.User;
-import com.ttak.backend.domain.user.entity.UserInfoResponse;
+import com.ttak.backend.domain.user.dto.response.UserInfoResponse;
 import com.ttak.backend.domain.user.entity.enumFolder.SocialDomain;
 import com.ttak.backend.domain.user.repository.UserRepository;
 import com.ttak.backend.global.exception.NotFoundException;

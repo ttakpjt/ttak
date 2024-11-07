@@ -1,6 +1,7 @@
-package com.ttak.backend.domain.observe.entity;
+package com.ttak.backend.domain.observe.dto;
 
 
+import com.ttak.backend.domain.observe.entity.Friend;
 import com.ttak.backend.domain.user.entity.User;
 
 import lombok.Getter;

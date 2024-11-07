@@ -1,4 +1,4 @@
-package com.ttak.backend.domain.user.entity;
+package com.ttak.backend.global.auth.Entity;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;

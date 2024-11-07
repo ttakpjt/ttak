@@ -1,4 +1,4 @@
-package com.ttak.backend.domain.observe.entity;
+package com.ttak.backend.domain.observe.dto;
 import lombok.Getter;
 
 

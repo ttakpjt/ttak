@@ -1,4 +1,4 @@
-package com.ttak.backend.domain.user.entity;
+package com.ttak.backend.domain.user.dto.response;
 import lombok.Getter;
 import lombok.ToString;
 
