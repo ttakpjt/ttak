@@ -32,8 +32,10 @@ public class ApplicationController {
 	public ResponseEntity<CommonResponse<?>> addApplication (@UserPk Long userId, @RequestBody final AppInfoReq appInfoReq){
 		log.info("========== 사용금지 항목 등록 시작 ==========");
 		applicationService.register(userId, appInfoReq);
-
 		log.info("========== 사용금지 항목 등록 시작 ==========");
 		return ResponseEntity.ok(CommonResponse.success());
 	}
+
+
+
 }

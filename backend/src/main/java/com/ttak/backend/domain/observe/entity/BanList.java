@@ -2,8 +2,12 @@ package com.ttak.backend.domain.observe.entity;
 
 import java.time.LocalTime;
 
+import com.ttak.backend.domain.observe.dto.reqeust.AppInfoReq;
+import com.ttak.backend.domain.observe.repository.BanListRepository;
+import com.ttak.backend.domain.user.dto.reqeust.GoogleUserRequest;
 import com.ttak.backend.domain.user.entity.User;
 import com.ttak.backend.global.common.TimeBaseEntity;
+import com.ttak.backend.global.util.RandomPkUtil;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,7 +30,6 @@ import lombok.experimental.SuperBuilder;
 public class BanList extends TimeBaseEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="ban_list_id")
 	private Long id;
 
@@ -38,4 +41,13 @@ public class BanList extends TimeBaseEntity {
 
 	private LocalTime endTime;
 
+
+	public static BanList toEntity (User user, AppInfoReq appInfoReq) {
+		return BanList.builder()
+			.id(new RandomPkUtil().makeRandomPk())
+			.user(user)
+			.startTime(appInfoReq.getStartTime())
+			.endTime(appInfoReq.getEndTime())
+			.build();
+	}
 }

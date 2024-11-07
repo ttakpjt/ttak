@@ -9,6 +9,7 @@ import com.ttak.backend.domain.user.dto.reqeust.GoogleUserRequest;
 import com.ttak.backend.domain.user.entity.enumFolder.Role;
 import com.ttak.backend.domain.user.entity.enumFolder.SocialDomain;
 import com.ttak.backend.global.common.TimeBaseEntity;
+import com.ttak.backend.global.util.RandomPkUtil;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -38,7 +39,6 @@ import lombok.experimental.SuperBuilder;
 public class User extends TimeBaseEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
 	private Long userId;
 
@@ -107,7 +107,7 @@ public class User extends TimeBaseEntity {
 
 	public static User toGoogleEntity(GoogleUserRequest googleUserRequest){
 		return User.builder()
-			.userId(System.currentTimeMillis())
+			.userId(new RandomPkUtil().makeRandomPk())
 			.email(googleUserRequest.getEmail())
 			.role(Role.USER)
 			.profilePic(googleUserRequest.getProfileImage())

@@ -18,6 +18,9 @@ public enum ErrorCode {
 	A006("Token 검증과정에서 오류가 발생했습니다."),
 	A007("AccessToken 내 유저정보가 실재하지 않는 정보입니다."),
 
+	// BanList, BanApp 관련 예외 코드
+	B000(""),
+
 
 	// Friend 관련 예외 코드
 	F000("이미 존재하는 친구입니다."),

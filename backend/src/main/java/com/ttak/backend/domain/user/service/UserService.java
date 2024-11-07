@@ -70,9 +70,11 @@ public class UserService{
 
 	public Long saveId(final GoogleUserRequest googleUserRequest){
 		User user = userRepository.findBySocialDomainAndSocialIdentify(SocialDomain.GOOGLE, googleUserRequest.getId())
-				.orElseGet(() -> User.toGoogleEntity(googleUserRequest));
-
-		userRepository.save(user);
+				.orElseGet(() -> {
+					User newUser = User.toGoogleEntity(googleUserRequest);
+					userRepository.save(newUser);
+					return newUser;
+				});
 
 		return user.getUserId();
 	}
