@@ -5,9 +5,9 @@ import java.util.List;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ttak.backend.domain.observe.dto.FriendInfoResponse;
+import com.ttak.backend.domain.observe.dto.QFriendInfoResponse;
 import com.ttak.backend.domain.observe.entity.QBanList;
 import com.ttak.backend.domain.observe.entity.QFriend;
-import com.ttak.backend.domain.observe.entity.QFriendInfoResponse;
 import com.ttak.backend.domain.user.entity.QUser;
 import com.ttak.backend.domain.user.entity.User;
 
