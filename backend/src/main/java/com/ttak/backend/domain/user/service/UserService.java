@@ -11,8 +11,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.ttak.backend.domain.user.dto.reqeust.GoogleUserRequest;
-import com.ttak.backend.domain.user.entity.User;
 import com.ttak.backend.domain.user.dto.response.UserInfoResponse;
+import com.ttak.backend.domain.user.entity.User;
 import com.ttak.backend.domain.user.entity.enumFolder.SocialDomain;
 import com.ttak.backend.domain.user.repository.UserRepository;
 import com.ttak.backend.global.common.ErrorCode;
@@ -94,8 +94,12 @@ public class UserService{
 
 	public void registerNickname(Long userId, String nickname) {
 		User user = findUserById(userId);
-		user.setNickname(nickname);
-		userRepository.save(user);
+		if(userRepository.existsByNickname(nickname)) {
+			throw new UnAuthorizedException(U003);
+		} else {
+			user.setNickname(nickname);
+			userRepository.save(user);
+		}
 	}
 
 	private User findUserById(Long userId){
