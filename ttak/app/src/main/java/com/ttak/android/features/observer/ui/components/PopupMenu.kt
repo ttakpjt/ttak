@@ -19,14 +19,12 @@ import kotlin.math.roundToInt
 @Composable
 fun PopupMenu(
     onDismiss: () -> Unit,
-    offset: Offset,
     onWaterBubbleClick: () -> Unit,
     onSpeechBubbleClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
-            .offset { IntOffset(offset.x.roundToInt(), offset.y.roundToInt()) }
             .width(100.dp)
             .shadow(
                 elevation = 8.dp,
