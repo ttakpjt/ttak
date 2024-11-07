@@ -10,10 +10,10 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ttak.backend.domain.observe.entity.CreateFriendRequest;
+import com.ttak.backend.domain.observe.dto.CreateFriendRequest;
 import com.ttak.backend.domain.observe.entity.Friend;
-import com.ttak.backend.domain.observe.entity.FriendInfoResponse;
-import com.ttak.backend.domain.observe.entity.StatusUpdateMessage;
+import com.ttak.backend.domain.observe.dto.FriendInfoResponse;
+import com.ttak.backend.domain.observe.dto.StatusUpdateMessage;
 import com.ttak.backend.domain.observe.repository.FriendRepository;
 import com.ttak.backend.domain.user.entity.User;
 import com.ttak.backend.domain.user.repository.UserRepository;

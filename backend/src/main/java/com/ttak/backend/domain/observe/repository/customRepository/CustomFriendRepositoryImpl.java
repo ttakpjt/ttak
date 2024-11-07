@@ -4,7 +4,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.ttak.backend.domain.observe.entity.FriendInfoResponse;
+import com.ttak.backend.domain.observe.dto.FriendInfoResponse;
 import com.ttak.backend.domain.observe.entity.QBanList;
 import com.ttak.backend.domain.observe.entity.QFriend;
 import com.ttak.backend.domain.observe.entity.QFriendInfoResponse;

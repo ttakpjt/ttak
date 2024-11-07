@@ -10,10 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
-import com.ttak.backend.domain.observe.entity.CreateFriendRequest;
-import com.ttak.backend.domain.observe.entity.StatusUpdateMessage;
+import com.ttak.backend.domain.observe.dto.CreateFriendRequest;
+import com.ttak.backend.domain.observe.dto.StatusUpdateMessage;
 import com.ttak.backend.domain.observe.service.FriendService;
 import com.ttak.backend.domain.user.entity.User;
 import com.ttak.backend.domain.user.repository.UserRepository;
