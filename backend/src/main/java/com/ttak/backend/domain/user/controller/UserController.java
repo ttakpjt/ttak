@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ttak.backend.domain.user.dto.reqeust.GoogleUserRequest;
+import com.ttak.backend.domain.user.dto.reqeust.NicknameReq;
 import com.ttak.backend.domain.user.dto.response.UserInfoResponse;
 import com.ttak.backend.domain.user.dto.response.UserRegistRes;
 import com.ttak.backend.domain.user.service.UserService;
@@ -36,25 +37,12 @@ public class UserController {
 
 	@Operation(summary = "[완료] 테스트 api", description = "테스트를 위한 임시 api 생성")
 	@GetMapping("/test")
-	public ResponseEntity<CommonResponse<?>> test(@UserPk Long userId) {
+	public ResponseEntity<CommonResponse<?>> test(@UserPk final Long userId) {
 		log.info("========== 테스트 시작 ==========");
 		Long userIds = userService.getUserId(userId);
 		log.info("========== 테스트 종료 ==========");
 		return ResponseEntity.ok(CommonResponse.success(userIds));
 	}
-
-	// @Operation(summary = "[완료] Annotation 테스트 api", description = "Custom Annotation 확인")
-	// @GetMapping("/test/annotation")
-	// public ResponseEntity<CommonResponse<?>> annotationTest(/*@authUser User user*/) {
-	// 	log.info("========== 테스트 2 시작 ==========");
-	// 	if (user != null) {
-	// 		log.info("로그인한 userID: " + user.getUserId());
-	// 	} else {
-	// 		log.warn("User 객체가 null입니다.");
-	// 	}
-	// 	log.info("========== 테스트 2 종료 ==========");
-	// 	return ResponseEntity.ok(CommonResponse.success());
-	// }
 
 	@GetMapping("/search")
 	public ResponseEntity<?> userSearch(@RequestParam("nickname") String nickname) {
@@ -70,5 +58,24 @@ public class UserController {
 		log.info("========== 유저정보 DB 이관 종료 ==========");
 		return ResponseEntity.ok(CommonResponse.success(result));
 	}
+
+	@Operation(summary = "닉네임 중복확인", description = "들어온 닉네임과 동일한 닉네임이 존재하는지 확인, 중복 닉네임이 없다면 상태 200 반환")
+	@PostMapping("/check/nickname")
+	public ResponseEntity<CommonResponse<?>> checkNickname(@UserPk final Long userId, @RequestBody final NicknameReq nicknameReq) {
+		log.info("========== 닉네임 중복확인 시작 ==========");
+		userService.checkNickname(userId, nicknameReq.getNickname());
+		log.info("========== 닉네임 중복확인 종료 ==========");
+		return ResponseEntity.ok(CommonResponse.success());
+	}
+
+	@Operation(summary = "닉네임 등록/수정", description = "파라미터로 들어온 닉네임으로 수정 및 등록 진행")
+	@PostMapping("/register/nickname")
+	public ResponseEntity<CommonResponse<?>> registerNickname(@UserPk final Long userId, @RequestBody final NicknameReq nicknameReq) {
+		log.info("========== 닉네임 등록 시작 ==========");
+		userService.registerNickname(userId, nicknameReq.getNickname());
+		log.info("========== 닉네임 등록 종료 ==========");
+		return ResponseEntity.ok(CommonResponse.success());
+	}
+
 
 }
