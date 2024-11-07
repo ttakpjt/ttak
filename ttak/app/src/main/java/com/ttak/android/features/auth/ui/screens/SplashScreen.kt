@@ -68,22 +68,22 @@ fun SplashScreen(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
-                painter = painterResource(id = R.drawable.default_proflie),  // 앱 로고 이미지
-                contentDescription = "앱 로고",
-                modifier = Modifier.size(100.dp)
+                painter = painterResource(id = R.drawable.ttak_logo_icon),
+                contentDescription = "Ttak 로고",
+                modifier = Modifier.size(300.dp)
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "King of Anyang",
-                style = MaterialTheme.typography.titleLarge,
-                color = White
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "로딩 중..",
-                style = MaterialTheme.typography.labelSmall,
-                color = Grey
-            )
+//            Spacer(modifier = Modifier.height(16.dp))
+//            Text(
+//                text = "King of Anyang",
+//                style = MaterialTheme.typography.titleLarge,
+//                color = White
+//            )
+//            Spacer(modifier = Modifier.height(8.dp))
+//            Text(
+//                text = "로딩 중..",
+//                style = MaterialTheme.typography.labelSmall,
+//                color = Grey
+//            )
         }
     }
 }

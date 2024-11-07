@@ -27,9 +27,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_ttak"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_ttak_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Ttak"
         tools:targetApi="31">
@@ -52,7 +52,7 @@
         </service>
 
         <activity
-            android:name="com.ttak.android.MainActivity"
+            android:name="com.ttak.android.features.auth.SplashActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Ttak">
@@ -63,7 +63,7 @@
         </activity>
 
         <!-- MainActivity는 네비게이션이 필요한 주요 화면만 관리 -->
-<!--        <activity android:name=".MainActivity" />-->
+        <activity android:name=".MainActivity" />
 
         <!-- LoginActivity는 로그인 관련 화면 관리 -->
         <activity android:name=".features.auth.LoginActivity" />

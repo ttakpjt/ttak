@@ -1,13 +1,17 @@
 package com.ttak.android.features.auth.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -17,35 +21,56 @@ import com.ttak.android.R
 
 @Composable
 fun LoginScreen(onLoginClick: () -> Unit) {
-    // 스플래시 화면 UI
     Box(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(48.dp) // 로고와 버튼 사이 간격
+        ) {
+            // 로고 섹션
             Image(
-                painter = painterResource(id = R.drawable.default_proflie),  // 앱 로고 이미지
-                contentDescription = "앱 로고",
-                modifier = Modifier.size(100.dp)
+                painter = painterResource(id = R.drawable.ttak_logo_icon),
+                contentDescription = "Ttak 로고",
+                modifier = Modifier.size(300.dp)
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "King of Anyang",
-                style = MaterialTheme.typography.titleLarge,
-                color = Color.White
-            )
-        }
-    }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 16.dp),
-        verticalArrangement = Arrangement.Bottom,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Button(onClick = onLoginClick) {
-            Text("Google 계정으로 로그인")
+
+            // 구글 로그인 버튼
+            Button(
+                onClick = onLoginClick,
+                modifier = Modifier
+                    .width(230.dp)
+                    .height(48.dp)
+                    .shadow(
+                        elevation = 4.dp,
+                        shape = RoundedCornerShape(24.dp)
+                    ),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White
+                ),
+                shape = RoundedCornerShape(24.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.google_logo),
+                        contentDescription = "Google 로고",
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        "Google로 시작하기",
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
+                }
+            }
         }
     }
 }
