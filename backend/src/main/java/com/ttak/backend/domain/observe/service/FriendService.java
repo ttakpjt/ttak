@@ -82,4 +82,7 @@ public class FriendService{
 		return bannedFriends;
 	}
 
+	public Long getFollowerNum(Long userId) {
+		return friendRepository.countFollowers(userId);
+	}
 }

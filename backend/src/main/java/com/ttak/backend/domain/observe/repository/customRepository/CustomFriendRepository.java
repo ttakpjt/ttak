@@ -8,5 +8,5 @@ import com.ttak.backend.domain.user.entity.User;
 
 public interface CustomFriendRepository {
 	List<FriendInfoResponse> findBannedFriends(User user, LocalTime currentTime);
-
+	long countFollowers(Long userId);
 }
