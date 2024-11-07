@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -14,11 +15,15 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.ttak.android.R
 import com.ttak.android.features.auth.ui.screens.LoginScreen
 import com.ttak.android.common.ui.theme.TtakTheme
+import com.ttak.android.domain.model.UserModel
 import com.ttak.android.features.mypage.ProfileSetupActivity
+import com.ttak.android.features.auth.viewmodel.MemberViewModel
+import com.ttak.android.features.auth.viewmodel.MemberViewModelFactory
 
 class LoginActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
+    private val memberViewModel: MemberViewModel by viewModels { MemberViewModelFactory(application) } // Repository 주입
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +71,19 @@ class LoginActivity : ComponentActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
+                    // 계정 정보를 mysql에 보냄
+                    val user = auth.currentUser
+                    if (user != null) {
+                        // 구글 로그인 정보로 UserModel 생성
+                        val userModel = UserModel(
+                            id = user.uid,
+                            email = user.email ?: "",
+                            profileImage = user.photoUrl?.toString()
+                        )
+                        Log.d("이규석", "UserModel: $userModel")
+                        // ViewModel을 통해 서버로 전송
+                        memberViewModel.signIn(userModel)
+                    }
                     // 로그인 성공 시 계정이 존재하지 않는다면 프로필을 설정하러 이동(추가)
                     startActivity(Intent(this, ProfileSetupActivity::class.java))
                     finish()

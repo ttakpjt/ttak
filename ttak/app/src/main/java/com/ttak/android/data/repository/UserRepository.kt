@@ -1,4 +1,4 @@
-package com.ttak.android.features.observer.domain.repository
+package com.ttak.android.data.repository
 
 import com.ttak.android.domain.model.User
 

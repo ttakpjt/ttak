@@ -1,5 +1,7 @@
 package com.ttak.android.features.auth
 
+import android.app.AppOpsManager
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -27,15 +29,22 @@ class SplashActivity : ComponentActivity() {
                 SplashScreen(
                     context = this,
                     isLoggedIn = checkLoginStatus(),
-                    hasPermissions = foregroundAppMonitor.hasUsageStatsPermission(),
+//                    hasPermissions = foregroundAppMonitor.hasUsageStatsPermission(),
+                    hasPermissions = checkUsageStatsPermission(this),
                     hasOverlayPermission = checkOverlayPermission(),
                     onPermissionsConfirmed = {
-                        // 권한 설정이 필요할 경우 실행할 동작
-                        if (!foregroundAppMonitor.hasUsageStatsPermission()) {
+                        if (!checkUsageStatsPermission(this)) {
                             isPermissionRequested = true
-                            foregroundAppMonitor.requestUsageStatsPermission(this@SplashActivity)
+                            requestUsageStatsPermission(this)
                         }
                     },
+//                    onPermissionsConfirmed = {
+//                        // 권한 설정이 필요할 경우 실행할 동작
+//                        if (!foregroundAppMonitor.hasUsageStatsPermission()) {
+//                            isPermissionRequested = true
+//                            foregroundAppMonitor.requestUsageStatsPermission(this@SplashActivity)
+//                        }
+//                    },
                     onOverlayPermissionConfirmed = {
                         // 오버레이 권한 요청
                         if (!checkOverlayPermission()) {
@@ -91,7 +100,18 @@ class SplashActivity : ComponentActivity() {
         }
     }
 
+    // 사용 시간 권한 확인
+    private fun checkUsageStatsPermission(context: Context): Boolean {
+        val appOpsManager = context.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+        val mode = appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, android.os.Process.myUid(), context.packageName)
+        return mode == AppOpsManager.MODE_ALLOWED
+    }
 
+    // 사용 시간 권한 요청
+    private fun requestUsageStatsPermission(activity: SplashActivity) {
+        val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+        activity.startActivityForResult(intent, REQUEST_USAGE_STATS_PERMISSION)
+    }
 
     // 권한을 얻었으면 화면 이동
     private fun navigateToNextScreen() {
@@ -103,5 +123,6 @@ class SplashActivity : ComponentActivity() {
 
     companion object {
         private const val REQUEST_OVERLAY_PERMISSION = 1001
+        private const val REQUEST_USAGE_STATS_PERMISSION = 1002
     }
 }
