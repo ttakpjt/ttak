@@ -5,6 +5,8 @@ import static com.ttak.backend.global.common.ErrorCode.*;
 import java.util.Map;
 
 import org.apache.coyote.BadRequestException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.google.firebase.FirebaseException;
@@ -25,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FcmService{
 
+	private static final Logger log = LoggerFactory.getLogger(FcmService.class);
 	private final FirebaseMessaging firebaseMessaging;
 	private final FcmRepository fcmRepository;
 	private final UserRepository userRepository;
@@ -36,18 +39,21 @@ public class FcmService{
 	 */
 	public void saveFcmToken(final Long userId, final String fcmToken) {
 		// 유저 객체 불러오기 (없다면 오류 발생 404)
+		log.info("===== 유저 객체 불러오기 (없다면 오류 발생 404) =====");
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new NotFoundException(U001));
 
 		// 해당 유저가 가지고 있는 Fcm객체 불러오기 (없다면 객체 생성)
+		log.info("===== 해당 유저가 가지고 있는 Fcm객체 불러오기 (없다면 객체 생성) =====");
 		Fcm fcm = fcmRepository.findByUser(user)
 			.orElseGet(() -> Fcm.of(user, fcmToken));
 
 		// fcmToken이 비어있거나 바뀌었다면 fcm객체의 token을 변경한다.
+		log.info("===== fcmToken이 비어있거나 바뀌었다면 fcm객체의 token을 변경한다. =====");
 		if(fcm.getFcmToken() == null || !fcm.getFcmToken().equals(fcmToken)){
 			fcm.changeFcmToken(fcmToken);
 		}
-
+		log.info("===== 저장!!! =====");
 		fcmRepository.save(fcm);
 	}
 
