@@ -32,7 +32,7 @@ fun BottomNavigationBar(navController: NavController) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp),
+            .height(80.dp),
         tonalElevation = 8.dp
     ) {
         Row(
@@ -65,7 +65,7 @@ fun BottomNavItem(
 ) {
     Column(
         modifier = Modifier
-            .size(width = 82.dp, height = 48.dp)
+            .size(width = 82.dp, height = 60.dp)
             .padding(8.dp)
             .background(if (isSelected) Color(0xFF515155) else Color.Transparent, shape = CircleShape)
             .clickable {
@@ -81,7 +81,7 @@ fun BottomNavItem(
             painter = painterResource(id = item.icon),
             contentDescription = item.label,
             tint = Grey,
-            modifier = Modifier.size(32.dp)
+            modifier = Modifier.size(60.dp)
         )
     }
 }

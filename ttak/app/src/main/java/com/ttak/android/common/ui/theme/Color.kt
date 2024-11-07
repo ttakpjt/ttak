@@ -2,7 +2,7 @@ package com.ttak.android.common.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Black = Color(0xFF0E181E)
+val Black = Color(0xFF000000)
 val White = Color(0xFFFFFFFF)
 val Grey = Color(0xFFB2B2B4)
 val Red = Color(0xFFFE6767)

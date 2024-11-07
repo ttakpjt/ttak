@@ -51,10 +51,10 @@ fun ProfileSetupScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         // 프로필 사진 설정 화면
-        ProfileImagePicker(
-            profileImageUri = profileImageUri,
-            selectImageLauncher = selectImageLauncher
-        )
+//        ProfileImagePicker(
+//            profileImageUri = profileImageUri,
+//            selectImageLauncher = selectImageLauncher
+//        )
 
         Spacer(modifier = Modifier.height(24.dp))
 

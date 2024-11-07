@@ -107,6 +107,7 @@ class MainActivity : ComponentActivity() {
                             Box(modifier = Modifier.weight(1f)) {
                                 AppNavHost(navController)
                             }
+                            // 하단 네비게이션 바
                             BottomNavigationBar(navController = navController)
                         }
                     }

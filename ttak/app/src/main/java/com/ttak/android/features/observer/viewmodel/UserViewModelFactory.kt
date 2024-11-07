@@ -2,7 +2,7 @@ package com.ttak.android.features.observer.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.ttak.android.features.observer.domain.repository.UserRepository
+import com.ttak.android.data.repository.UserRepository
 
 class UserViewModelFactory(
     private val repository: UserRepository
