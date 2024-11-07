@@ -49,4 +49,16 @@ public class CustomFriendRepositoryImpl implements CustomFriendRepository{
 			.fetch();
 	}
 
+	@Override
+	public long countFollowers(Long userId) {
+		QFriend friend = QFriend.friend;
+		Long num = jpaQueryFactory
+			.select(friend.count())
+			.from(friend)
+			.where(friend.followingId.userId.eq(userId))
+			.fetchOne();
+
+		return num != null ? num : 0L; // num이 null일 경우 0을 반환
+	}
+
 }

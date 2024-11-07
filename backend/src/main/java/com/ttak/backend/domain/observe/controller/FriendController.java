@@ -60,4 +60,9 @@ public class FriendController {
 			.orElseThrow(() -> new NotFoundException(ErrorCode.U001));
 		return ResponseEntity.ok(friendService.getBannedFriends(user));
 	}
+
+	@GetMapping("/follower")
+	public ResponseEntity<?> getFollowerFriendsNum(@UserPk Long userId) {
+		return ResponseEntity.ok(friendService.getFollowerNum(userId));
+	}
 }
