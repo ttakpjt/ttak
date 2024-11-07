@@ -118,6 +118,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.ttak.android.domain.model.FriendStory
@@ -132,7 +133,7 @@ fun FriendStoryItem(
     var showPopup by remember { mutableStateOf(false) }
 
     Box(
-        modifier = modifier.width(80.dp),
+        modifier = modifier.width(80.dp).height(100.dp),
         contentAlignment = Alignment.TopCenter
     ) {
         // 메인 컨텐츠
@@ -196,6 +197,7 @@ fun FriendStoryItem(
             Box(
                 modifier = Modifier
                     .offset(y = (-30).dp)
+                    .zIndex(1f)
                     .clickable { /* 팝업 영역 클릭 시 이벤트 전파 방지 */ }
             ) {
                 PopupMenu(
