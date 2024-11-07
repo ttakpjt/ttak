@@ -1,6 +1,7 @@
 package com.ttak.backend.domain.observe.entity;
 
 import com.ttak.backend.global.common.TimeBaseEntity;
+import com.ttak.backend.global.util.RandomPkUtil;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,4 +33,11 @@ public class BanApp extends TimeBaseEntity {
 	private BanList banList;
 
 	private String appName;
+
+	public static BanApp toEntity(BanList banList, String appName) {
+		return BanApp.builder()
+			.banList(banList)
+			.appName(appName)
+			.build();
+	}
 }
