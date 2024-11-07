@@ -71,7 +71,7 @@ public class UserService{
 
 
 	public Long saveId(final GoogleUserRequest googleUserRequest){
-		User user = userRepository.findBySocialDomainAndSocialIdentify(SocialDomain.GOOGLE, googleUserRequest.getId())
+		User user = userRepository.findBySocialDomainAndEmail(SocialDomain.GOOGLE, googleUserRequest.getEmail())
 				.orElseGet(() -> {
 					User newUser = User.toGoogleEntity(googleUserRequest);
 					userRepository.save(newUser);
