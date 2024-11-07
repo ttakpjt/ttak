@@ -1,5 +1,6 @@
 package com.ttak.android.features.screentime.ui.screens
 
+import SmallGoalCard
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,10 +29,9 @@ fun ScreenTimeScreen() {
                 .padding(16.dp)
         ) {
             // 1. 앱 사용 약속 시간 표시
-            PromiseAppTimeComponent(
-                appIconResId = R.drawable.app_icon,
-                startTime = "18:00",
-                endTime = "20:00"
+            SmallGoalCard(
+                modifier = Modifier
+                    .fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
