@@ -34,8 +34,18 @@ public class CustomFriendRepositoryImpl implements CustomFriendRepository{
 			.join(friend.followingId, followingUser)
 			.join(banList).on(banList.user.eq(followingUser))
 			.where(friend.userId.eq(user)
-				.and(banList.startTime.loe(currentTime))
-				.and(banList.endTime.gt(currentTime)))
+				.and(
+					// 자정을 넘지 않는 경우
+					(banList.startTime.loe(currentTime)
+						.and(banList.endTime.gt(currentTime)))
+						.or(
+							// 자정을 넘는 경우
+							banList.startTime.goe(banList.endTime)
+								.and(banList.startTime.loe(currentTime)
+									.or(banList.endTime.gt(currentTime)))
+						)
+				)
+			)
 			.fetch();
 	}
 
