@@ -31,7 +31,7 @@ public class UserService{
 	private static final String USER_STATUS_KEY_PREFIX = "user:status:";
 
 	public Long getUserId(Long id) {
-		if(id >= 10) throw new NotFoundException(T000);
+		// if(id >= 10) throw new NotFoundException(T000);
 		return id;
 	}
 
