@@ -45,7 +45,7 @@ public class User extends TimeBaseEntity {
 	@Column(name = "email")
 	private String email;
 
-	@Column(name = "nickname", nullable = false)
+	@Column(name = "nickname")
 	private String nickname;
 
 	@Column(name="profile_pic")
@@ -109,10 +109,9 @@ public class User extends TimeBaseEntity {
 		return User.builder()
 			.userId(System.currentTimeMillis())
 			.email(googleUserRequest.getEmail())
-			.nickname(googleUserRequest.getName())
 			.role(Role.USER)
 			.profilePic(googleUserRequest.getProfileImage())
-			.socialDomain(SocialDomain.KAKAO)
+			.socialDomain(SocialDomain.GOOGLE)
 			.socialIdentify(googleUserRequest.getId())
 			.build();
 	}
