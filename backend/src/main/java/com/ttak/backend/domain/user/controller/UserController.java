@@ -16,6 +16,7 @@ import com.ttak.backend.domain.user.dto.reqeust.GoogleUserRequest;
 import com.ttak.backend.domain.user.entity.User;
 import com.ttak.backend.domain.user.entity.UserInfoResponse;
 import com.ttak.backend.domain.user.service.UserService;
+import com.ttak.backend.global.auth.annotation.UserPk;
 import com.ttak.backend.global.common.CommonResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,8 +36,8 @@ public class UserController {
 
 
 	@Operation(summary = "[완료] 테스트 api", description = "테스트를 위한 임시 api 생성")
-	@GetMapping("/test/{userId}")
-	public ResponseEntity<CommonResponse<?>> test(@PathVariable final Long userId) {
+	@GetMapping("/test")
+	public ResponseEntity<CommonResponse<?>> test(@UserPk Long userId) {
 		log.info("========== 테스트 시작 ==========");
 		Long userIds = userService.getUserId(userId);
 		log.info("========== 테스트 종료 ==========");
