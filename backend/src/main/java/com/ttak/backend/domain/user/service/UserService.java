@@ -15,7 +15,9 @@ import com.ttak.backend.domain.user.entity.User;
 import com.ttak.backend.domain.user.dto.response.UserInfoResponse;
 import com.ttak.backend.domain.user.entity.enumFolder.SocialDomain;
 import com.ttak.backend.domain.user.repository.UserRepository;
+import com.ttak.backend.global.common.ErrorCode;
 import com.ttak.backend.global.exception.NotFoundException;
+import com.ttak.backend.global.exception.UnAuthorizedException;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -80,4 +82,24 @@ public class UserService{
 	}
 
 
+	public void checkNickname(Long userId, String nickname) {
+		User user = findUserById(userId);
+
+		// 기존 닉네임과 동일한 경우 오류발생
+		if(user.getNickname().equals(nickname)) throw new UnAuthorizedException(U004);
+
+		// 이미 존재하는 닉네임이라면 오류발생
+		if(userRepository.existsByNickname(nickname)) throw new UnAuthorizedException(U003);
+	}
+
+	public void registerNickname(Long userId, String nickname) {
+		User user = findUserById(userId);
+		user.setNickname(nickname);
+		userRepository.save(user);
+	}
+
+	private User findUserById(Long userId){
+		return userRepository.findById(userId)
+			.orElseThrow(() -> new NotFoundException(ErrorCode.U001));
+	}
 }

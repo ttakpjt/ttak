@@ -37,7 +37,7 @@ public class UserController {
 
 	@Operation(summary = "[완료] 테스트 api", description = "테스트를 위한 임시 api 생성")
 	@GetMapping("/test")
-	public ResponseEntity<CommonResponse<?>> test(@UserPk Long userId) {
+	public ResponseEntity<CommonResponse<?>> test(@UserPk final Long userId) {
 		log.info("========== 테스트 시작 ==========");
 		Long userIds = userService.getUserId(userId);
 		log.info("========== 테스트 종료 ==========");
@@ -59,12 +59,23 @@ public class UserController {
 		return ResponseEntity.ok(CommonResponse.success(result));
 	}
 
-	@Operation(summary = "닉네임 중복확인", description = "들어온 닉네임과 동일한 닉네임이 존재하는지 확인, 중복 닉네임이 없다면 200반환")
+	@Operation(summary = "닉네임 중복확인", description = "들어온 닉네임과 동일한 닉네임이 존재하는지 확인, 중복 닉네임이 없다면 상태 200 반환")
 	@PostMapping("/check/nickname")
-	public ResponseEntity<CommonResponse<?>> checkNickname(@UserPk Long userId, @RequestBody final NicknameReq nicknameReq) {
+	public ResponseEntity<CommonResponse<?>> checkNickname(@UserPk final Long userId, @RequestBody final NicknameReq nicknameReq) {
 		log.info("========== 닉네임 중복확인 시작 ==========");
-		// userService.checkNickname(userId, nicknameReq.getNickname());
+		userService.checkNickname(userId, nicknameReq.getNickname());
 		log.info("========== 닉네임 중복확인 종료 ==========");
 		return ResponseEntity.ok(CommonResponse.success());
 	}
+
+	@Operation(summary = "닉네임 등록/수정", description = "파라미터로 들어온 닉네임으로 수정 및 등록 진행")
+	@PostMapping("/register/nickname")
+	public ResponseEntity<CommonResponse<?>> registerNickname(@UserPk final Long userId, @RequestBody final NicknameReq nicknameReq) {
+		log.info("========== 닉네임 등록 시작 ==========");
+		userService.registerNickname(userId, nicknameReq.getNickname());
+		log.info("========== 닉네임 등록 종료 ==========");
+		return ResponseEntity.ok(CommonResponse.success());
+	}
+
+
 }

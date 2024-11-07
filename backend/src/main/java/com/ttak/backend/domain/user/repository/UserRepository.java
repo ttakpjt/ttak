@@ -15,6 +15,8 @@ public interface UserRepository extends JpaRepository<User, Long>, CustomUserRep
 
 	Optional<User> findByUserId(Long userId);
 
+	boolean existsByNickname(String nickName);
+
 	// 닉네임을 포함하는 사용자 검색
 	List<User> findByNicknameContainingIgnoreCase(String nickname);
 
