@@ -44,7 +44,7 @@ fun HistoryMessageItem(
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 4.dp)
+                .padding(bottom = 8.dp)
         ) {
             Row(
                 modifier = Modifier.padding(16.dp),
@@ -76,6 +76,8 @@ fun HistoryMessageItem(
                         )
                     }
                 }
+
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
