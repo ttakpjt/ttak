@@ -10,6 +10,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.ttak.backend.domain.fcm.entity.Fcm;
+import com.ttak.backend.domain.fcm.repository.FcmRepository;
 import com.ttak.backend.domain.user.dto.reqeust.GoogleUserRequest;
 import com.ttak.backend.domain.user.dto.response.UserInfoResponse;
 import com.ttak.backend.domain.user.entity.User;
@@ -29,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService{
 
 	private final UserRepository userRepository;
+	private final FcmRepository fcmRepository;
 	private final RedisTemplate<String, Object> redisTemplate;
 	private static final String USER_STATUS_KEY_PREFIX = "user:status:";
 
@@ -69,8 +72,13 @@ public class UserService{
 		redisTemplate.opsForValue().set("user:status:" + userId, String.valueOf(status), Duration.ofSeconds(ttlInSeconds));
 	}
 
-
+	/**
+	 * 로그인당시 해당 회원정보를 DB에 이관한다. 이 때, FcmToken도 저장하게 된다.
+	 * @param googleUserRequest
+	 * @return
+	 */
 	public Long saveId(final GoogleUserRequest googleUserRequest){
+		// User 정보를 불러온다. 만약 정보가 없다면 회원가입을 진행한다.
 		User user = userRepository.findBySocialDomainAndEmail(SocialDomain.GOOGLE, googleUserRequest.getEmail())
 				.orElseGet(() -> {
 					User newUser = User.toGoogleEntity(googleUserRequest);
@@ -78,6 +86,15 @@ public class UserService{
 					return newUser;
 				});
 
+		// 파라미터로 들어온 fcm정보를 DB에서 찾아온다. 만약 정보가 없다면 오류반환 (F001)
+		Fcm fcm = fcmRepository.findByFcmToken(googleUserRequest.getFcmToken())
+			.orElseThrow(() -> new NotFoundException(F001));
+
+		// 불러온 fcm 정보에 해당 유저를 저장한다.
+		fcm.setUser(user);
+		fcmRepository.save(fcm);
+
+		// 값 반환
 		return user.getUserId();
 	}
 

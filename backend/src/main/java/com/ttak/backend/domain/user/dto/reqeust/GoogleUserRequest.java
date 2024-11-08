@@ -15,5 +15,6 @@ public class GoogleUserRequest {
 	private String id;
 	private String email;
 	private String profileImage;
+	private String fcmToken;
 
 }
