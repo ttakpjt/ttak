@@ -1,17 +1,15 @@
 package com.ttak.backend.domain.user.dto.response;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.ToString;
+import lombok.NoArgsConstructor;
 
 @Getter
-@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserInfoResponse {
-	private String UserName;
-	private Long UserId;
-	private String UserImg;
-
-	public UserInfoResponse(String UserName, Long UserId, String UserImg) {
-		this.UserName = UserName;
-		this.UserId = UserId;
-		this.UserImg = UserImg;
-	}
+	private String userName;
+	private Long userId;
+	private String userImg;
+	private String relation;
 }
