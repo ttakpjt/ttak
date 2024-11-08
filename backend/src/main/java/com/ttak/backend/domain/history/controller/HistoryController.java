@@ -2,12 +2,17 @@ package com.ttak.backend.domain.history.controller;
 
 import java.util.List;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ttak.backend.domain.history.dto.request.HistoryCount;
 import com.ttak.backend.domain.history.dto.response.HistoryListRes;
 import com.ttak.backend.domain.history.service.HistoryService;
 import com.ttak.backend.global.auth.annotation.UserPk;
@@ -45,4 +50,19 @@ public class HistoryController {
 		log.info("========== 히스토리 반환 종료 ==========");
 		return ResponseEntity.ok(CommonResponse.success(list));
 	}
+
+	@GetMapping("/pick-rank")
+	public ResponseEntity<CommonResponse<?>> readPickForRank(@UserPk final Long userId) {
+		HistoryCount hc = historyService.getCumulativeCounts(userId);
+		return ResponseEntity.ok(CommonResponse.success(hc));
+	}
+
+	@GetMapping("/pick")
+	public ResponseEntity<CommonResponse<?>> readUserPick(@UserPk final Long userId) {
+		Long count = historyService.getUserPick(userId);
+		Map<String , Long> message = new HashMap<>();
+		message.put("myCount", count);
+		return ResponseEntity.ok(CommonResponse.success(message));
+	}
+
 }
