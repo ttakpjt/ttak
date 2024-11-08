@@ -3,6 +3,7 @@ package com.ttak.android.network.util
 
 import android.content.Context
 import android.util.Log
+import com.ttak.android.network.api.GoalApi
 import com.ttak.android.network.api.MemberApi
 import com.ttak.android.network.api.MessageApi
 import com.ttak.android.network.api.MyPageApi
@@ -86,5 +87,10 @@ object ApiConfig {
     // myPageApi 생성 메소드
     fun createMyPageApi(context: Context): MyPageApi {
         return createRetrofit(context).create(MyPageApi::class.java)
+    }
+
+    // GoalApi 인스턴스 생성
+    fun createGoalApi(context: Context): GoalApi {
+        return createRetrofit(context).create(GoalApi::class.java)
     }
 }
