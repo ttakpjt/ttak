@@ -54,7 +54,7 @@ fun SystemNotificationCard(
                     Image(
                         painter = painterResource(id = R.drawable.bullet_mark),
                         contentDescription = "총알 자국",
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(36.dp)
                     )
                     Text(
                         text = notificationText,
@@ -82,7 +82,7 @@ fun SystemNotificationCard(
                     Image(
                         painter = painterResource(id = R.drawable.observer),
                         contentDescription = "감시자",
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(36.dp)
                     )
                     Text(
                         text = "${watchingCount}명의 친구가\n지켜보고 있어요", // 친구가와 지켜보고 있어요를 줄 바꿈으로 나눔
