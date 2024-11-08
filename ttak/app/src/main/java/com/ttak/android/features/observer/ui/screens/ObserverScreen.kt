@@ -13,12 +13,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ttak.android.domain.model.FriendStory
 import com.ttak.android.domain.model.GoalState
 import com.ttak.android.data.repository.PreviewFriendStoryRepository
-import com.ttak.android.data.repository.UserRepositoryImpl
 import com.ttak.android.features.observer.ui.components.*
 import com.ttak.android.features.observer.viewmodel.FriendStoryViewModel
 import com.ttak.android.features.observer.viewmodel.FriendStoryViewModelFactory
 import com.ttak.android.features.observer.viewmodel.UserViewModel
 import com.ttak.android.features.observer.viewmodel.UserViewModelFactory
+import com.ttak.android.network.implementation.UserApiImpl
 import com.ttak.android.network.util.ApiConfig
 
 @Composable
@@ -27,7 +27,7 @@ fun ObserverScreen() {
 
     // API 및 Repository 초기화
     val userApi = ApiConfig.createUserApi(context)
-    val userRepository = UserRepositoryImpl(userApi)
+    val userRepository = UserApiImpl(userApi)  // UserRepositoryImpl -> UserApiImpl
     val friendStoryRepository = PreviewFriendStoryRepository()
 
     // ViewModel 초기화
@@ -85,9 +85,10 @@ private fun ObserverScreenContent(
                     onSearchUsers = { query ->
                         userViewModel.searchUsers(query)
                     },
-                    searchResults = searchResults,  // Flow로 받은 검색 결과 전달
+                    searchResults = searchResults,
                     onUserSelect = { user ->
-                        // userViewModel.addFriend(user)
+                        Log.d("ObserverScreen", "Adding friend: ${user.userName} (ID: ${user.userId})")
+                        userViewModel.addFriend(user)  // 주석 해제
                     },
                     modifier = Modifier.fillMaxSize(),
                     onExpandedChanged = { expanded ->
@@ -102,6 +103,20 @@ private fun ObserverScreenContent(
                         showMessageDialog = true
                     }
                 )
+
+                LaunchedEffect(uiState) {
+                    when (uiState) {
+                        is UserViewModel.UiState.Success -> {
+                            // 친구 추가 성공 처리 (필요한 경우)
+                        }
+                        is UserViewModel.UiState.Error -> {
+                            // 에러 처리 (필요한 경우 Toast나 Snackbar 표시)
+                            Log.e("ObserverScreen", "Friend add error: ${(uiState as UserViewModel.UiState.Error).message}")
+                        }
+                        else -> {}
+                    }
+                }
+
 
                 if (showMessageDialog && selectedFriend != null) {
                     MessageDialog(

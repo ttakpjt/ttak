@@ -12,6 +12,7 @@ class UserApiImpl(
 ) : UserRepository {
     override suspend fun searchUsers(query: String): List<User> = withContext(Dispatchers.IO) {
         try {
+            Log.d("UserApiImpl", "Searching users with query: $query")
             val response = api.searchUsers(query)
             if (response.isSuccessful) {
                 response.body() ?: emptyList()
@@ -25,14 +26,20 @@ class UserApiImpl(
         }
     }
 
-    // 기존 addFriend 메서드가 있다면 그대로 유지
-//    override suspend fun addFriend(userId: Long): Result<Unit> = withContext(Dispatchers.IO) {
-//        try {
-//            // addFriend API 구현
-//            Result.success(Unit)
-//        } catch (e: Exception) {
-//            Log.e("UserApiImpl", "친구 추가 중 예외 발생", e)
-//            Result.failure(e)
-//        }
-//    }
+    override suspend fun addFriend(followingId: Long): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            Log.d("UserApiImpl", "Adding friend with ID: $followingId")
+            val response = api.addFriend(followingId)
+            if (response.isSuccessful) {
+                Log.d("UserApiImpl", "친구 추가 성공")
+                Result.success(Unit)
+            } else {
+                Log.e("UserApiImpl", "친구 추가 실패: 코드=${response.code()}, 메시지=${response.message()}")
+                Result.failure(Exception("친구 추가 실패: ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            Log.e("UserApiImpl", "친구 추가 중 예외 발생", e)
+            Result.failure(e)
+        }
+    }
 }

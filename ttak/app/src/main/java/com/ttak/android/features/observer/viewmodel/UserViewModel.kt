@@ -13,7 +13,6 @@ import kotlinx.coroutines.withContext
 class UserViewModel(
     private val repository: UserRepository
 ) : ViewModel() {
-
     private val _searchResults = MutableStateFlow<List<User>>(emptyList())
     val searchResults = _searchResults.asStateFlow()
 
@@ -24,24 +23,9 @@ class UserViewModel(
         viewModelScope.launch {
             try {
                 _uiState.value = UiState.Loading
-
-                when {
-                    query.isBlank() -> {
-                        _searchResults.value = emptyList()
-                        _uiState.value = UiState.Success
-                        return@launch
-                    }
-                    query.length < 2 -> {
-                        _searchResults.value = emptyList()
-                        _uiState.value = UiState.Error("검색어는 2자 이상 입력해주세요")
-                        return@launch
-                    }
-                }
-
                 val results = repository.searchUsers(query)
                 _searchResults.value = results
                 _uiState.value = UiState.Success
-
             } catch (e: Exception) {
                 _searchResults.value = emptyList()
                 _uiState.value = UiState.Error(e.message ?: "검색 중 오류가 발생했습니다")
@@ -49,28 +33,25 @@ class UserViewModel(
         }
     }
 
-//    fun addFriend(user: User) {
-//        viewModelScope.launch {
-//            try {
-//                _uiState.value = UiState.Loading
-//
-//                val result = withContext(Dispatchers.IO) {
-//                    repository.addFriend(user.userId)  // id -> userId로 변경
-//                }
-//
-//                result.fold(
-//                    onSuccess = {
-//                        _uiState.value = UiState.Success
-//                    },
-//                    onFailure = { error ->
-//                        _uiState.value = UiState.Error(error.message ?: "친구 추가에 실패했습니다")
-//                    }
-//                )
-//            } catch (e: Exception) {
-//                _uiState.value = UiState.Error(e.message ?: "친구 추가 중 오류가 발생했습니다")
-//            }
-//        }
-//    }
+    fun addFriend(user: User) {
+        viewModelScope.launch {
+            try {
+                _uiState.value = UiState.Loading
+                val result = repository.addFriend(user.userId)
+                result.fold(
+                    onSuccess = {
+                        _uiState.value = UiState.Success
+                    },
+                    onFailure = { error ->
+                        _uiState.value = UiState.Error(error.message ?: "친구 추가에 실패했습니다")
+                    }
+                )
+            } catch (e: Exception) {
+                _uiState.value = UiState.Error(e.message ?: "친구 추가 중 오류가 발생했습니다")
+            }
+        }
+    }
+
 
     sealed class UiState {
         object Idle : UiState()
