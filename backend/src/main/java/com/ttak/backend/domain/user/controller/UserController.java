@@ -61,9 +61,9 @@ public class UserController {
 
 	@Operation(summary = "닉네임 중복확인", description = "들어온 닉네임과 동일한 닉네임이 존재하는지 확인, 중복 닉네임이 없다면 상태 200 반환")
 	@PostMapping("/check/nickname")
-	public ResponseEntity<CommonResponse<?>> checkNickname(@UserPk final Long userId, @RequestBody final NicknameReq nicknameReq) {
+	public ResponseEntity<CommonResponse<?>> checkNickname(@RequestBody final NicknameReq nicknameReq) {
 		log.info("========== 닉네임 중복확인 시작 ==========");
-		userService.checkNickname(userId, nicknameReq.getNickname());
+		userService.checkNickname(nicknameReq.getNickname());
 		log.info("========== 닉네임 중복확인 종료 ==========");
 		return ResponseEntity.ok(CommonResponse.success());
 	}
