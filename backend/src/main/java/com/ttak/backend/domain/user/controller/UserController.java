@@ -45,8 +45,8 @@ public class UserController {
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<CommonResponse<?>> userSearch(@RequestParam("nickname") String nickname) {
-		List<UserInfoResponse> users = userService.searchUsersByNickname(nickname);
+	public ResponseEntity<CommonResponse<?>> userSearch(@RequestParam("nickname") String nickname, @UserPk Long userId) {
+		List<UserInfoResponse> users = userService.searchUsersByNickname(nickname, userId);
 		return ResponseEntity.ok(CommonResponse.success(users));
 	}
 

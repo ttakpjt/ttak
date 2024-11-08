@@ -4,7 +4,6 @@ import static com.ttak.backend.global.common.ErrorCode.*;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.ttak.backend.domain.fcm.entity.Fcm;
 import com.ttak.backend.domain.fcm.repository.FcmRepository;
+import com.ttak.backend.domain.observe.repository.FriendRepository;
 import com.ttak.backend.domain.user.dto.reqeust.GoogleUserRequest;
 import com.ttak.backend.domain.user.dto.response.UserInfoResponse;
 import com.ttak.backend.domain.user.entity.User;
@@ -31,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService{
 
 	private final UserRepository userRepository;
+	private final FriendRepository friendRepository;
 	private final FcmRepository fcmRepository;
 	private final RedisTemplate<String, Object> redisTemplate;
 	private static final String USER_STATUS_KEY_PREFIX = "user:status:";
@@ -44,15 +45,9 @@ public class UserService{
 		return userRepository.findAll();
 	}
 
-	public List<UserInfoResponse> searchUsersByNickname(String nickname) {
-		return userRepository.findByNicknameContainingIgnoreCase(nickname)
-			.stream()
-			.map(user -> new UserInfoResponse(
-				user.getNickname(),
-				user.getUserId(),
-				user.getProfilePic()
-			))
-			.collect(Collectors.toList());
+	public List<UserInfoResponse> searchUsersByNickname(String nickname, Long currentUserId) {
+		System.out.println(nickname);
+		return userRepository.findUsersWithRelation(currentUserId, nickname);
 	}
 
 	@PostConstruct
