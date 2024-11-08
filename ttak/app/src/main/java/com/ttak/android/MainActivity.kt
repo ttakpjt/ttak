@@ -31,6 +31,15 @@ import com.ttak.android.network.socket.SocketEvent
 import com.ttak.android.network.socket.WebSocketManager
 import android.Manifest
 import com.google.firebase.messaging.FirebaseMessaging
+import com.google.type.Expr
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 
 /*
 1. 앱 실행 시 필요한 권한들을 확인
@@ -177,11 +186,45 @@ class MainActivity : ComponentActivity() {
                 val token = task.result
                 Log.d("MainActivity", "FCM 토큰: $token")
                 Toast.makeText(this, "FCM 토큰: $token", Toast.LENGTH_SHORT).show()
+
+                // FCM 토큰을 서버로 전송
+                CoroutineScope(Dispatchers.IO).launch {
+                    sendRegistrationToServer(token)
+                }
             } else {
                 Log.w("MainActivity", "FCM 토큰 가져오기 실패", task.exception)
             }
         }
     }
+
+    private suspend fun sendRegistrationToServer(token: String) {
+        Log.d(TAG, "Testing token generation: $token")
+        val json = JSONObject().apply {
+            put("token", token)
+        }
+
+        val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
+        val client = OkHttpClient()
+
+        val request = Request.Builder()
+            .url("https://k11a509.p.ssafy.io/api/fcm/save")
+            .addHeader("user", "1")  // 사용자 ID를 헤더에 추가 (예시)
+            .post(requestBody)
+            .build()
+
+        try {
+            client.newCall(request).execute().use { response ->
+                if (response.isSuccessful) {
+                    Log.d(TAG, "토큰 전송 성공: ${response.body?.string()}")
+                } else {
+                    Log.e(TAG, "토큰 전송 실패: ${response.code}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "네트워크 요청 중 오류 발생", e)
+        }
+    }
+
     // 포그라운드 구동 앱 감시
     private fun startForegroundMonitorService() {
         Intent(this, ForegroundMonitorService::class.java).also { intent ->

@@ -8,11 +8,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ttak.android.domain.model.FriendStory
 import com.ttak.android.domain.model.GoalState
 import com.ttak.android.data.repository.PreviewFriendStoryRepository
+import com.ttak.android.data.repository.UserRepositoryImpl
+import com.ttak.android.domain.model.MessageData
 import com.ttak.android.features.observer.ui.components.*
 import com.ttak.android.features.observer.viewmodel.FriendStoryViewModel
 import com.ttak.android.features.observer.viewmodel.FriendStoryViewModelFactory
@@ -20,6 +25,9 @@ import com.ttak.android.features.observer.viewmodel.UserViewModel
 import com.ttak.android.features.observer.viewmodel.UserViewModelFactory
 import com.ttak.android.network.implementation.UserApiImpl
 import com.ttak.android.network.util.ApiConfig
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun ObserverScreen() {
@@ -50,6 +58,9 @@ private fun ObserverScreenContent(
     userViewModel: UserViewModel,
     goalState: GoalState = GoalState()
 ) {
+    val context = LocalContext.current
+    val messageApi = ApiConfig.createMessageApi(context)
+
     val selectedFilterId by friendStoryViewModel.selectedFilterId.collectAsState()
     val filterOptions by friendStoryViewModel.filterOptions.collectAsState()
     val friends by friendStoryViewModel.friends.collectAsState()
@@ -127,6 +138,22 @@ private fun ObserverScreenContent(
                         onSend = { message ->
 //                            Log.d("ObserverScreen", "Sending message to ${selectedFriend!!.userName}: $message")  // name -> userName
                             showMessageDialog = false
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val messageData = MessageData(
+                                    userId = selectedFriend!!.id,
+                                    message = message
+                                )
+                                try {
+                                    val response = messageApi.sendMessage(messageData)
+                                    if (response.isSuccessful) {
+                                        Log.d("ObserverScreen", "Message sent successfully")
+                                    } else {
+                                        Log.e("ObserverScreen", "Failed to send message: ${response.code()}")
+                                    }
+                                } catch (e: Exception) {
+                                    Log.e("ObserverScreen", "Error sending message", e)
+                                }
+                            }
                         }
                     )
                 }
