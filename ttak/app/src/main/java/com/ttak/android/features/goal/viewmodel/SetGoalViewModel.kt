@@ -16,6 +16,8 @@ import com.ttak.android.data.local.AppDatabase
 import com.ttak.android.data.repository.FocusGoalRepository
 import com.ttak.android.domain.model.AppInfo
 import com.ttak.android.domain.model.FocusGoal
+import com.ttak.android.network.implementation.GoalApiImpl
+import com.ttak.android.network.util.ApiConfig
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -33,6 +35,8 @@ class SetGoalViewModel(application: Application) : AndroidViewModel(application)
         selectedAppDao = database.selectedAppDao(),
         packageManager = application.packageManager
     )
+    private val goalApi = ApiConfig.createGoalApi(application)
+    private val goalApiImpl = GoalApiImpl(goalApi)
 
     private val _startTime = MutableStateFlow(LocalTime.of(9, 0))
     val startTime = _startTime.asStateFlow()
@@ -116,39 +120,40 @@ class SetGoalViewModel(application: Application) : AndroidViewModel(application)
 
     fun saveGoal() {
         viewModelScope.launch {
-            // 현재 날짜 가져오기
-            val today = LocalDate.now()
+            runCatching {
+                // 기존의 로컬 저장 로직
+                val today = LocalDate.now()
+                val startDateTime = LocalDateTime.of(today, startTime.value)
+                val endDateTime = LocalDateTime.of(today, endTime.value)
+                val adjustedEndDateTime = if (endDateTime.isBefore(startDateTime)) {
+                    endDateTime.plusDays(1)
+                } else {
+                    endDateTime
+                }
 
-            // LocalTime을 LocalDateTime으로 변환
-            val startDateTime = LocalDateTime.of(
-                today,
-                startTime.value
-            )
-
-            val endDateTime = LocalDateTime.of(
-                today,
-                endTime.value
-            )
-
-            // 만약 종료 시간이 시작 시간보다 이르다면 다음날로 설정
-            val adjustedEndDateTime = if (endDateTime.isBefore(startDateTime)) {
-                endDateTime.plusDays(1)
-            } else {
-                endDateTime
-            }
-
-            // 저장 시 로그
-            Log.d("SetGoalViewModel", "Saving goal - Start DateTime: $startDateTime, End DateTime: $adjustedEndDateTime")
-            Log.d("SetGoalViewModel", "Selected apps: ${selectedApps.value}")
-
-            val focusGoal = FocusGoal(
-                startDateTime = startDateTime,
-                endDateTime = adjustedEndDateTime,
-                selectedApps = installedApps.value.filter {
+                val selectedAppsList = installedApps.value.filter {
                     selectedApps.value.contains(it.packageName)
                 }
-            )
-            repository.saveFocusGoal(focusGoal)
+
+                // 로컬 저장
+                val focusGoal = FocusGoal(
+                    startDateTime = startDateTime,
+                    endDateTime = adjustedEndDateTime,
+                    selectedApps = selectedAppsList
+                )
+                repository.saveFocusGoal(focusGoal)
+
+                // 서버 저장 - LocalTime 직접 전달
+                val appNames = selectedAppsList.map { it.appName }
+
+                goalApiImpl.saveApplicationSetting(
+                    appNames = appNames,
+                    startTime = startTime.value,  // LocalTime 직접 전달
+                    endTime = endTime.value       // LocalTime 직접 전달
+                )
+            }.onFailure { e ->
+                Log.e("SetGoalViewModel", "Error saving goal", e)
+            }
         }
     }
 }

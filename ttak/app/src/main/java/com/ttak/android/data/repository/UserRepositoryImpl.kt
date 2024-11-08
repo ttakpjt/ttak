@@ -20,7 +20,15 @@ class UserRepositoryImpl(
             logApiResponse(response, "User Search")
 
             when {
-                response.isSuccessful -> response.body() ?: emptyList()
+                response.isSuccessful -> {
+                    val apiResponse = response.body()
+                    if (apiResponse?.code == "200" && apiResponse.message == "SUCCESS") {
+                        apiResponse.data  // List<User>를 반환
+                    } else {
+                        Log.e("UserRepositoryImpl", "API 응답 실패: code=${apiResponse?.code}, message=${apiResponse?.message}")
+                        emptyList()
+                    }
+                }
                 else -> {
                     Log.e("UserRepositoryImpl", "검색 실패: ${response.code()}")
                     emptyList()
@@ -31,7 +39,6 @@ class UserRepositoryImpl(
             emptyList()
         }
     }
-
     override suspend fun addFriend(userId: Long): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             Log.d("UserRepositoryImpl", "Adding friend with ID: $userId")
