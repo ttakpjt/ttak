@@ -1,5 +1,6 @@
 package com.ttak.android.service
 
+import android.provider.Settings
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -30,15 +31,18 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     private fun sendRegistrationToServer(token: String) {
         // 서버 전송 없이 토큰을 로그로 출력하여 테스트
         Log.d("MyFirebaseMessagingService", "Testing token generation: $token")
-        val json = JSONObject()
-        json.put("token", token)
+        val deviceSerialNumber = getDeviceSerialNumber();
+        val json = JSONObject().apply {
+            put("deviceSerialNumber", deviceSerialNumber)
+            put("token", token)
+        }
 
         val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
 
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("https://k11a509.p.ssafy.io/api/fcm/save")
-            .addHeader("user", "1")
+//            .addHeader("user", "1")
             .post(requestBody)
             .build()
 
@@ -49,6 +53,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 Log.e("MyFirebaseMessagingService", "토큰 전송 실패: ${response.code}")
             }
         }
+    }
+
+    // 기기 고유 ID를 가져오는 메서드
+    private fun getDeviceSerialNumber(): String {
+        return Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
     }
 
     // 메시지 수신 시 호출되는 메서드 추가
