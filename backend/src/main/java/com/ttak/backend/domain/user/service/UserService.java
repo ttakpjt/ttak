@@ -103,7 +103,9 @@ public class UserService{
 		User user = findUserById(userId);
 
 		// 기존 닉네임과 동일한 경우 오류발생
-		if(user.getNickname().equals(nickname)) throw new UnAuthorizedException(U004);
+		if(!user.getNickname().isEmpty()){
+			if(user.getNickname().equals(nickname)) throw new UnAuthorizedException(U004);
+		}
 
 		// 이미 존재하는 닉네임이라면 오류발생
 		if(userRepository.existsByNickname(nickname)) throw new UnAuthorizedException(U003);
