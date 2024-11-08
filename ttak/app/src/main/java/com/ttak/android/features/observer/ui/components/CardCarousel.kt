@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ttak.android.data.local.AppDatabase
 import com.ttak.android.data.repository.FocusGoalRepository
+import com.ttak.android.features.observer.ui.components.Dashboard
 import com.ttak.android.features.observer.ui.components.PageIndicator
 import com.ttak.android.features.observer.ui.components.SetGoalCard
 import com.ttak.android.features.observer.ui.components.UnsetGoalCard
@@ -66,16 +67,19 @@ fun CardCarousel(
                         }
                     }
                     1 -> {
+//                        Column(
+//                            modifier = Modifier
+//                                .fillMaxSize()
+//                                .padding(24.dp)
+//                        ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(24.dp)
                         ) {
-                            // 계기판                                                                                                                                                                                                                                                                                                                                                                                                                                                컴포넌트 만들기
-                            Text(
-                                "두 번째 카드",
-                                color = Color.White
-                            )
+                            Dashboard() // 전체 유저용 계기판
+                            Spacer(modifier = Modifier.height(16.dp)) // 계기판 간의 간격
+                            Dashboard() // 친구용 계기판
                         }
                     }
                 }
