@@ -3,8 +3,18 @@ package com.ttak.android.network.api
 import com.ttak.android.data.repository.HistoryRepository
 import com.ttak.android.domain.model.HistoryInfo
 import com.ttak.android.domain.model.HistoryType
+import com.ttak.android.domain.model.WeeklyPickData
+import com.ttak.android.domain.model.WeeklyPickResponse
 
 class PreviewHistoryApi : HistoryRepository {
+
+    override suspend fun getWeeklyPickCount(): Int {
+        return WeeklyPickResponse(
+            code = "200",
+            message = "SUCCESS",
+            data = WeeklyPickData(myCount = 10)
+        ).data.myCount
+    }
 
     override suspend fun getMessages(): List<HistoryInfo> {
         return listOf(
