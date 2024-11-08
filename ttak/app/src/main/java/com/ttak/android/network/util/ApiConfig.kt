@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import com.ttak.android.network.api.MemberApi
 import com.ttak.android.network.api.MyPageApi
+import com.ttak.android.network.api.UserApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -32,7 +33,7 @@ object ApiConfig {
             requestBuilder.addHeader("user", userId.toString())
             Log.d("닉네임", "userId 헤더 추가됨: $userId")
         } else {
-            Log.d("닉네임", "userId가 null임, 헤더 추가 안 됨")
+            chain.request()
         }
 
         // 최종 요청
@@ -67,6 +68,11 @@ object ApiConfig {
     // MemberApi 인스턴스 생성
     fun createMemberApi(context: Context): MemberApi {
         return createRetrofit(context).create(MemberApi::class.java)
+    }
+
+    // UserApi 인스턴스 생성
+    fun createUserApi(context: Context): UserApi {
+        return createRetrofit(context).create(UserApi::class.java)
     }
 
     // testApi 인스턴스 생성

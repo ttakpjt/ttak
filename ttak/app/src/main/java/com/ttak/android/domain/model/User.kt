@@ -1,7 +1,7 @@
 package com.ttak.android.domain.model
 
 data class User(
-    val id: String,
-    val name: String,
-    val profileImageUrl: String
+    val userId: Long,
+    val userName: String,
+    val userImg: String
 )
