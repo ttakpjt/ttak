@@ -9,10 +9,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.ttak.android.features.screentime.ui.components.*
-import com.ttak.android.R
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ttak.android.features.screentime.viewmodel.ScreenTimeViewModel
 import com.ttak.android.features.screentime.viewmodel.ScreenTimeViewModelFactory
+import com.ttak.android.network.util.UserPreferences
 
 @Composable
 fun ScreenTimeScreen() {
@@ -21,6 +21,7 @@ fun ScreenTimeScreen() {
         factory = ScreenTimeViewModelFactory(context)
     )
     val screenTimeData = viewModel.screenTimeData.collectAsState().value
+    val nickname = UserPreferences(context.applicationContext).getNickname().toString() // nickname 가져오기
 
     screenTimeData?.let { data ->
         Column(
@@ -37,7 +38,7 @@ fun ScreenTimeScreen() {
             Spacer(modifier = Modifier.height(16.dp))
 
             // 2. 사용 시간 변화 표시
-            ScreenTimeChangeComponent(username = "remember the name", hoursDifference = data.todayUsageDifference)
+            ScreenTimeChangeComponent(username = nickname, hoursDifference = data.todayUsageDifference)
 
             Spacer(modifier = Modifier.height(16.dp))
 

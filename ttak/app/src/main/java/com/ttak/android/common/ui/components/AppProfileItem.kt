@@ -21,7 +21,7 @@ import com.ttak.android.common.ui.theme.White
 @Composable
 fun AppProfileItem(
     profileImage: Int? = null,       // 프로필 이미지 리소스 ID
-    nickName: String,                // 사용자 이름
+    nickname: String,                // 사용자 이름
     borderColor: Color = Color.Black // 기본 테두리 색상
 ) {
     Column(
@@ -46,7 +46,7 @@ fun AppProfileItem(
 
         // 사용자 이름
         Text(
-            text = nickName,
+            text = nickname,
             style = MaterialTheme.typography.bodyLarge,
             color = White,
             fontSize = 18.sp
