@@ -12,6 +12,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.messaging.FirebaseMessaging
 import com.ttak.android.R
 import com.ttak.android.features.auth.ui.screens.LoginScreen
 import com.ttak.android.common.ui.theme.TtakTheme
@@ -74,19 +75,28 @@ class LoginActivity : ComponentActivity() {
                     // 계정 정보를 mysql에 보냄
                     val user = auth.currentUser
                     if (user != null) {
-                        // 구글 로그인 정보로 UserModel 생성
-                        val userModel = UserModel(
-                            id = user.uid,
-                            email = user.email ?: "",
-                            profileImage = user.photoUrl?.toString()
-                        )
-                        Log.d("이규석", "UserModel: $userModel")
-                        // ViewModel을 통해 서버로 전송
-                        memberViewModel.signIn(userModel)
+                        FirebaseMessaging.getInstance().token.addOnCompleteListener { tokenTask ->
+                            if (tokenTask.isSuccessful) {
+                                val fcmToken = tokenTask.result
+                                // UserModel 생성, FCM 토큰 포함
+                                val userModel = UserModel(
+                                    id = user.uid,
+                                    email = user.email ?: "",
+                                    profileImage = user.photoUrl?.toString(),
+                                    token = fcmToken // FCM 토큰 추가
+                                )
+                                Log.d("LoginActivity", "UserModel with FCM token: $userModel")
+                                // ViewModel을 통해 서버로 전송
+                                memberViewModel.signIn(userModel)
+
+                                // 다음 화면 이동
+                                startActivity(Intent(this, ProfileSetupActivity::class.java))
+                                finish()
+                            } else {
+                                Log.e("LoginActivity", "FCM 토큰 가져오기 실패", tokenTask.exception)
+                            }
+                        }
                     }
-                    // 로그인 성공 시 계정이 존재하지 않는다면 프로필을 설정하러 이동(추가)
-                    startActivity(Intent(this, ProfileSetupActivity::class.java))
-                    finish()
                 } else {
                     // 로그인 실패 시 처리
                     Log.e("이규석", "로그인이 실패했습니다.")

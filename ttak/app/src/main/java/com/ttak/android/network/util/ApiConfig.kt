@@ -4,10 +4,12 @@ package com.ttak.android.network.util
 import android.content.Context
 import android.util.Log
 import com.ttak.android.network.api.MemberApi
+import com.ttak.android.network.api.MessageApi
 import com.ttak.android.network.api.MyPageApi
 import com.ttak.android.network.api.UserApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -78,6 +80,11 @@ object ApiConfig {
     // testApi 인스턴스 생성
     fun createTestApi(context: Context): MemberApi {
         return createRetrofit(context).create(MemberApi::class.java)
+    }
+
+    // 메시지 전송 api 생성
+    fun createMessageApi(context: Context): MessageApi {
+        return createRetrofit(context).create(MessageApi::class.java)
     }
 
     // myPageApi 생성 메소드

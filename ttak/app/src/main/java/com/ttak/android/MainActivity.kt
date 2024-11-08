@@ -224,6 +224,7 @@ class MainActivity : ComponentActivity() {
             Log.e(TAG, "네트워크 요청 중 오류 발생", e)
         }
     }
+
     // 포그라운드 구동 앱 감시
     private fun startForegroundMonitorService() {
         Intent(this, ForegroundMonitorService::class.java).also { intent ->

@@ -49,8 +49,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 Log.e("MyFirebaseMessagingService", "토큰 전송 실패: ${response.code}")
             }
         }
-
-
     }
 
     // 메시지 수신 시 호출되는 메서드 추가
