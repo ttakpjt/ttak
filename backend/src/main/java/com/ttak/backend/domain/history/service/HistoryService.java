@@ -54,4 +54,13 @@ public class HistoryService {
 	public List<HistoryListRes> getAttackHistory(Long userId){
 		return historyRepository.findByReceiveId(userId);
 	}
+
+	public Long getUserPick(Long userId) {
+		LocalDateTime startOfWeek = getStartOfWeek();
+		LocalDateTime endOfToday = getEndOfToday();
+
+		Long myCount = historyRepository.getMyCount(userId, startOfWeek, endOfToday);
+
+		return myCount;
+	}
 }

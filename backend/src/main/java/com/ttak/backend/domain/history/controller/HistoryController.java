@@ -2,6 +2,9 @@ package com.ttak.backend.domain.history.controller;
 
 import java.util.List;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,6 +55,14 @@ public class HistoryController {
 	public ResponseEntity<CommonResponse<?>> readPickForRank(@UserPk final Long userId) {
 		HistoryCount hc = historyService.getCumulativeCounts(userId);
 		return ResponseEntity.ok(CommonResponse.success(hc));
+	}
+
+	@GetMapping("/pick")
+	public ResponseEntity<CommonResponse<?>> readUserPick(@UserPk final Long userId) {
+		Long count = historyService.getUserPick(userId);
+		Map<String , Long> message = new HashMap<>();
+		message.put("myCount", count);
+		return ResponseEntity.ok(CommonResponse.success(message));
 	}
 
 }
