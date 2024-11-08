@@ -94,13 +94,9 @@ public class UserService{
 	}
 
 
-	public void checkNickname(Long userId, String nickname) {
-		User user = findUserById(userId);
-
-		// 기존 닉네임과 동일한 경우 오류발생
-		if(!user.getNickname().isEmpty()){
-			if(user.getNickname().equals(nickname)) throw new UnAuthorizedException(U004);
-		}
+	public void checkNickname(String nickname) {
+		// 비어있는 닉네임은 불가
+		if(nickname.isBlank() || nickname.isEmpty()) throw new UnAuthorizedException(U005);
 
 		// 이미 존재하는 닉네임이라면 오류발생
 		if(userRepository.existsByNickname(nickname)) throw new UnAuthorizedException(U003);
@@ -108,6 +104,11 @@ public class UserService{
 
 	public void registerNickname(Long userId, String nickname) {
 		User user = findUserById(userId);
+
+		// 기존 닉네임과 동일한 경우 오류발생
+		if(user.getNickname().equals(nickname)) throw new UnAuthorizedException(U004);
+
+		// 이미 존재하는 닉네임이라면 오류발생, 아니라면 닉네임 변경
 		if(userRepository.existsByNickname(nickname)) {
 			throw new UnAuthorizedException(U003);
 		} else {
