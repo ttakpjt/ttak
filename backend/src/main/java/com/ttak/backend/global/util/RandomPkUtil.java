@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class RandomPkUtil {
 
 	public Long makeRandomPk () {

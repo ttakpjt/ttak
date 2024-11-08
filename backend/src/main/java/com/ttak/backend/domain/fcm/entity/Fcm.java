@@ -1,5 +1,6 @@
 package com.ttak.backend.domain.fcm.entity;
 
+import com.ttak.backend.domain.fcm.dto.request.FcmTokenReq;
 import com.ttak.backend.domain.user.entity.User;
 import com.ttak.backend.global.common.TimeBaseEntity;
 
@@ -33,12 +34,14 @@ public class Fcm extends TimeBaseEntity {
 	@JoinColumn(name = "user_id")
 	private User user;
 
+	private String deviceSerialNumber;
+
 	private String fcmToken;
 
-	public static Fcm of(User user, String fcmToken) {
+	public static Fcm toEntity(FcmTokenReq fcmTokenReq) {
 		return Fcm.builder()
-			.user(user)
-			.fcmToken(fcmToken)
+			.deviceSerialNumber(fcmTokenReq.getDeviceSerialNumber())
+			.fcmToken(fcmTokenReq.getToken())
 			.build();
 	}
 
