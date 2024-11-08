@@ -48,4 +48,8 @@ public class Fcm extends TimeBaseEntity {
 	public void changeFcmToken(String fcmToken) {
 		this.fcmToken = fcmToken;
 	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
 }
