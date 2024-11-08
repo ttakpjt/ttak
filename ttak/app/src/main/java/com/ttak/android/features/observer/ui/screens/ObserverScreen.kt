@@ -4,34 +4,33 @@ import CardCarousel
 import MessageDialog
 import android.util.Log
 import androidx.compose.animation.*
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ttak.android.domain.model.FriendStory
 import com.ttak.android.domain.model.GoalState
 import com.ttak.android.data.repository.PreviewFriendStoryRepository
-import com.ttak.android.data.repository.PreviewUserRepository
 import com.ttak.android.data.repository.UserRepositoryImpl
 import com.ttak.android.features.observer.ui.components.*
 import com.ttak.android.features.observer.viewmodel.FriendStoryViewModel
 import com.ttak.android.features.observer.viewmodel.FriendStoryViewModelFactory
 import com.ttak.android.features.observer.viewmodel.UserViewModel
 import com.ttak.android.features.observer.viewmodel.UserViewModelFactory
-import com.ttak.android.network.api.PreviewUserApi
+import com.ttak.android.network.util.ApiConfig
 
 @Composable
 fun ObserverScreen() {
-    // 목업 API와 Repository 사용
-    val userRepository = UserRepositoryImpl(PreviewUserApi())
+    val context = LocalContext.current  // Context 가져오기
+
+    // API 및 Repository 초기화
+    val userApi = ApiConfig.createUserApi(context)
+    val userRepository = UserRepositoryImpl(userApi)
     val friendStoryRepository = PreviewFriendStoryRepository()
 
-    // ViewModel Factory 생성
+    // ViewModel 초기화
     val userViewModel: UserViewModel = viewModel(
         factory = UserViewModelFactory(userRepository)
     )
@@ -55,6 +54,7 @@ private fun ObserverScreenContent(
     val filterOptions by friendStoryViewModel.filterOptions.collectAsState()
     val friends by friendStoryViewModel.friends.collectAsState()
     val searchResults by userViewModel.searchResults.collectAsState()
+    val uiState by userViewModel.uiState.collectAsState()
 
     var isListExpanded by remember { mutableStateOf(false) }
     var showMessageDialog by remember { mutableStateOf(false) }
@@ -64,7 +64,6 @@ private fun ObserverScreenContent(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Carousel
             AnimatedVisibility(
                 visible = !isListExpanded,
                 enter = fadeIn() + slideInVertically(),
@@ -77,7 +76,6 @@ private fun ObserverScreenContent(
                 )
             }
 
-            // Friend List with integrated Filter
             Box(modifier = Modifier.fillMaxSize()) {
                 ExpandableFriendListContainer(
                     friends = friends,
@@ -86,10 +84,10 @@ private fun ObserverScreenContent(
                     onFilterSelected = friendStoryViewModel::setSelectedFilter,
                     onSearchUsers = { query ->
                         userViewModel.searchUsers(query)
-                        searchResults
                     },
+                    searchResults = searchResults,  // Flow로 받은 검색 결과 전달
                     onUserSelect = { user ->
-                        userViewModel.addFriend(user)
+                        // userViewModel.addFriend(user)
                     },
                     modifier = Modifier.fillMaxSize(),
                     onExpandedChanged = { expanded ->
@@ -105,7 +103,6 @@ private fun ObserverScreenContent(
                     }
                 )
 
-                // Message Dialog
                 if (showMessageDialog && selectedFriend != null) {
                     MessageDialog(
                         friendStory = selectedFriend!!,
@@ -113,8 +110,7 @@ private fun ObserverScreenContent(
                             showMessageDialog = false
                         },
                         onSend = { message ->
-                            Log.d("ObserverScreen", "Sending message to ${selectedFriend!!.name}: $message")
-                            // TODO: 메시지 전송 로직 구현
+//                            Log.d("ObserverScreen", "Sending message to ${selectedFriend!!.userName}: $message")  // name -> userName
                             showMessageDialog = false
                         }
                     )
@@ -122,17 +118,4 @@ private fun ObserverScreenContent(
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ObserverScreenPreview() {
-    val previewFriendStoryViewModel = FriendStoryViewModel(PreviewFriendStoryRepository())
-    val previewUserViewModel = UserViewModel(PreviewUserRepository())
-    previewFriendStoryViewModel.loadInitialData()
-
-    ObserverScreenContent(
-        friendStoryViewModel = previewFriendStoryViewModel,
-        userViewModel = previewUserViewModel
-    )
 }

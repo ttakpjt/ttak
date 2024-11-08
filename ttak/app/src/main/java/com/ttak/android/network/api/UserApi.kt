@@ -8,10 +8,10 @@ import retrofit2.http.Query
 
 interface UserApi {
 
-    @GET("users/search")
-    suspend fun searchUsers(@Query("query") query: String): List<User>
+    @GET("user/search")
+    suspend fun searchUsers(@Query("nickname") query: String): Response<List<User>>
 
-    @POST("friends/add")
-    suspend fun addFriend(@Query("userId") userId: String): Response<Unit>
+//    @POST("friends/add")
+//    suspend fun addFriend(@Query("userId") userId: String): Response<Unit>
 
 }

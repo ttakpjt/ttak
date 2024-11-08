@@ -1,10 +1,13 @@
 package com.ttak.android.features.observer.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
@@ -15,8 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -31,67 +36,37 @@ fun UserSearchDialog(
     isVisible: Boolean,
     onDismiss: () -> Unit,
     onUserSelect: (User) -> Unit,
-    searchUsers: suspend (String) -> List<User>,
+    searchUsers: (String) -> Unit,
+    searchResults: List<User>,  // val parameter
     modifier: Modifier = Modifier
 ) {
     if (!isVisible) return
 
     var searchQuery by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-    var searchResults by remember { mutableStateOf(emptyList<User>()) }
     var searchJob by remember { mutableStateOf<Job?>(null) }
     val scope = rememberCoroutineScope()
-
-    // 검색 결과를 위한 state holder
-    val searchState = remember {
-        mutableStateOf<SearchState>(SearchState.Initial)
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            searchJob?.cancel()
-        }
-    }
+    val focusManager = LocalFocusManager.current
 
     val performSearch = { query: String ->
-        // 20자 초과시 아무 것도 하지 않음
-        if (query.length <= 20) { // 20자 이하일 때만 검색 실행
+        if (query.length <= 20) {
             searchJob?.cancel()
-            searchJob = scope.launch(Dispatchers.IO) {
+            searchJob = scope.launch {
                 try {
                     if (query.isBlank()) {
-                        withContext(Dispatchers.Main) {
-                            searchState.value = SearchState.Initial
-                            searchResults = emptyList()
-                        }
                         return@launch
                     }
 
-                    withContext(Dispatchers.Main) {
-                        isLoading = true
-                    }
+                    isLoading = true
+                    Log.d("UserSearchDialog", "Starting search for query: $query")
 
-                    delay(300) // 디바운스
+                    delay(300)
+                    searchUsers(query)  // ViewModel의 searchUsers 호출
 
-                    val results = searchUsers(query)
-
-                    withContext(Dispatchers.Main) {
-                        searchResults = results
-                        searchState.value = if (results.isEmpty()) {
-                            SearchState.Empty
-                        } else {
-                            SearchState.Success(results)
-                        }
-                    }
+                    isLoading = false
                 } catch (e: Exception) {
-                    withContext(Dispatchers.Main) {
-                        searchState.value = SearchState.Error("검색 중 오류가 발생했습니다")
-                    }
-                } finally {
-                    withContext(Dispatchers.Main) {
-                        isLoading = false
-                    }
+                    Log.e("UserSearchDialog", "Search error", e)
+                    isLoading = false
                 }
             }
         }
@@ -153,7 +128,6 @@ fun UserSearchDialog(
                     value = searchQuery,
                     onValueChange = { query ->
                         searchQuery = query
-                        performSearch(query)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -168,22 +142,32 @@ fun UserSearchDialog(
                     },
                     trailingIcon = if (searchQuery.isNotEmpty()) {
                         {
-                            IconButton(
-                                onClick = {
-                                    searchQuery = ""
-                                    searchResults = emptyList()
-                                    searchState.value = SearchState.Initial
+                            Row {
+                                IconButton(
+                                    onClick = {
+                                        searchQuery = ""  // 검색어만 지우기
+                                        searchUsers("")   // 빈 검색어로 검색하여 결과 초기화
+                                    }
+                                ) {
+                                    Icon(
+                                        Icons.Default.Close,
+                                        contentDescription = "Clear search",
+                                        tint = Color.Black
+                                    )
                                 }
-                            ) {
-                                Icon(
-                                    Icons.Default.Close,
-                                    contentDescription = "Clear search",
-                                    tint = Color.Black
-                                )
                             }
                         }
                     } else null,
                     singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Search
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onSearch = {
+                            performSearch(searchQuery)
+                            focusManager.clearFocus()  // 키보드 닫기
+                        }
+                    ),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color(0xFFD9D9D9),
                         unfocusedContainerColor = Color(0xFFD9D9D9),
@@ -211,23 +195,13 @@ fun UserSearchDialog(
                                 color = Color.White
                             )
                         }
-                        searchResults.isEmpty() && searchQuery.isNotBlank() -> {
-                            Text(
-                                text = "검색 결과가 없습니다",
-                                color = Color.Gray,
-                                modifier = Modifier
-                                    .align(Alignment.Center)
-                                    .padding(16.dp),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                        else -> {
+                        searchResults.isNotEmpty() -> {
                             LazyColumn(
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 items(
                                     items = searchResults,
-                                    key = { it.id }
+                                    key = { it.userId }
                                 ) { user ->
                                     UserSearchItem(
                                         user = user,
@@ -239,18 +213,21 @@ fun UserSearchDialog(
                                 }
                             }
                         }
+                        searchQuery.isNotBlank() -> {
+                            Text(
+                                text = "검색 결과가 없습니다",
+                                color = Color.Gray,
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .padding(16.dp),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
                     }
                 }
             }
         }
     }
-}
-
-sealed class SearchState {
-    object Initial : SearchState()
-    object Empty : SearchState()
-    data class Success(val results: List<User>) : SearchState()
-    data class Error(val message: String) : SearchState()
 }
 
 @Composable
@@ -271,8 +248,8 @@ private fun UserSearchItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                model = user.profileImageUrl,
-                contentDescription = "Profile image of ${user.name}",
+                model = user.userImg,
+                contentDescription = "Profile image of ${user.userName}",
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape),
@@ -282,7 +259,7 @@ private fun UserSearchItem(
             Spacer(modifier = Modifier.width(12.dp))
 
             Text(
-                text = user.name,
+                text = user.userName,
                 style = MaterialTheme.typography.bodyLarge,
                 color = Color.White
             )

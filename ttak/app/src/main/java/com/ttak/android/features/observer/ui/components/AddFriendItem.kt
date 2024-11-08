@@ -24,7 +24,8 @@ import com.ttak.android.domain.model.User
 
 @Composable
 fun AddFriendItem(
-    searchUsers: suspend (String) -> List<User>,
+    searchUsers: (String) -> Unit,  // suspend 제거
+    searchResults: List<User>,      // 검색 결과 추가
     onUserSelect: (User) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -35,7 +36,8 @@ fun AddFriendItem(
         UserSearchDialog(
             isVisible = true,
             onDismiss = { showSearchModal = false },
-            searchUsers = searchUsers,  // 직접 suspend 함수를 전달
+            searchUsers = searchUsers,
+            searchResults = searchResults,  // 검색 결과 전달
             onUserSelect = { user ->
                 onUserSelect(user)
                 showSearchModal = false

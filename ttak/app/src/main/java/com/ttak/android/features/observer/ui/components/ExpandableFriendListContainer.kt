@@ -29,7 +29,8 @@ fun ExpandableFriendListContainer(
     filterOptions: List<FilterOption>,
     selectedFilterId: Int,
     onFilterSelected: (Int) -> Unit,
-    onSearchUsers: suspend (String) -> List<User>,
+    onSearchUsers: (String) -> Unit,
+    searchResults: List<User>,
     onUserSelect: (User) -> Unit,
     onWaterBubbleClick: (FriendStory) -> Unit,
     onSpeechBubbleClick: (FriendStory) -> Unit,
@@ -92,7 +93,7 @@ fun ExpandableFriendListContainer(
                 columns = GridCells.Fixed(3),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f) // 남은 공간을 모두 차지하도록 설정
+                    .weight(1f)
                     .animateContentSize(
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioMediumBouncy,
@@ -103,18 +104,17 @@ fun ExpandableFriendListContainer(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                item {
+                item {  // 이 부분은 item으로 유지
                     AddFriendItem(
                         searchUsers = { query ->
-                            scope.async {
-                                onSearchUsers(query)
-                            }.await()
+                            onSearchUsers(query)
                         },
+                        searchResults = searchResults,
                         onUserSelect = onUserSelect
                     )
                 }
 
-                items(if (isExpanded) friends else friends.take(8)) { friend ->
+                items(if (isExpanded) friends else friends.take(8)) { friend ->  // 이 부분은 items로 유지
                     FriendStoryItem(
                         friend = friend,
                         onWaterBubbleClick = onWaterBubbleClick,
