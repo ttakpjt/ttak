@@ -30,9 +30,9 @@ class NicknameViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             val result = myPageRepository.registerNickname(nickname)
             if (result.isSuccess) {
-                Log.d("이규석", "닉네임 등록 성공: ${result.getOrNull()}")
+                Log.d("귯", "닉네임 등록 성공: ${result.getOrNull()}")
             } else {
-                Log.e("이규석", "닉네임 등록 실패: ${result.exceptionOrNull()}")
+                Log.e("귯", "닉네임 등록 실패: ${result.exceptionOrNull()}")
             }
         }
     }

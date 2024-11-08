@@ -33,9 +33,9 @@ object ApiConfig {
         // userId가 있는지 확인하고 헤더 추가
         if (userId != null) {
             requestBuilder.addHeader("user", userId.toString())
-            Log.d("이규석", "userId 헤더 추가됨: $userId")
+            Log.d("귯", "userId 헤더 추가됨: $userId")
         } else {
-            Log.d("이규석", "userId가 null임, 헤더 추가 안 됨")
+            Log.d("귯", "userId가 null임, 헤더 추가 안 됨")
 //            chain.request()
         }
 
@@ -43,8 +43,8 @@ object ApiConfig {
         val request = requestBuilder.build()
 
         // 전체 요청 정보 로그 출력
-        Log.d("이규석", "요청 URL: ${request.url}")
-        Log.d("이규석", "요청 헤더: ${request.headers}")
+        Log.d("귯", "요청 URL: ${request.url}")
+        Log.d("귯", "요청 헤더: ${request.headers}")
 
         chain.proceed(request)
     }

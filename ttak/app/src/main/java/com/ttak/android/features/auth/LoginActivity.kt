@@ -86,7 +86,7 @@ class LoginActivity : ComponentActivity() {
                                     profileImage = user.photoUrl.toString(),
                                     fcmToken = fcmToken // FCM 토큰 추가
                                 )
-                                Log.d("이규석", "UserModel with FCM token: $userModel")
+                                Log.d("귯", "UserModel with FCM token: $userModel")
                                 // ViewModel을 통해 서버로 전송
                                 memberViewModel.signIn(userModel)
 

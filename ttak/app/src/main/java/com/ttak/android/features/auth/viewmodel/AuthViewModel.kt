@@ -25,13 +25,13 @@ class MemberViewModel(application: Application) : AndroidViewModel(application) 
                     if (result.isSuccess) {
                         // 로그인 성공
                         val userId = result.getOrNull() // userId 값을 가져옴
-                        Log.d("이규석", "로그인 성공: $result")
+                        Log.d("귯", "로그인 성공: $result")
 
                         UserPreferences(getApplication()).saveUserId(userId.toString()) // userId를 저장
-                        Log.d("이규석", "앞으로 사용할 header: $userId")
+                        Log.d("귯", "앞으로 사용할 header: $userId")
                     } else {
                         // 로그인 실패 처리
-                        Log.e("이규석", "로그인 실패: ${result.exceptionOrNull()}")
+                        Log.e("귯", "로그인 실패: ${result.exceptionOrNull()}")
                     }
                 }
             } catch (e: Exception) {
