@@ -2,7 +2,9 @@ package com.ttak.android.network.util
 
 
 import android.content.Context
+import android.util.Log
 import com.ttak.android.network.api.MemberApi
+import com.ttak.android.network.api.MyPageApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -23,13 +25,24 @@ object ApiConfig {
     // 사용자 ID를 추가하는 인터셉터 설정
     private fun userIdInterceptor(context: Context) = Interceptor { chain ->
         val userId = UserPreferences(context).getUserId()  // UserPreferences에서 userId 가져오기
-        val request: Request = if (userId != null) {
-            chain.request().newBuilder()
-                .addHeader("user", userId)  // userId를 헤더에 추가
-                .build()
+
+        val requestBuilder = chain.request().newBuilder()
+
+        // userId가 있는지 확인하고 헤더 추가
+        if (userId != null) {
+            requestBuilder.addHeader("user", userId.toString())
+            Log.d("닉네임", "userId 헤더 추가됨: $userId")
         } else {
-            chain.request()
+            Log.d("닉네임", "userId가 null임, 헤더 추가 안 됨")
         }
+
+        // 최종 요청
+        val request = requestBuilder.build()
+
+        // 전체 요청 정보 로그 출력
+        Log.d("닉네임", "요청 URL: ${request.url}")
+        Log.d("닉네임", "요청 헤더: ${request.headers}")
+
         chain.proceed(request)
     }
 
@@ -52,7 +65,6 @@ object ApiConfig {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
-
     // MemberApi 인스턴스 생성
     fun createMemberApi(context: Context): MemberApi {
         return createRetrofit(context).create(MemberApi::class.java)
@@ -61,5 +73,10 @@ object ApiConfig {
     // testApi 인스턴스 생성
     fun createTestApi(context: Context): MemberApi {
         return createRetrofit(context).create(MemberApi::class.java)
+    }
+
+    // myPageApi 생성 메소드
+    fun createMyPageApi(context: Context): MyPageApi {
+        return createRetrofit(context).create(MyPageApi::class.java)
     }
 }
