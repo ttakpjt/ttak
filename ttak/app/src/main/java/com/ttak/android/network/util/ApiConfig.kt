@@ -3,6 +3,7 @@ package com.ttak.android.network.util
 
 import android.content.Context
 import android.util.Log
+import com.ttak.android.network.api.FriendApi
 import com.ttak.android.network.api.GoalApi
 import com.ttak.android.network.api.MemberApi
 import com.ttak.android.network.api.MessageApi
@@ -79,6 +80,11 @@ object ApiConfig {
         return createRetrofit(context).create(UserApi::class.java)
     }
 
+    // FriendApi 인스턴스 생성
+    fun createFriendApi(context: Context): FriendApi {
+        return createRetrofit(context).create(FriendApi::class.java)
+    }
+
     // 메시지 전송 api 생성
     fun createMessageApi(context: Context): MessageApi {
         return createRetrofit(context).create(MessageApi::class.java)
@@ -98,4 +104,5 @@ object ApiConfig {
     fun createObserverApi(context: Context): ObserverApi2 {
         return createRetrofit(context).create(ObserverApi2::class.java)
     }
+
 }

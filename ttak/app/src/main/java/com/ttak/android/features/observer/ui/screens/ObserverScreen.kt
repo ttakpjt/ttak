@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ttak.android.domain.model.FriendStory
 import com.ttak.android.domain.model.GoalState
-import com.ttak.android.data.repository.PreviewFriendStoryRepository
+//import com.ttak.android.data.repository.PreviewFriendStoryRepository
 import com.ttak.android.data.repository.UserRepositoryImpl
 import com.ttak.android.domain.model.MessageData
 import com.ttak.android.features.observer.ui.components.*
@@ -23,6 +23,7 @@ import com.ttak.android.features.observer.viewmodel.FriendStoryViewModel
 import com.ttak.android.features.observer.viewmodel.FriendStoryViewModelFactory
 import com.ttak.android.features.observer.viewmodel.UserViewModel
 import com.ttak.android.features.observer.viewmodel.UserViewModelFactory
+import com.ttak.android.network.implementation.FriendApiImpl
 import com.ttak.android.network.implementation.UserApiImpl
 import com.ttak.android.network.util.ApiConfig
 import kotlinx.coroutines.CoroutineScope
@@ -31,12 +32,13 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ObserverScreen() {
-    val context = LocalContext.current  // Context 가져오기
+    val context = LocalContext.current
 
     // API 및 Repository 초기화
     val userApi = ApiConfig.createUserApi(context)
-    val userRepository = UserApiImpl(userApi)  // UserRepositoryImpl -> UserApiImpl
-    val friendStoryRepository = PreviewFriendStoryRepository()
+    val friendApi = ApiConfig.createFriendApi(context)
+    val userRepository = UserApiImpl(userApi)
+    val friendStoryRepository = FriendApiImpl(friendApi)
 
     // ViewModel 초기화
     val userViewModel: UserViewModel = viewModel(
@@ -45,6 +47,11 @@ fun ObserverScreen() {
     val friendStoryViewModel: FriendStoryViewModel = viewModel(
         factory = FriendStoryViewModelFactory(friendStoryRepository)
     )
+
+    // 친구 목록 초기 로딩
+    LaunchedEffect(Unit) {
+        (friendStoryRepository as FriendApiImpl).fetchFriends()
+    }
 
     ObserverScreenContent(
         friendStoryViewModel = friendStoryViewModel,
@@ -99,17 +106,18 @@ private fun ObserverScreenContent(
                     searchResults = searchResults,
                     onUserSelect = { user ->
                         Log.d("ObserverScreen", "Adding friend: ${user.userName} (ID: ${user.userId})")
-                        userViewModel.addFriend(user)  // 주석 해제
+                        userViewModel.addFriend(user)
                     },
                     modifier = Modifier.fillMaxSize(),
                     onExpandedChanged = { expanded ->
                         isListExpanded = expanded
                     },
                     onWaterBubbleClick = { friend ->
-                        Log.d("ObserverScreen", "Water bubble clicked for: ${friend.name}")
+                        Log.d("ObserverScreen", "Water bubble clicked for: ${friend.friendName}")  // name -> friendName
+                        Log.d("ObserverScreen", "Water bubble clicked for: ${friend.friendName}")
                         CoroutineScope(Dispatchers.IO).launch {
                             val messageData = MessageData(
-                                userId = selectedFriend!!.id,
+                                userId = selectedFriend!!.friendId,
                                 data = "WaterBalloon"
                             )
                             try {
@@ -125,7 +133,7 @@ private fun ObserverScreenContent(
                         }
                     },
                     onSpeechBubbleClick = { friend ->
-                        Log.d("ObserverScreen", "Speech bubble clicked for: ${friend.name}")
+                        Log.d("ObserverScreen", "Speech bubble clicked for: ${friend.friendName}")  // name -> friendName
                         selectedFriend = friend
                         showMessageDialog = true
                     }
@@ -152,11 +160,10 @@ private fun ObserverScreenContent(
                             showMessageDialog = false
                         },
                         onSend = { message ->
-//                            Log.d("ObserverScreen", "Sending message to ${selectedFriend!!.userName}: $message")  // name -> userName
                             showMessageDialog = false
                             CoroutineScope(Dispatchers.IO).launch {
                                 val messageData = MessageData(
-                                    userId = selectedFriend!!.id,
+                                    userId = selectedFriend!!.friendId.toString(),  // id -> friendId.toString()
                                     data = message
                                 )
                                 try {
