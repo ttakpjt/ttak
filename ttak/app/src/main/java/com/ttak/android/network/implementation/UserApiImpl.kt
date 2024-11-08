@@ -15,7 +15,13 @@ class UserApiImpl(
             Log.d("UserApiImpl", "Searching users with query: $query")
             val response = api.searchUsers(query)
             if (response.isSuccessful) {
-                response.body() ?: emptyList()
+                val apiResponse = response.body()
+                if (apiResponse?.code == "200" && apiResponse.message == "SUCCESS") {
+                    apiResponse.data // User 객체 리스트가 직접 반환됨
+                } else {
+                    Log.e("UserApiImpl", "API 응답 실패: code=${apiResponse?.code}, message=${apiResponse?.message}")
+                    emptyList()
+                }
             } else {
                 Log.e("UserApiImpl", "검색 실패: 코드=${response.code()}, 메시지=${response.message()}")
                 throw Exception("사용자 검색 실패: ${response.message()}")
@@ -25,6 +31,7 @@ class UserApiImpl(
             throw Exception("사용자 검색 중 오류 발생: ${e.message}")
         }
     }
+
 
     override suspend fun addFriend(followingId: Long): Result<Unit> = withContext(Dispatchers.IO) {
         try {
