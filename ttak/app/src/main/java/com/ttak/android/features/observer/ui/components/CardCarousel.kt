@@ -67,19 +67,14 @@ fun CardCarousel(
                         }
                     }
                     1 -> {
-//                        Column(
-//                            modifier = Modifier
-//                                .fillMaxSize()
-//                                .padding(24.dp)
-//                        ) {
+
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(24.dp)
                         ) {
-                            Dashboard() // 전체 유저용 계기판
-                            Spacer(modifier = Modifier.height(16.dp)) // 계기판 간의 간격
-                            Dashboard() // 친구용 계기판
+                            // 계기판                                                                                                                                                                                                                                                                                                                                                                                                                                                컴포넌트 만들기
+                            Dashboard()
                         }
                     }
                 }

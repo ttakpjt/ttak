@@ -38,6 +38,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         }
 
         val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
+        Log.d("MyFirebaseMessagingService", "Request body: $requestBody")
 
         val client = OkHttpClient()
         val request = Request.Builder()

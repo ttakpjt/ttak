@@ -76,6 +76,7 @@ class GoalStateViewModel(application: Application) : AndroidViewModel(applicatio
         _goalState.value = when {
             activeGoal != null -> GoalState(
                 isSet = true,
+                // 이규석
                 observerCount = 3,
                 startTime = Time(activeGoal.startDateTime.hour, activeGoal.startDateTime.minute),
                 endTime = Time(activeGoal.endDateTime.hour, activeGoal.endDateTime.minute),

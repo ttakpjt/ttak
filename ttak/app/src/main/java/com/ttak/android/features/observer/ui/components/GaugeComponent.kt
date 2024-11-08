@@ -13,16 +13,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun Dashboard() {
+fun Dashboard(
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        GaugeComponent(title = "전체 유저", percentage = 75)
-        Spacer(modifier = Modifier.height(32.dp))
-        GaugeComponent(title = "친구", percentage = 45)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ){
+            GaugeComponent(title = "전체 유저", percentage = 75)
+            Spacer(modifier = Modifier.height(32.dp))
+            GaugeComponent(title = "친구", percentage = 45)
+        }
     }
 }
 
@@ -33,7 +39,7 @@ fun GaugeComponent(title: String, percentage: Int) {
 
         Canvas(
             modifier = Modifier
-                .size(200.dp)
+                .size(50.dp)
                 .padding(16.dp)
         ) {
             // 반원형 게이지 배경 그리기
