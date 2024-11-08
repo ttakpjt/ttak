@@ -75,6 +75,7 @@ class LoginActivity : ComponentActivity() {
                     // 계정 정보를 mysql에 보냄
                     val user = auth.currentUser
                     if (user != null) {
+                        // 구글 로그인 정보로 UserModel 생성
                         FirebaseMessaging.getInstance().token.addOnCompleteListener { tokenTask ->
                             if (tokenTask.isSuccessful) {
                                 val fcmToken = tokenTask.result
@@ -82,24 +83,24 @@ class LoginActivity : ComponentActivity() {
                                 val userModel = UserModel(
                                     id = user.uid,
                                     email = user.email ?: "",
-                                    profileImage = user.photoUrl?.toString(),
-                                    token = fcmToken // FCM 토큰 추가
+                                    profileImage = user.photoUrl.toString(),
+                                    fcmToken = fcmToken // FCM 토큰 추가
                                 )
-                                Log.d("LoginActivity", "UserModel with FCM token: $userModel")
+                                Log.d("귯", "UserModel with FCM token: $userModel")
                                 // ViewModel을 통해 서버로 전송
                                 memberViewModel.signIn(userModel)
 
-                                // 다음 화면 이동
+                                // 로그인 성공 시 계정이 존재하지 않는다면 프로필을 설정하러 이동
                                 startActivity(Intent(this, ProfileSetupActivity::class.java))
                                 finish()
                             } else {
-                                Log.e("LoginActivity", "FCM 토큰 가져오기 실패", tokenTask.exception)
+                                Log.e("이규석", "FCM 토큰 가져오기 실패", tokenTask.exception)
                             }
                         }
                     }
                 } else {
                     // 로그인 실패 시 처리
-                    Log.e("이규석", "로그인이 실패했습니다.")
+                    Log.e("이규석", "로그인이 실패했습니다.$task")
                 }
             }
     }

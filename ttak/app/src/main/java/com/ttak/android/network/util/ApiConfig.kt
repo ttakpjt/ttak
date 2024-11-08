@@ -33,17 +33,18 @@ object ApiConfig {
         // userId가 있는지 확인하고 헤더 추가
         if (userId != null) {
             requestBuilder.addHeader("user", userId.toString())
-            Log.d("닉네임", "userId 헤더 추가됨: $userId")
+            Log.d("귯", "userId 헤더 추가됨: $userId")
         } else {
-            chain.request()
+            Log.d("귯", "userId가 null임, 헤더 추가 안 됨")
+//            chain.request()
         }
 
         // 최종 요청
         val request = requestBuilder.build()
 
         // 전체 요청 정보 로그 출력
-        Log.d("닉네임", "요청 URL: ${request.url}")
-        Log.d("닉네임", "요청 헤더: ${request.headers}")
+        Log.d("귯", "요청 URL: ${request.url}")
+        Log.d("귯", "요청 헤더: ${request.headers}")
 
         chain.proceed(request)
     }
@@ -75,11 +76,6 @@ object ApiConfig {
     // UserApi 인스턴스 생성
     fun createUserApi(context: Context): UserApi {
         return createRetrofit(context).create(UserApi::class.java)
-    }
-
-    // testApi 인스턴스 생성
-    fun createTestApi(context: Context): MemberApi {
-        return createRetrofit(context).create(MemberApi::class.java)
     }
 
     // 메시지 전송 api 생성

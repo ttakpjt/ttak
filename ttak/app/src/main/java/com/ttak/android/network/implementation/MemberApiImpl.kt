@@ -33,25 +33,4 @@ class MemberApiImpl(
             Result.failure(Exception("API 호출 중 예외 발생: ${e.message}"))
         }
     }
-
-    override suspend fun test(): Result<String> = withContext(Dispatchers.IO) {
-        try {
-            val response = api.test()
-            if (response.isSuccessful) {
-                // 응답에서 StringData를 받아와서 data 값을 추출하여 반환
-                val responseBody = response.body()?.data
-                if (responseBody != null) {
-                    Result.success(responseBody)  // StringData의 data 값을 반환
-                } else {
-                    Result.failure(Exception("응답에 data가 포함되지 않았습니다"))
-                }
-            } else {
-                Log.e("이규석", "API 호출 실패: 코드=${response.code()}, 메시지=${response.message()}")
-                Result.failure(Exception("API 호출 실패: ${response.message()}"))
-            }
-        } catch (e: Exception) {
-            Log.e("이규석", "API 호출 중 예외 발생", e)
-            Result.failure(Exception("API 호출 중 예외 발생: ${e.message}"))
-        }
-    }
 }
