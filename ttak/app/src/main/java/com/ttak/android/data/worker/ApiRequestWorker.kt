@@ -16,7 +16,8 @@ class ApiRequestWorker(context: Context, workerParams: WorkerParameters) : Worke
 
         // API 요청 URL 설정
         val userId = 1 // 임시로 userId를 1로 고정
-        val url = "https://k11a509.p.ssafy.io/user/test/$userId"
+//        val url = "https://k11a509.p.ssafy.io/user/test/$userId"
+        val url = "https://k11a509.p.ssafy.io/api/user/test/$userId"
 
         // OkHttpClient로 API 요청 보내기
         val client = OkHttpClient()
