@@ -22,4 +22,19 @@ class UserPreferences(context: Context) {
     fun clearUserId() {
         preferences.edit().remove("user_id").apply()
     }
+
+    // 사용자 닉네임 설정
+    fun saveNickname(nickname: String) {
+        preferences.edit().putString("nickname", nickname).apply()
+    }
+
+    // 사용자 닉네임 가져오기
+    fun getNickname(): String? {
+        return preferences.getString("nickname", null)
+    }
+
+    // 저장한 사용자 닉네임 삭제
+    fun clearNickname() {
+        preferences.edit().remove("nickname").apply()
+    }
 }
