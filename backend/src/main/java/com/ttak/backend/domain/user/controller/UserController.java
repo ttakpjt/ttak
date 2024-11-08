@@ -45,9 +45,9 @@ public class UserController {
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<?> userSearch(@RequestParam("nickname") String nickname) {
+	public ResponseEntity<CommonResponse<?>> userSearch(@RequestParam("nickname") String nickname) {
 		List<UserInfoResponse> users = userService.searchUsersByNickname(nickname);
-		return ResponseEntity.ok(users);
+		return ResponseEntity.ok(CommonResponse.success(users));
 	}
 
 	@Operation(summary = "로그인한 유저 정보 DB이관", description = "google로그인 유저 정보 받아오면 UserId 반환")
