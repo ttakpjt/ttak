@@ -16,7 +16,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ttak.android.domain.model.FriendStory
 import com.ttak.android.domain.model.GoalState
 import com.ttak.android.data.repository.PreviewFriendStoryRepository
-import com.ttak.android.data.repository.PreviewUserRepository
 import com.ttak.android.data.repository.UserRepositoryImpl
 import com.ttak.android.domain.model.MessageData
 import com.ttak.android.features.observer.ui.components.*
@@ -25,8 +24,6 @@ import com.ttak.android.features.observer.viewmodel.FriendStoryViewModelFactory
 import com.ttak.android.features.observer.viewmodel.UserViewModel
 import com.ttak.android.features.observer.viewmodel.UserViewModelFactory
 import com.ttak.android.network.implementation.UserApiImpl
-import com.ttak.android.network.util.ApiConfig
-import com.ttak.android.network.api.PreviewUserApi
 import com.ttak.android.network.util.ApiConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
