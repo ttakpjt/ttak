@@ -25,8 +25,4 @@ interface MemberApi {
     // 구글 계정 정보 보내기
     @POST("user/save")
     suspend fun signIn(@Body user: UserModel): Response<SignInResponse>
-
-    // 새로 추가할 API 메서드 예시
-    @GET("user/test")
-    suspend fun test(): Response<StringData>
 }
