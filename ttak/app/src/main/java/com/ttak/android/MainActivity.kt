@@ -28,7 +28,6 @@ import com.ttak.android.common.navigation.NavigationManager
 import com.ttak.android.common.ui.components.BottomNavigationBar
 import com.ttak.android.data.worker.ApiRequestWorker
 import com.ttak.android.network.socket.SocketEvent
-import com.ttak.android.network.socket.WebSocketManager
 import android.Manifest
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.type.Expr
@@ -168,7 +167,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        webSocketManager.connect()
+        webSocketManager.connect(this)  // this를 context로 전달
 
         // 권한 체크 다시 수행
         if (foregroundAppMonitor.hasUsageStatsPermission()) {

@@ -13,7 +13,6 @@ import androidx.core.app.NotificationCompat
 import com.ttak.android.data.local.AppDatabase
 import com.ttak.android.data.repository.FocusGoalRepository
 import com.ttak.android.network.implementation.ObserverApiImpl
-import com.ttak.android.network.socket.WebSocketManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
