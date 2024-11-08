@@ -18,9 +18,7 @@ import kotlin.math.absoluteValue
 @Composable
 fun ScreenTimeChangeComponent(username: String, hoursDifference: Int) {
     Column(modifier = Modifier.padding(8.dp)) {
-        // 추후 닉네임으로 변경
-//        Text(text = "${username}", style = MaterialTheme.typography.labelSmall)
-        Text(text = "이규석님!", style = MaterialTheme.typography.labelSmall)
+        Text(text = "${username}님", style = MaterialTheme.typography.labelSmall)
         Text(
             text = buildAnnotatedString {
                 append("어제보다 ")

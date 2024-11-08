@@ -36,11 +36,4 @@ class NicknameViewModel(application: Application) : AndroidViewModel(application
             }
         }
     }
-
-    private val _nickname = mutableStateOf<String>("")
-    val nickname: State<String> = _nickname
-
-    fun setNickname(nickname: String) {
-        _nickname.value = nickname
-    }
 }

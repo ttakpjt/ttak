@@ -29,6 +29,7 @@ import com.ttak.android.common.ui.theme.Black
 import com.ttak.android.common.ui.theme.White
 import com.ttak.android.features.mypage.ui.components.ProfileImagePicker
 import com.ttak.android.features.mypage.viewmodel.NicknameViewModel
+import com.ttak.android.network.util.UserPreferences
 
 @Composable
 fun ProfileSetupScreen(
@@ -100,7 +101,8 @@ fun ProfileSetupScreen(
             // 닉네임을 저장하고, 다음으로 이동
             onClick = {
                 if (isNicknameAvailable) {
-                    viewModel.setNickname(nickname) // 로컬에 닉네임 등록
+                    // application의 context를 가져오기 위해 applicationContext를 사용
+                    UserPreferences(context.applicationContext).saveNickname(nickname) // nickname 저장하기
                     viewModel.registerNickname(nickname)  // db에 닉네임 등록
 
                     val sharedPreferences =
