@@ -16,7 +16,6 @@ class MyPageApiImpl (
         override suspend fun checkNickname(nickname: String): Result<MyPageResponse> = handleApiResponse {
             val nicknameRequest = NicknameRequest(nickname)
             val response = api.checkNickname(nicknameRequest)
-            Log.d("닉네임", "닉네임 중복 검사 결과2: $response $nickname")
             if (response.isSuccessful) {
                 response.body()?.let {
                     Result.success(it)

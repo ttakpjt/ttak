@@ -24,11 +24,11 @@ import com.ttak.android.common.ui.theme.White
 fun AppSearchBar(
     modifier: Modifier = Modifier,
     icon: Int = R.drawable.ic_magnify,  // 기본 아이콘 설정
+    isError: Boolean = false,  // 경고 문구 표시 여부
     errorMessage: String = "사용자가 존재하지 않습니다.",  // 기본 에러 메시지
-    onIconClick: () -> Unit = {}  // 아이콘 클릭 시 동작
+    onIconClick: (String) -> Unit = {}  // 닉네임 중복 여부 결과 콜백
 ) {
     var searchText by remember { mutableStateOf(TextFieldValue("")) }
-    var isError by remember { mutableStateOf(false) }  // 경고 문구 표시 여부
 
     Column(modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
         Row(
@@ -44,7 +44,6 @@ fun AppSearchBar(
                 value = searchText,
                 onValueChange = {
                     searchText = it
-                    isError = false  // 텍스트 입력 시 경고 문구 초기화
                 },
                 modifier = Modifier
                     .weight(1f)
@@ -66,11 +65,7 @@ fun AppSearchBar(
             // 검색 아이콘 버튼
             IconButton(
                 onClick = {
-                    onIconClick()  // 아이콘 클릭 시 동작 매번 다르니까 이거 수정도 해야 할 듯
-                    // 예시 로직: False 반환 시 에러 표시
-                    if (/* 검색 결과가 없는 경우 */ false) {
-                        isError = true
-                    }
+                    onIconClick(searchText.text)  // 닉네임 전달
                 }
             ) {
                 Icon(
@@ -86,7 +81,7 @@ fun AppSearchBar(
             Text(
                 text = errorMessage,
                 color = Color.Red,
-                fontSize = 12.sp,
+                style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(start = 8.dp, top = 4.dp)
             )
         }

@@ -7,7 +7,6 @@ import com.ttak.android.network.api.MemberApi
 import com.ttak.android.network.api.MyPageApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

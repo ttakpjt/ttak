@@ -89,7 +89,7 @@ class LoginActivity : ComponentActivity() {
                     finish()
                 } else {
                     // 로그인 실패 시 처리
-                    Log.e("login", "로그인이 실패했습니다.")
+                    Log.e("이규석", "로그인이 실패했습니다.")
                 }
             }
     }
