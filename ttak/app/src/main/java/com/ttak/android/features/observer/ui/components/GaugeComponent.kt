@@ -10,10 +10,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.ttak.android.domain.model.CountResponse
 
 @Composable
 fun Dashboard(
+    countData: CountResponse,   // totalCount, myCount, friendsCount
 ) {
     Column(
         modifier = Modifier
@@ -25,21 +26,21 @@ fun Dashboard(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ){
-            GaugeComponent(title = "전체 유저", percentage = 75)
+            GaugeComponent(title = "사용자", total = countData.data.totalCount, my = countData.data.myCount)
             Spacer(modifier = Modifier.height(32.dp))
-            GaugeComponent(title = "친구", percentage = 45)
+            GaugeComponent(title = "친구", total = countData.data.friendsCount, my = countData.data.myCount)
         }
     }
 }
 
 @Composable
-fun GaugeComponent(title: String, percentage: Int) {
+fun GaugeComponent(title: String, total: Int, my: Int) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = title, fontSize = 20.sp)
+        Text(text = title, style = MaterialTheme.typography.bodyLarge)
 
         Canvas(
             modifier = Modifier
-                .size(50.dp)
+                .size(100.dp)
                 .padding(16.dp)
         ) {
             // 반원형 게이지 배경 그리기
@@ -51,8 +52,9 @@ fun GaugeComponent(title: String, percentage: Int) {
                 style = Stroke(width = 8.dp.toPx())
             )
 
-            // 바늘 각도 계산
-            val needleAngle = 180f + (percentage / 100f) * 180f
+            // 바늘 각도 계산 (부동 소수점으로 계산)
+            val percentage = (my.toFloat() / total.toFloat()) * 100
+            val needleAngle = 270f + percentage * 180f / 100
 
             // 바늘 그리기
             rotate(degrees = needleAngle) {
@@ -65,7 +67,7 @@ fun GaugeComponent(title: String, percentage: Int) {
             }
         }
 
-        // 순위 퍼센트 텍스트
-        Text(text = "상위 $percentage%", fontSize = 16.sp)
+        // 적발 횟수 비교 텍스트
+        Text(text = "${total}번 중 ${my}번", style = MaterialTheme.typography.bodyLarge)
     }
 }
