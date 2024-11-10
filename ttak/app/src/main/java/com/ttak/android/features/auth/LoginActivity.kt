@@ -77,6 +77,7 @@ class LoginActivity : ComponentActivity() {
                     if (user != null) {
                         // 구글 로그인 정보로 UserModel 생성
                         FirebaseMessaging.getInstance().token.addOnCompleteListener { tokenTask ->
+                            Log.d("귯", "FCM 토큰은? : ${tokenTask.result}")
                             if (tokenTask.isSuccessful) {
                                 val fcmToken = tokenTask.result
                                 // UserModel 생성, FCM 토큰 포함
@@ -90,7 +91,7 @@ class LoginActivity : ComponentActivity() {
                                 // ViewModel을 통해 서버로 전송
                                 memberViewModel.signIn(userModel)
 
-                                // 로그인 성공 시 계정이 존재하지 않는다면 프로필을 설정하러 이동
+                                // (추가) 내 계정으로 된 닉네임이 있다면 로그인 성공 시 프로필을 설정하러 이동
                                 startActivity(Intent(this, ProfileSetupActivity::class.java))
                                 finish()
                             } else {

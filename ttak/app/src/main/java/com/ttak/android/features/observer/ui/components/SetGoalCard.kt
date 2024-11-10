@@ -56,6 +56,7 @@ fun SetGoalCard(
 
             Spacer(modifier = Modifier.width(4.dp))
 
+            // 이규석
             Text(
                 text = "${goalState.observerCount}명이 지켜보고 있어요",
                 style = MaterialTheme.typography.bodyMedium,
