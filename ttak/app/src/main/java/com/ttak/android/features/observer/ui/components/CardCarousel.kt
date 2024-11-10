@@ -18,12 +18,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ttak.android.data.local.AppDatabase
 import com.ttak.android.data.repository.FocusGoalRepository
+import com.ttak.android.domain.model.CountResponse
+import com.ttak.android.domain.model.CountResponseData
 import com.ttak.android.features.observer.ui.components.Dashboard
 import com.ttak.android.features.observer.ui.components.PageIndicator
 import com.ttak.android.features.observer.ui.components.SetGoalCard
 import com.ttak.android.features.observer.ui.components.UnsetGoalCard
 import com.ttak.android.features.observer.viewmodel.GoalStateViewModel
 import com.ttak.android.features.observer.viewmodel.GoalStateViewModelFactory
+import com.ttak.android.features.observer.viewmodel.ObserverViewModel
+import com.ttak.android.features.observer.viewmodel.ObserverViewModelFactory
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -40,7 +44,23 @@ fun CardCarousel(
         factory = GoalStateViewModelFactory(application)
     )
 
+    // 주간 딱걸림 횟수 가져오기
+    val observerViewModel: ObserverViewModel = viewModel(
+        factory = ObserverViewModelFactory(application)
+    )
+    observerViewModel.getPickRank()
+
     val goalState by viewModel.goalState.collectAsState()
+//    val countData by observerViewModel.countData.collectAsState()   // history/pick-rank
+    val countData = CountResponse(
+        code = "1",
+        message = "바보",
+        data = CountResponseData(
+            totalCount = 1000,  // 총 유저의 걸린 횟수개수 예시 값
+            myCount = 100,      // 내 개수 예시 값
+            friendsCount = 100  // 친구의 걸린 횟수 예시 값
+        )
+    )
     val pagerState = rememberPagerState(pageCount = { 2 })
 
     HorizontalPager(
@@ -67,19 +87,16 @@ fun CardCarousel(
                         }
                     }
                     1 -> {
-//                        Column(
-//                            modifier = Modifier
-//                                .fillMaxSize()
-//                                .padding(24.dp)
-//                        ) {
+
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(24.dp)
                         ) {
-                            Dashboard() // 전체 유저용 계기판
-                            Spacer(modifier = Modifier.height(16.dp)) // 계기판 간의 간격
-                            Dashboard() // 친구용 계기판
+                            // 계기판                                                                                                                                                                                                                                                                                                                                                                                                                                                컴포넌트 만들기
+                            countData?.let { data ->
+                                Dashboard(countData = data)
+                            }
                         }
                     }
                 }

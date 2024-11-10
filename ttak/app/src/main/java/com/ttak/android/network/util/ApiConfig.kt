@@ -7,10 +7,10 @@ import com.ttak.android.network.api.GoalApi
 import com.ttak.android.network.api.MemberApi
 import com.ttak.android.network.api.MessageApi
 import com.ttak.android.network.api.MyPageApi
+import com.ttak.android.network.api.ObserverApi2
 import com.ttak.android.network.api.UserApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -92,5 +92,10 @@ object ApiConfig {
     // GoalApi 인스턴스 생성
     fun createGoalApi(context: Context): GoalApi {
         return createRetrofit(context).create(GoalApi::class.java)
+    }
+
+    // ObserverApi 인스턴스 생성
+    fun createObserverApi(context: Context): ObserverApi2 {
+        return createRetrofit(context).create(ObserverApi2::class.java)
     }
 }
