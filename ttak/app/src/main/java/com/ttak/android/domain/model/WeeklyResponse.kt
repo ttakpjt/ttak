@@ -6,7 +6,16 @@ data class WeeklyPickResponse(
     val data: WeeklyPickData
 )
 
+data class WeeklyWatchingResponse(
+    val code: String,
+    val message: String,
+    val data: WeeklyWatchingData
+)
+
 data class WeeklyPickData(
-    val myCount: Int,
+    val myCount: Int
+)
+
+data class WeeklyWatchingData(
     val followerNum: Int
 )
