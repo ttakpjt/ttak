@@ -27,7 +27,7 @@ import com.ttak.backend.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/friends")
+@RequestMapping("/api/friends")
 @RequiredArgsConstructor
 public class FriendController {
 
