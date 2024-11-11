@@ -37,4 +37,13 @@ public class History extends TimeBaseEntity {
 
 	@Column(name = "message")
 	private String message;
+
+	public static History of(Long attackId, Long receiveId, String type, String message) {
+		return History.builder()
+			.attackId(attackId)
+			.receiveId(receiveId)
+			.type(type)
+			.message(message)
+			.build();
+	}
 }

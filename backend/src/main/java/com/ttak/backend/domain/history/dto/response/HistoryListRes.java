@@ -11,7 +11,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class HistoryListRes {
 
-	private Long count;
 	private String Type;
 	private String message;
 	private LocalDateTime createAt;

@@ -12,6 +12,8 @@ import com.google.firebase.messaging.Notification;
 import com.ttak.backend.domain.fcm.dto.request.FcmTokenReq;
 import com.ttak.backend.domain.fcm.entity.Fcm;
 import com.ttak.backend.domain.fcm.repository.FcmRepository;
+import com.ttak.backend.domain.history.entity.History;
+import com.ttak.backend.domain.history.service.HistoryService;
 import com.ttak.backend.global.util.IdempotencyUtil;
 import com.ttak.backend.domain.user.entity.User;
 import com.ttak.backend.domain.user.repository.UserRepository;
@@ -30,6 +32,8 @@ public class FcmService{
 	private final FcmRepository fcmRepository;
 	private final UserRepository userRepository;
 	private final IdempotencyUtil idempotencyUtil;
+	private final HistoryService historyService;
+
 	/**
 	 * Fcm을 통해 받아온 해당 유저의 fcmToken을 DB에 저장한다.
 	 * @param fcmTokenReq
@@ -75,7 +79,7 @@ public class FcmService{
 		}
 
 		// redis에 저장할 Unique Key 생성
-		String messageKey = "message" + sendId + "_" + receiveId + "_" + data;
+		String messageKey = "message_" + sendId + "_" + receiveId + "_" + data;
 
 		// message 객체 생성 (firebase)
 		Message message = Message.builder()
@@ -86,9 +90,8 @@ public class FcmService{
 			.build();
 
 		try {
-			log.info("===Sending message: {}", message.toString());
 			firebaseMessaging.send(message);
-			idempotencyUtil.addRequest(messageKey);
+			if(idempotencyUtil.addRequest(messageKey)) historyService.addAttackHistory(sendId, data, receiveId, "message");
 		} catch (FirebaseMessagingException | com.google.firebase.messaging.FirebaseMessagingException e) {
 			throw new FirebaseMessagingException(FCM001);
 		}
@@ -107,7 +110,7 @@ public class FcmService{
 		}
 
 		// redis에 저장할 Unique Key 생성
-		String messageKey = "message" + sendId + "_" + receiveId + "_" + data;
+		String messageKey = "message_" + sendId + "_" + receiveId + "_" + data;
 
 		// message 객체 생성 (firebase)
 		Message message = Message.builder()
@@ -117,7 +120,7 @@ public class FcmService{
 
 		try {
 			firebaseMessaging.send(message);
-			idempotencyUtil.addRequest(messageKey);
+			if(idempotencyUtil.addRequest(messageKey)) historyService.addAttackHistory(sendId, null, receiveId, data);
 		} catch (FirebaseMessagingException | com.google.firebase.messaging.FirebaseMessagingException e) {
 			throw new FirebaseMessagingException(FCM001);
 		}

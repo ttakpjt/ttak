@@ -43,7 +43,7 @@ public class HistoryController {
 	}
 
 	@Operation(summary = "공격 히스토리 반환", description = "공격 히스토리 리스트 반환")
-	@PostMapping("/list")
+	@GetMapping("/list")
 	public ResponseEntity<CommonResponse<?>> listHistory (@UserPk final Long userId) {
 		log.info("========== 히스토리 반환 시작 ==========");
 		List<HistoryListRes> list = historyService.getAttackHistory(userId);
