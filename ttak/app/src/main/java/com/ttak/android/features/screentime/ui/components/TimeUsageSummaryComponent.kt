@@ -33,7 +33,12 @@ fun TimeUsageSummaryComponent(monthUsage: Int, weekUsage: Int, todayUsage: Int) 
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.weight(1f)
             ) {
-                Text(text = "이번 달", style = MaterialTheme.typography.bodyLarge, color = Black, fontSize = 16.sp)
+                Text(
+                    text = "이번 달",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Black,
+//                    fontSize = 16.sp
+                )
                 Text(text = formatDuration(monthUsage), style = MaterialTheme.typography.bodyLarge, color = Black)
             }
 
@@ -48,7 +53,12 @@ fun TimeUsageSummaryComponent(monthUsage: Int, weekUsage: Int, todayUsage: Int) 
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.weight(1f)
             ) {
-                Text(text = "지난 주", style = MaterialTheme.typography.bodyLarge, color = Black, fontSize = 16.sp)
+                Text(
+                    text = "지난 주",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Black,
+//                    fontSize = 16.sp
+                )
                 Text(text = formatDuration(weekUsage), style = MaterialTheme.typography.bodyLarge, color = Black)
             }
 
@@ -63,7 +73,11 @@ fun TimeUsageSummaryComponent(monthUsage: Int, weekUsage: Int, todayUsage: Int) 
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.weight(1f)
             ) {
-                Text(text = "오늘", style = MaterialTheme.typography.bodyLarge, color = Black, fontSize = 16.sp)
+                Text(text = "오늘",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Black,
+//                    fontSize = 16.sp
+                )
                 Text(text = formatDuration(todayUsage), style = MaterialTheme.typography.bodyLarge, color = Red)
             }
         }

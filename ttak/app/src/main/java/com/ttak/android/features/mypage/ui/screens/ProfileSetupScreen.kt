@@ -7,6 +7,7 @@ import android.net.Uri
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -54,7 +55,8 @@ fun ProfileSetupScreen(
         // 상단 프로필 소제목
         Text(
             text = "프로필 설정",
-            fontSize = 32.sp,
+            style = MaterialTheme.typography.titleLarge,
+//            fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
             color = White,
             modifier = Modifier.align(Alignment.Start)

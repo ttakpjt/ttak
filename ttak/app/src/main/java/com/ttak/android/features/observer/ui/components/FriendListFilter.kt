@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -63,8 +64,9 @@ fun FriendListFilter(
                     Text(
                         text = option.title,
                         color = Color.Black,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.titleSmall
+//                        fontSize = 20.sp,
+//                        fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Box(
@@ -79,8 +81,9 @@ fun FriendListFilter(
                         Text(
                             text = option.count.toString(),
                             color = Color.White,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
+//                            fontSize = 16.sp,
+//                            fontWeight = FontWeight.Bold
+                            style = MaterialTheme.typography.bodySmall
                         )
                     }
                 }
