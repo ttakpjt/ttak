@@ -7,5 +7,6 @@ data class WeeklyPickResponse(
 )
 
 data class WeeklyPickData(
-    val myCount: Int
+    val myCount: Int,
+    val followerNum: Int
 )
