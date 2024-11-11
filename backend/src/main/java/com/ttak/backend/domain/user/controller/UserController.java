@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @Tag(name = "User API", description = "회원가입 및 정보확인을 위한 API")
 @CrossOrigin("*")
 public class UserController {
