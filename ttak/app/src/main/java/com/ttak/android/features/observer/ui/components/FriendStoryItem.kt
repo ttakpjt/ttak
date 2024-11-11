@@ -10,11 +10,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -36,13 +33,12 @@ fun FriendStoryItem(
 
     Box(
         modifier = modifier.width(80.dp).height(120.dp),
-//        modifier = modifier.width(80.dp),
         contentAlignment = Alignment.TopCenter
     ) {
         // 메인 컨텐츠
         Column(
             modifier = Modifier.then(
-                if (friend.hasNewStory) {
+                if (friend.hasNewStory) {  // status를 통해 계산된 hasNewStory 프로퍼티 사용
                     Modifier.clickable { showPopup = !showPopup }
                 } else {
                     Modifier
@@ -62,10 +58,10 @@ fun FriendStoryItem(
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(friend.profileImageUrl)
+                        .data(friend.friendImg)
                         .crossfade(true)
                         .build(),
-                    contentDescription = "${friend.name}의 프로필 이미지",
+                    contentDescription = "${friend.friendName}의 프로필 이미지",
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(8.dp)
@@ -77,7 +73,7 @@ fun FriendStoryItem(
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = friend.name,
+                text = friend.friendName,
                 color = Color.White,
 //                fontSize = 18.sp,
                 style = MaterialTheme.typography.bodyMedium,

@@ -20,7 +20,7 @@ fun MessageDialog(
 ) {
     var message by remember { mutableStateOf("") }
 
-    Log.d("MessageDialog", "Dialog opened for friend: ${friendStory.name}")
+    Log.d("MessageDialog", "Dialog opened for friend: ${friendStory.friendName}")
 
     AlertDialog(
         onDismissRequest = {
@@ -56,7 +56,7 @@ fun MessageDialog(
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
                     Text(
-                        text = friendStory.name,
+                        text = friendStory.friendName,
                         style = MaterialTheme.typography.titleLarge,  // 더 큰 글씨체로 변경
 //                        color = Color.White,
 //                        fontSize = 20.sp

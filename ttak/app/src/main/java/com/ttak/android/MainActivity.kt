@@ -1,5 +1,6 @@
 package com.ttak.android
 
+import WebSocketManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -28,18 +29,9 @@ import com.ttak.android.common.navigation.NavigationManager
 import com.ttak.android.common.ui.components.BottomNavigationBar
 import com.ttak.android.data.worker.ApiRequestWorker
 import com.ttak.android.network.socket.SocketEvent
-import com.ttak.android.network.socket.WebSocketManager
 import android.Manifest
-import com.google.firebase.messaging.FirebaseMessaging
-import com.google.type.Expr
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONObject
+import com.ttak.android.network.util.UserPreferences
+import kotlinx.coroutines.delay
 
 /*
 1. 앱 실행 시 필요한 권한들을 확인
@@ -51,7 +43,6 @@ import org.json.JSONObject
 class MainActivity : ComponentActivity() {
     private val TAG = "MainActivity"
 
-
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
     ) { isGranted: Boolean ->
@@ -62,11 +53,10 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private val webSocketManager = WebSocketManager.getInstance()
+    private lateinit var webSocketManager: WebSocketManager
     private lateinit var foregroundAppMonitor: ForegroundAppMonitor
 
     private fun askNotificationPermission() {
-        // This is only necessary for API level >= 33 (TIRAMISU)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
                 PackageManager.PERMISSION_GRANTED
@@ -74,12 +64,8 @@ class MainActivity : ComponentActivity() {
 //                getToken()
                 // FCM SDK (and your app) can post notifications.
             } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-                // TODO: display an educational UI explaining to the user the features that will be enabled
-                //       by them granting the POST_NOTIFICATION permission. This UI should provide the user
-                //       "OK" and "No thanks" buttons. If the user selects "OK," directly request the permission.
-                //       If the user selects "No thanks," allow the user to continue without notifications.
+                // TODO: display an educational UI
             } else {
-                // Directly ask for the permission
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         } else {
@@ -90,25 +76,66 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // ForegroundAppMonitor 초기화
+        Log.d(TAG, "onCreate called")  // 추가
+
+        // 초기화
+        webSocketManager = WebSocketManager.getInstance(applicationContext)
+        Log.d(TAG, "WebSocketManager initialized")  // 추가
+
         foregroundAppMonitor = ForegroundAppMonitor(application)
 
         setContent {
             TtakTheme {
                 val navController = rememberNavController()
 
-                // 권한 체크 및 서비스 시작
-                LaunchedEffect(Unit) {
-                    checkPermissionAndStartService()
+                // NavController 초기화
+                LaunchedEffect(navController) {
+                    NavigationManager.setNavController(navController)
                 }
 
                 Scaffold(
                     modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
-                    // NavigationManager 초기화를 여기로 이동
-                    LaunchedEffect(navController) {
-                        Log.d(TAG, "Setting NavController in MainActivity")
-                        NavigationManager.setNavController(navController)
+                    // WebSocket 연결 및 이벤트 처리
+                    LaunchedEffect(Unit) {
+                        Log.d(TAG, "LaunchedEffect for WebSocket triggered")  // 추가
+                        try {
+                            Log.d(TAG, "Attempting to connect to WebSocket...")
+
+                            // userId 로그 추가
+                            val userId = UserPreferences(applicationContext).getUserId()
+                            Log.d(TAG, "Current userId: $userId")  // 추가
+
+                            webSocketManager.connect()
+
+                            Log.d(TAG, "Starting to collect WebSocket events")  // 추가
+                            webSocketManager.socketEvents.collect { event ->
+                                when (event) {
+                                    is SocketEvent.Connected -> {
+                                        Log.d(TAG, "WebSocket connected successfully")
+                                    }
+                                    is SocketEvent.MessageReceived -> {
+                                        Log.d(TAG, "Received WebSocket message: ${event.data}")
+                                    }
+                                    is SocketEvent.Disconnected -> {
+                                        Log.e(TAG, "WebSocket disconnected, will attempt reconnect in 5s")  // 수정
+                                        delay(5000)
+                                        Log.d(TAG, "Attempting reconnection after disconnect")  // 추가
+                                        webSocketManager.connect()
+                                    }
+                                    is SocketEvent.Error -> {
+                                        Log.e(TAG, "WebSocket error occurred", event.error)
+                                        Log.e(TAG, "Error details: ${event.error.message}")  // 추가
+                                        delay(5000)
+                                        Log.d(TAG, "Attempting reconnection after error")  // 추가
+                                        webSocketManager.connect()
+                                    }
+                                }
+                            }
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Critical error in WebSocket setup", e)  // 수정
+                            Log.e(TAG, "Stack trace: ${e.stackTraceToString()}")  // 추가
+                        }
                     }
 
                     Box(modifier = Modifier.padding(innerPadding)) {
@@ -116,43 +143,15 @@ class MainActivity : ComponentActivity() {
                             Box(modifier = Modifier.weight(1f)) {
                                 AppNavHost(navController)
                             }
-                            // 하단 네비게이션 바
                             BottomNavigationBar(navController = navController)
                         }
                     }
                 }
-
-                // 웹소켓 이벤트 수신 처리
-                LaunchedEffect(Unit) {
-                    webSocketManager.socketEvents.collect { event ->
-                        when (event) {
-                            is SocketEvent.Connected -> {
-                                Log.d(TAG, "WebSocket connected")
-                            }
-                            is SocketEvent.MessageReceived -> {
-                                Log.d(TAG, "WebSocket message: ${event.data}")  // data로 수정
-                            }
-                            is SocketEvent.Disconnected -> {
-                                Log.d(TAG, "WebSocket disconnected")
-                            }
-                            is SocketEvent.Error -> {
-                                Log.e(TAG, "WebSocket error", event.error)  // error로 수정
-                            }
-                        }
-                    }
-                }
-
-                startForegroundMonitorService()
-                startApiRequestWorker()
             }
         }
-    }
 
-
-    override fun onDestroy() {
-        super.onDestroy()
-        // Activity가 완전히 종료될 때도 연결 해제
-        webSocketManager.disconnect()
+        startForegroundMonitorService()
+        startApiRequestWorker()
     }
 
     private fun checkPermissionAndStartService() {
@@ -168,17 +167,21 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        webSocketManager.connect()
+        // 웹소켓은 LaunchedEffect에서 관리하므로 여기서 제거
 
         // 권한 체크 다시 수행
         if (foregroundAppMonitor.hasUsageStatsPermission()) {
             startForegroundMonitorService()
         }
 
-        // 알림 권환 확인 및 요청
+        // 알림 권한 확인 및 요청
         askNotificationPermission()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        webSocketManager.disconnect()
+    }
 //    // FCM 토큰을 수동으로 가져오는 함수
 //    private fun getToken() {
 //        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
