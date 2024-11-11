@@ -22,6 +22,10 @@ class SplashActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // 앱 재설치 시 인증 상태 초기화
+        FirebaseAuth.getInstance().signOut()
+
         foregroundAppMonitor = ForegroundAppMonitor(application)
 
         setContent {

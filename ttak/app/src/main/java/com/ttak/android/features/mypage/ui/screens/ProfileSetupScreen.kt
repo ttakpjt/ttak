@@ -80,14 +80,14 @@ fun ProfileSetupScreen(
             errorMessage = errorMessage,
             // 닉네임 중복 여부 확인
             onIconClick = { inputNickname ->
-                viewModel.checkNickname(inputNickname) { isAvailable ->
+                viewModel.checkNickname(inputNickname) { isAvailable, serverMessage  ->
                     isError = !isAvailable  // 닉네임 중복 확인 결과에 따라 경고 문구 표시
                     onNicknameCheck(isAvailable)  // 결과 콜백
                     isNicknameAvailable = isAvailable  // 닉네임 중복 결과 저장
                     if (isAvailable) {
                         nickname = inputNickname  // 사용 가능한 닉네임을 저장
                     } else {
-                        errorMessage = "이미 존재하는 닉네임입니다."
+                        errorMessage = serverMessage ?: "이미 존재하는 닉네임입니다."
                     }
                 }
             }

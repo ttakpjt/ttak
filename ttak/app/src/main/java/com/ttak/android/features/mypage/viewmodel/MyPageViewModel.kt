@@ -15,11 +15,15 @@ class NicknameViewModel(application: Application) : AndroidViewModel(application
         ApiConfig.createMyPageApi(application)
     )
     // checkNickname 메소드: 닉네임 중복 검사
-    fun checkNickname(nickname: String, onResult: (Boolean) -> Unit) {
+    fun checkNickname(nickname: String, onResult: (Boolean, String?) -> Unit) {
         // 비동기 요청 수행
         viewModelScope.launch {
             val result = myPageRepository.checkNickname(nickname)
-            onResult(result.isSuccess && result.getOrNull()?.data == null)  // 중복 체크 결과 전달
+            val isAvailable = result.isSuccess && result.getOrNull()?.data == null
+            Log.d("귯", "$${result.getOrNull()}$")
+            val serverMessage = result.getOrNull()?.message ?: "오류 발생" // 메시지 값이 없을 경우 기본 메시지 설정
+
+            onResult(isAvailable, serverMessage) // 콜백에 중복 여부와 메시지 전달
         }
     }
 
