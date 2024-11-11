@@ -1,46 +1,51 @@
 package com.ttak.android.common.monitor
 
 import android.app.Application
-import android.app.usage.UsageStatsManager
+import android.app.AppOpsManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Process
 import android.provider.Settings
-import java.util.concurrent.TimeUnit
-
-/*
-- Usage Stats 권한 확인 및 요청을 담당
-- MainActivity에서 사용
-- 주로 권한 관련 기능 처리
- */
 
 class ForegroundAppMonitor(private val application: Application) {
-    private lateinit var usageStatsManager: UsageStatsManager
-
-    init {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            usageStatsManager = application.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-        }
-    }
 
     fun hasUsageStatsPermission(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val time = System.currentTimeMillis()
-            val stats = usageStatsManager.queryUsageStats(
-                UsageStatsManager.INTERVAL_DAILY,
-                time - TimeUnit.DAYS.toMillis(1),
-                time
-            )
-            return stats != null && stats.isNotEmpty()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            return false
         }
-        return false
+
+        return try {
+            val appOps = application.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                appOps.unsafeCheckOpNoThrow(
+                    AppOpsManager.OPSTR_GET_USAGE_STATS,
+                    Process.myUid(),
+                    application.packageName
+                ) == AppOpsManager.MODE_ALLOWED
+            } else {
+                @Suppress("DEPRECATION")
+                appOps.checkOpNoThrow(
+                    AppOpsManager.OPSTR_GET_USAGE_STATS,
+                    Process.myUid(),
+                    application.packageName
+                ) == AppOpsManager.MODE_ALLOWED
+            }
+        } catch (e: Exception) {
+            false
+        }
     }
 
     fun requestUsageStatsPermission(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
             context.startActivity(intent)
         }
+    }
+
+    companion object {
+        private const val TAG = "ForegroundAppMonitor"
     }
 }
