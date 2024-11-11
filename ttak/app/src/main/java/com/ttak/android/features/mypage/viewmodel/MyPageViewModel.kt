@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.ttak.android.data.repository.MyPageRepository
 import kotlinx.coroutines.launch
 import android.util.Log
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import com.ttak.android.network.implementation.MyPageApiImpl
 import com.ttak.android.network.util.ApiConfig
@@ -26,13 +24,14 @@ class NicknameViewModel(application: Application) : AndroidViewModel(application
     }
 
     // registerNickname 메소드: 닉네임 등록
-    fun registerNickname(nickname: String) {
+    fun registerNickname(nickname: String, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             val result = myPageRepository.registerNickname(nickname)
             if (result.isSuccess) {
-                Log.d("귯", "닉네임 등록 성공: ${result.getOrNull()}")
+                onResult(true) // 성공: 등록 성공
             } else {
                 Log.e("귯", "닉네임 등록 실패: ${result.exceptionOrNull()}")
+                onResult(false)
             }
         }
     }
