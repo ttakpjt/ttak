@@ -84,8 +84,8 @@ fun SmallGoalCard(
                     Text(
                         text = "목표를 설정하고 집중해보세요!",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
+//                        color = Color.White,
+//                        fontWeight = FontWeight.Bold
                     )
                 }
 
@@ -118,15 +118,15 @@ fun SmallGoalCard(
                     Text(
                         text = "${String.format("%02d:%02d", goalState.startTime.hour, goalState.startTime.minute)} - ${String.format("%02d:%02d", goalState.endTime.hour, goalState.endTime.minute)}",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
+//                        color = Color.White,
+//                        fontWeight = FontWeight.Bold
                     )
 
                     Text(
                         text = "(",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
+//                        color = Color.White,
+//                        fontWeight = FontWeight.Bold
                     )
 
                     // 앱 아이콘들
@@ -148,8 +148,8 @@ fun SmallGoalCard(
                             Text(
                                 text = "...",
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold
+//                                color = Color.White,
+//                                fontWeight = FontWeight.Bold
                             )
                         }
                     }
@@ -157,8 +157,8 @@ fun SmallGoalCard(
                     Text(
                         text = ")",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
+//                        color = Color.White,
+//                        fontWeight = FontWeight.Bold
                     )
                 }
             }

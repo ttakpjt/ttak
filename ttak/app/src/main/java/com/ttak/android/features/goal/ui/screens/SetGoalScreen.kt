@@ -46,8 +46,8 @@ fun SetGoalScreen(
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "제한시간 설정",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.titleMedium,
+//                fontWeight = FontWeight.Bold
             )
         }
 
@@ -77,9 +77,9 @@ fun SetGoalScreen(
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "앱 선택",
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(vertical = 8.dp),
-                fontWeight = FontWeight.Bold
+//                fontWeight = FontWeight.Bold
             )
         }
 

@@ -33,7 +33,7 @@ fun UnsetGoalCard() {
         Text(
             text = "목표를 설정하고\n집중해보세요!",
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.titleMedium,
             color = Color.White
         )
 
@@ -52,9 +52,9 @@ fun UnsetGoalCard() {
             Text(
                 "설정하기",
                 color = Color.Black,
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(vertical = 4.dp),
-                fontWeight = FontWeight.Bold
+//                fontWeight = FontWeight.Bold
             )
         }
     }
