@@ -51,16 +51,7 @@ fun CardCarousel(
     observerViewModel.getPickRank()
 
     val goalState by viewModel.goalState.collectAsState()
-//    val countData by observerViewModel.countData.collectAsState()   // history/pick-rank
-    val countData = CountResponse(
-        code = "1",
-        message = "바보",
-        data = CountResponseData(
-            totalCount = 1000,  // 총 유저의 걸린 횟수개수 예시 값
-            myCount = 100,      // 내 개수 예시 값
-            friendsCount = 100  // 친구의 걸린 횟수 예시 값
-        )
-    )
+    val countData by observerViewModel.countData.collectAsState()   // history/pick-rank
     val pagerState = rememberPagerState(pageCount = { 2 })
 
     HorizontalPager(
