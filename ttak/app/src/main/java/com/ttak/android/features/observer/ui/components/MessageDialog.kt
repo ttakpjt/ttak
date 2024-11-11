@@ -58,14 +58,14 @@ fun MessageDialog(
                     Text(
                         text = friendStory.name,
                         style = MaterialTheme.typography.titleLarge,  // 더 큰 글씨체로 변경
-                        color = Color.White,
-                        fontSize = 20.sp
+//                        color = Color.White,
+//                        fontSize = 20.sp
                     )
                     Text(
                         text = "님에게",
                         style = MaterialTheme.typography.bodySmall,  // 더 작은 글씨체로 변경
-                        color = Color.White,
-                        fontSize = 16.sp
+//                        color = Color.White,
+//                        fontSize = 16.sp
                     )
                 }
 
@@ -113,8 +113,9 @@ fun MessageDialog(
                     Text(
                         text = "취소하기",
                         color = Color.Black,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
+//                        fontSize = 16.sp,
+//                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.bodySmall
                     )
                 }
                 Button(
@@ -135,8 +136,9 @@ fun MessageDialog(
                     Text(
                         text = "보내기",
                         color = Color.Black,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
+//                        fontSize = 16.sp,
+//                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.bodySmall
                     )
                 }
             }

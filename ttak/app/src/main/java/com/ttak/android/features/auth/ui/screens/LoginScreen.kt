@@ -66,8 +66,9 @@ fun LoginScreen(onLoginClick: () -> Unit) {
                     Text(
                         "Google로 시작하기",
                         color = Color.Black,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
+                        style = MaterialTheme.typography.bodySmall
+//                        fontWeight = FontWeight.Bold,
+//                        fontSize = 16.sp
                     )
                 }
             }

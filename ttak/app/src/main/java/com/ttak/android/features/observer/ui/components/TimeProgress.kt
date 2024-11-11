@@ -74,9 +74,10 @@ fun TimeProgress(
 
             Text(
                 text = formatTimeRange(startTime, endTime),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
+//                fontSize = 24.sp,
+//                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleMedium,
+//                color = Color.White
             )
         }
 

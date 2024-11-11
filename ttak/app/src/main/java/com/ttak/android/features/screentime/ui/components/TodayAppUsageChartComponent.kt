@@ -69,14 +69,14 @@ fun TodayAppUsageChartComponent(topSixAppsUsage: Map<String, Int>) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = appName,
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.weight(1f) // 왼쪽 정렬
                     )
 
                     // 앱 사용 시간 (오른쪽 정렬)
                     Text(
                         text = formatDuration(usage),
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )
                 }
