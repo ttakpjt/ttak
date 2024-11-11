@@ -22,10 +22,8 @@ class HistoryRepositoryImpl(
 
     override suspend fun getWeeklyWatchingCount(): Int = withContext(Dispatchers.IO) {
         runCatching {
-            Log.d("here", "faew")
             val response = api.getWeeklyWatchingCount()
             if (response.isSuccessful) {
-                Log.d("WeeklyWatchingCount", "Follower Num: ${response.body()?.data?.followerNum}")
                 response.body()?.takeIf { it.code == "200" }?.data?.followerNum
             } else null
         }.getOrElse { 0 } ?: 0

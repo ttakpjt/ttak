@@ -16,6 +16,10 @@ class PreviewHistoryApi : HistoryRepository {
         ).data.myCount
     }
 
+    override suspend fun getWeeklyWatchingCount(): Int {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun getMessages(): List<HistoryInfo> {
         return listOf(
             HistoryInfo(
