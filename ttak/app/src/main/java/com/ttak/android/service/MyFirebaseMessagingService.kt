@@ -31,7 +31,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     private fun sendRegistrationToServer(token: String) {
         // 서버 전송 없이 토큰을 로그로 출력하여 테스트
         Log.d("MyFirebaseMessagingService", "Testing token generation: $token")
-        val deviceSerialNumber = getDeviceSerialNumber();
+        val deviceSerialNumber = getDeviceSerialNumber()
         val json = JSONObject().apply {
             put("deviceSerialNumber", deviceSerialNumber)
             put("token", token)
