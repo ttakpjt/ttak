@@ -89,6 +89,9 @@ public class UserService{
 		fcm.setUser(user);
 		fcmRepository.save(fcm);
 
+		// Redis 유저 상태 등록
+		setUserStatus(user.getUserId(), 0, 86400); // 24시간 TTL 설정
+
 		// 값 반환
 		return user.getUserId();
 	}
