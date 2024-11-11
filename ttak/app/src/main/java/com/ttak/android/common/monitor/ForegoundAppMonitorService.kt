@@ -32,7 +32,9 @@ class ForegroundMonitorService : Service() {
     private lateinit var repository: FocusGoalRepository
     private var previousStatus: Int? = null // 이전 상태를 저장하는 변수
     private var lastEventTime: Long = 0L
-    private val observerApi = ObserverApiImpl.getInstance()
+    private val observerApi by lazy {
+        ObserverApiImpl.getInstance(this) // Service의 context 사용
+    }
 
     companion object {
         private const val NOTIFICATION_ID = 1
