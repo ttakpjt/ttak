@@ -18,6 +18,7 @@ import com.ttak.android.domain.model.GoalState
 import com.ttak.android.data.repository.PreviewFriendStoryRepository
 import com.ttak.android.data.repository.UserRepositoryImpl
 import com.ttak.android.domain.model.MessageData
+import com.ttak.android.domain.model.NotificationData
 import com.ttak.android.features.observer.ui.components.*
 import com.ttak.android.features.observer.viewmodel.FriendStoryViewModel
 import com.ttak.android.features.observer.viewmodel.FriendStoryViewModelFactory
@@ -141,7 +142,10 @@ private fun ObserverScreenContent(
                             CoroutineScope(Dispatchers.IO).launch {
                                 val messageData = MessageData(
                                     userId = selectedFriend!!.id,
-                                    message = message
+                                    data = NotificationData(
+                                        title = "New Message",
+                                        body = message
+                                    )
                                 )
                                 try {
                                     val response = messageApi.sendMessage(messageData)
