@@ -13,58 +13,58 @@ class MyPageApiImpl(
 ) : MyPageRepository {
 
     // 닉네임 중복 검사
-    override suspend fun checkNickname(nickname: String): Result<MyPageResponse> = handleApiResponse {
-        val nicknameRequest = NicknameRequest(nickname)
+    override suspend fun checkNickname(nickname: String): Result<MyPageResponse> =
+        handleApiResponse {
+            val nicknameRequest = NicknameRequest(nickname)
 
-        // Request 로깅
-        Log.d("API", "=== Check Nickname Request ===")
-        Log.d("API", "Endpoint: /check-nickname")
-        Log.d("API", "Request Headers: ${api.checkNickname(nicknameRequest).raw().request.headers}")
-        Log.d("API", "Request Body: $nicknameRequest")
+            // Request 로깅
+            Log.d("API", "=== Check Nickname Request ===")
+            Log.d("API", "Endpoint: /check-nickname")
+            Log.d("API", "Request Body: $nicknameRequest")
 
-        val response = api.checkNickname(nicknameRequest)
+            val response = api.checkNickname(nicknameRequest)
 
-        // Response 로깅
-        Log.d("API", "=== Check Nickname Response ===")
-        Log.d("API", "Response Code: ${response.code()}")
-        Log.d("API", "Response Headers: ${response.headers()}")
-        Log.d("API", "Response Body: ${response.body()}")
+            // Response 로깅
+            Log.d("API", "=== Check Nickname Response ===")
+            Log.d("API", "Response Code: ${response.code()}")
+            Log.d("API", "Response Headers: ${response.headers()}")
+            Log.d("API", "Response Body: ${response.body()}")
 
-        if (response.isSuccessful) {
-            response.body()?.let {
-                Result.success(it)
-            } ?: Result.failure(Exception("Response body is null"))
-        } else {
-            Result.failure(Exception("API 호출 실패"))
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    Result.success(it)
+                } ?: Result.failure(Exception("Response body is null"))
+            } else {
+                Result.failure(Exception("API 호출 실패"))
+            }
         }
-    }
 
     // 닉네임 등록
-    override suspend fun registerNickname(nickname: String): Result<MyPageResponse> = handleApiResponse {
-        val nicknameRequest = NicknameRequest(nickname)
+    override suspend fun registerNickname(nickname: String): Result<MyPageResponse> =
+        handleApiResponse {
+            val nicknameRequest = NicknameRequest(nickname)
 
-        // Request 로깅
-        Log.d("API", "=== Register Nickname Request ===")
-        Log.d("API", "Endpoint: /register-nickname")
-        Log.d("API", "Request Headers: ${api.registerNickname(nicknameRequest).raw().request.headers}")
-        Log.d("API", "Request Body: $nicknameRequest")
+            // Request 로깅
+            Log.d("API", "=== Register Nickname Request ===")
+            Log.d("API", "Endpoint: /register-nickname")
+            Log.d("API", "Request Body: $nicknameRequest")
 
-        val response = api.registerNickname(nicknameRequest)
+            val response = api.registerNickname(nicknameRequest)
 
-        // Response 로깅
-        Log.d("API", "=== Register Nickname Response ===")
-        Log.d("API", "Response Code: ${response.code()}")
-        Log.d("API", "Response Headers: ${response.headers()}")
-        Log.d("API", "Response Body: ${response.body()}")
+            // Response 로깅
+            Log.d("API", "=== Register Nickname Response ===")
+            Log.d("API", "Response Code: ${response.code()}")
+            Log.d("API", "Response Headers: ${response.headers()}")
+            Log.d("API", "Response Body: ${response.body()}")
 
-        if (response.isSuccessful) {
-            response.body()?.let {
-                Result.success(it)
-            } ?: Result.failure(Exception("Response body is null"))
-        } else {
-            Result.failure(Exception("API 호출 실패"))
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    Result.success(it)
+                } ?: Result.failure(Exception("Response body is null"))
+            } else {
+                Result.failure(Exception("API 호출 실패"))
+            }
         }
-    }
 
     // 공통 예외 처리
     private suspend fun <T> handleApiResponse(apiCall: suspend () -> Result<T>): Result<T> {

@@ -79,15 +79,15 @@ fun ProfileSetupScreen(
             isError = isError,
             errorMessage = errorMessage,
             // 닉네임 중복 여부 확인
-                onIconClick = { inputNickname ->
-                viewModel.checkNickname(inputNickname) { isAvailable ->
+            onIconClick = { inputNickname ->
+                viewModel.checkNickname(inputNickname) { isAvailable, serverMessage  ->
                     isError = !isAvailable  // 닉네임 중복 확인 결과에 따라 경고 문구 표시
                     onNicknameCheck(isAvailable)  // 결과 콜백
                     isNicknameAvailable = isAvailable  // 닉네임 중복 결과 저장
                     if (isAvailable) {
                         nickname = inputNickname  // 사용 가능한 닉네임을 저장
                     } else {
-                        errorMessage = "이미 존재하는 닉네임입니다."
+                        errorMessage = serverMessage ?: "이미 존재하는 닉네임입니다."
                     }
                 }
             }
@@ -100,22 +100,26 @@ fun ProfileSetupScreen(
             text = "저장",
             backgroundColor = Blue,
             contentColor = Black,
-            // 닉네임을 저장하고, 다음으로 이동
             onClick = {
                 if (isNicknameAvailable) {
-                    // application의 context를 가져오기 위해 applicationContext를 사용
-                    UserPreferences(context.applicationContext).saveNickname(nickname) // nickname 저장하기
-                    viewModel.registerNickname(nickname)  // db에 닉네임 등록
+                    viewModel.registerNickname(nickname) { isRegistered ->
+                        if (isRegistered) {
+                            UserPreferences(context.applicationContext).saveNickname(nickname)
 
-                    val sharedPreferences =
-                        context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
-                    sharedPreferences.edit().putBoolean("isProfileSetupComplete", true).apply()
+                            val sharedPreferences =
+                                context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+                            sharedPreferences.edit().putBoolean("isProfileSetupComplete", true)
+                                .apply()
 
-                    // 완료하면 MainActivity로 이동
-                    context.startActivity(Intent(context, MainActivity::class.java))
-                    (context as? Activity)?.finish()
+                            context.startActivity(Intent(context, MainActivity::class.java))
+                            (context as? Activity)?.finish()
+                        } else {
+                            // 등록 실패 시 오류 메시지와 상태 설정
+                            isError = true
+                            errorMessage = "닉네임 등록에 실패했습니다. 다시 시도해 주세요."
+                        }
+                    }
                 } else {
-                    // 닉네임 중복 확인 안 됨 - 오류 메시지 및 에러 상태 설정
                     isError = true
                     errorMessage = "닉네임 중복을 확인해 주세요."
                 }

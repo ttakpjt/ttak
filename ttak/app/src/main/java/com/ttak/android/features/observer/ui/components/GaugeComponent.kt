@@ -40,7 +40,7 @@ fun GaugeComponent(title: String, total: Int, my: Int) {
 
         Canvas(
             modifier = Modifier
-                .size(100.dp)
+                .size(120.dp)
                 .padding(16.dp)
         ) {
             // 반원형 게이지 배경 그리기
@@ -68,6 +68,6 @@ fun GaugeComponent(title: String, total: Int, my: Int) {
         }
 
         // 적발 횟수 비교 텍스트
-        Text(text = "${total}번 중 ${my}번", style = MaterialTheme.typography.bodyLarge)
+        Text(text = "전체 ${total}번 중 ${my}번", style = MaterialTheme.typography.bodySmall)
     }
 }

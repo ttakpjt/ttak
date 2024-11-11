@@ -87,20 +87,29 @@ class LoginActivity : ComponentActivity() {
                                     profileImage = user.photoUrl.toString(),
                                     fcmToken = fcmToken // FCM 토큰 추가
                                 )
-                                Log.d("귯", "UserModel with FCM token: $userModel")
-                                // ViewModel을 통해 서버로 전송
-                                memberViewModel.signIn(userModel)
-
+                                // 서버로 전송 후 성공 시에만 화면 전환
                                 // (추가) 내 계정으로 된 닉네임이 있다면 로그인 성공 시 프로필을 설정하러 이동
-                                startActivity(Intent(this, ProfileSetupActivity::class.java))
-                                finish()
+                                memberViewModel.signIn(userModel) { isSignInSuccessful ->
+                                    if (isSignInSuccessful) {
+                                        startActivity(
+                                            Intent(
+                                                this,
+                                                ProfileSetupActivity::class.java
+                                            )
+                                        )
+                                        finish()
+                                    } else {
+                                        Log.e("이규석", "로그인 처리 실패 - 화면 전환 중단")
+                                        // 로그인 실패 시 Google 로그인 세션 초기화
+                                        googleSignInClient.signOut()
+                                    }
+                                }
                             } else {
                                 Log.e("이규석", "FCM 토큰 가져오기 실패", tokenTask.exception)
                             }
                         }
                     }
                 } else {
-                    // 로그인 실패 시 처리
                     Log.e("이규석", "로그인이 실패했습니다.$task")
                 }
             }

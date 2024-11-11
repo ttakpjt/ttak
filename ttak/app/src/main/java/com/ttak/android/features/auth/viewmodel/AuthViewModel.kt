@@ -16,7 +16,7 @@ class MemberViewModel(application: Application) : AndroidViewModel(application) 
         MemberApiImpl(ApiConfig.createMemberApi(application))
 
     // signIn 메소드: 로그인 처리 후 test 호출
-    fun signIn(user: UserModel) {
+    fun signIn(user: UserModel, onResult: (Boolean) -> Unit) {
         // 비동기 요청 수행
         viewModelScope.launch {
             try {
@@ -25,17 +25,18 @@ class MemberViewModel(application: Application) : AndroidViewModel(application) 
                     if (result.isSuccess) {
                         // 로그인 성공
                         val userId = result.getOrNull() // userId 값을 가져옴
-                        Log.d("귯", "로그인 성공: $result")
 
                         UserPreferences(getApplication()).saveUserId(userId.toString()) // userId를 저장
-                        Log.d("귯", "앞으로 사용할 header: $userId")
+                        onResult(true)
                     } else {
                         // 로그인 실패 처리
                         Log.e("귯", "로그인 실패: ${result.exceptionOrNull()}")
+                        onResult(false)
                     }
                 }
             } catch (e: Exception) {
                 Log.e("이규석", "로그인 실패: $e")
+                onResult(false)
             }
         }
     }
