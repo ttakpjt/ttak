@@ -91,6 +91,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             TtakTheme {
                 val navController = rememberNavController()
+                val refreshState = remember { mutableStateOf(false) }
 
                 // NavController 초기화
                 LaunchedEffect(navController) {
