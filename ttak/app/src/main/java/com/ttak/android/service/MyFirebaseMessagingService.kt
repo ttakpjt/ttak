@@ -13,12 +13,16 @@ import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.firebase.messaging.remoteMessage
+import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import org.json.JSONObject
+import java.io.IOException
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -45,8 +49,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             put("token", token)
         }
 
+
+        // JSON 데이터를 문자열로 변환 후, 실제 JSON을 포함한 requestBody 생성
         val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
-        Log.d("MyFirebaseMessagingService", "Request body: $requestBody")
+        Log.d("MyFirebaseMessagingService", "Request body: $$requestBody")
 
         val client = OkHttpClient()
         val request = Request.Builder()
@@ -55,13 +61,20 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             .post(requestBody)
             .build()
 
-        client.newCall(request).execute().use { response ->
-            if (response.isSuccessful) {
-                Log.d("MyFirebaseMessagingService", "토큰 전송 성공: ${response.body?.toString()}")
-            } else {
-                Log.e("MyFirebaseMessagingService", "토큰 전송 실패: ${response.code}")
+        Log.d("MyFirebaseMessagingService", "Request: $request")
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("MyFirebaseMessagingService", "토큰 전송 실패: ${e.message}")
             }
-        }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    Log.d("MyFirebaseMessagingService", "토큰 전송 성공: ${response.body?.string()}")
+                } else {
+                    Log.e("MyFirebaseMessagingService", "토큰 전송 실패: ${response.code}")
+                }
+            }
+        })
     }
 
     // 기기 고유 ID를 가져오는 메서드
