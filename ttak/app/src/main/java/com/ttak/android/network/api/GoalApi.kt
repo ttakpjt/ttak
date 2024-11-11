@@ -11,6 +11,6 @@ data class ApplicationSettingRequest(
 )
 
 interface GoalApi {
-    @POST("/application/setting")
+    @POST("application/setting")
     suspend fun saveApplicationSetting(@Body request: ApplicationSettingRequest): Response<Unit>
 }
