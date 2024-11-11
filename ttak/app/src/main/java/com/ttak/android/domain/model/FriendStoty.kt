@@ -1,7 +1,7 @@
 package com.ttak.android.domain.model
 
 data class FriendStory(
-    val friendId: Int,
+    val friendId: Long,
     val friendName: String,
     val friendImg: String,
     val status: Int
