@@ -19,7 +19,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.time.LocalDateTime
 
 class ForegroundMonitorService : Service() {
@@ -28,11 +31,17 @@ class ForegroundMonitorService : Service() {
     private var isMonitoring = false
     private lateinit var repository: FocusGoalRepository
     private var lastEventTime: Long = 0L
+
+    private var currentForegroundPackage: String? = null
+    private val stateMutex = Mutex()
+    private var currentState: AppState = AppState.NORMAL
+    private var lastStateUpdateTime: Long = 0
+    private var pendingStateChange: Boolean = false
+
     private val observerApi by lazy {
         ObserverApiImpl.getInstance(this)
     }
 
-    // 상태를 enum으로 정의
     enum class AppState(val value: Int) {
         NORMAL(0),
         RESTRICTED(1);
@@ -42,25 +51,30 @@ class ForegroundMonitorService : Service() {
         }
     }
 
-    // 현재 상태를 non-null로 관리
-    private var currentState: AppState = AppState.NORMAL
-
     companion object {
         private const val NOTIFICATION_ID = 1
         private const val CHANNEL_ID = "ForegroundMonitorChannel"
         private const val TAG = "ForegroundAppMonitor"
-        private const val EVENT_CHECK_INTERVAL = 500L // 0.5초
+        private const val EVENT_CHECK_INTERVAL = 500L
+        private const val STATE_UPDATE_THRESHOLD = 1000L
+
+        private val LAUNCHER_PACKAGES = setOf(
+            "com.google.android.apps.nexuslauncher",
+            "com.android.launcher3",
+            "com.android.launcher",
+            "com.android.launcher2"
+        )
     }
 
     override fun onCreate() {
         super.onCreate()
         initializeService()
+        startMonitoring()
     }
 
     private fun initializeService() {
         usageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
 
-        // Initialize Repository
         val database = AppDatabase.getDatabase(applicationContext)
         repository = FocusGoalRepository(
             focusGoalDao = database.focusGoalDao(),
@@ -71,13 +85,6 @@ class ForegroundMonitorService : Service() {
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, createNotification())
     }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startMonitoring()
-        return START_STICKY
-    }
-
-    override fun onBind(intent: Intent?): IBinder? = null
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -100,9 +107,21 @@ class ForegroundMonitorService : Service() {
         .setPriority(NotificationCompat.PRIORITY_LOW)
         .build()
 
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        startMonitoring()
+        return START_STICKY
+    }
+
+    override fun onBind(intent: Intent?): IBinder? = null
+
     private fun startMonitoring() {
-        if (isMonitoring) return
+        if (isMonitoring) {
+            Log.d(TAG, "Monitoring already active")
+            return
+        }
+
         isMonitoring = true
+        Log.d(TAG, "Starting monitoring service")
 
         serviceScope.launch {
             while (isMonitoring) {
@@ -113,22 +132,34 @@ class ForegroundMonitorService : Service() {
     }
 
     private fun checkForNewEvents() {
-        if (!hasUsageStatsPermission()) {
-            Log.e(TAG, "Usage stats permission not granted!")
-            return
-        }
+        if (!hasUsageStatsPermission()) return
 
-        val currentTime = System.currentTimeMillis()
-        val events = usageStatsManager.queryEvents(lastEventTime, currentTime)
-        val event = android.app.usage.UsageEvents.Event()
-
-        while (events.hasNextEvent()) {
-            events.getNextEvent(event)
-            if (event.eventType == android.app.usage.UsageEvents.Event.MOVE_TO_FOREGROUND) {
-                lastEventTime = event.timeStamp
-                Log.d(TAG, "App switch detected: ${event.packageName}")
-                checkFocusGoalAndUpdateStatus(event.packageName)
+        try {
+            val currentTime = System.currentTimeMillis()
+            if (lastEventTime == 0L) {
+                lastEventTime = currentTime - 1000
             }
+
+            val events = usageStatsManager.queryEvents(lastEventTime, currentTime)
+            val event = android.app.usage.UsageEvents.Event()
+
+            while (events.hasNextEvent()) {
+                events.getNextEvent(event)
+                if (event.eventType == android.app.usage.UsageEvents.Event.MOVE_TO_FOREGROUND) {
+                    lastEventTime = event.timeStamp
+
+                    val packageName = event.packageName
+                    Log.d(TAG, "App switch detected: $packageName")
+
+                    if (currentForegroundPackage != packageName) {
+                        serviceScope.launch {
+                            processAppSwitch(packageName)
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error checking events", e)
         }
     }
 
@@ -136,59 +167,108 @@ class ForegroundMonitorService : Service() {
         val currentTime = System.currentTimeMillis()
         val stats = usageStatsManager.queryUsageStats(
             UsageStatsManager.INTERVAL_DAILY,
-            currentTime - 60_000, // 1분 전부터
+            currentTime - 60_000,
             currentTime
         )
         return !stats.isNullOrEmpty()
     }
 
-    private fun checkFocusGoalAndUpdateStatus(packageName: String) {
-        serviceScope.launch {
-            val currentTime = LocalDateTime.now()
-            Log.d(TAG, "Checking focus goals at: $currentTime")
+    private suspend fun processAppSwitch(newPackage: String) {
+        stateMutex.withLock {
+            if (pendingStateChange) {
+                Log.d(TAG, "Waiting for pending state change to complete")
+                return
+            }
 
-            repository.getAllGoals().collect { goals ->
-                val newState = determineAppState(goals, packageName, currentTime)
-                updateStateIfChanged(newState)
+            try {
+                pendingStateChange = true
+                val currentTime = System.currentTimeMillis()
+
+                // 마지막 상태 업데이트로부터 충분한 시간이 지났는지 확인
+                if ((currentTime - lastStateUpdateTime) < STATE_UPDATE_THRESHOLD) {
+                    Log.d(TAG, "Too soon for state update, waiting...")
+                    return
+                }
+
+                currentForegroundPackage = newPackage
+                val goals = repository.getAllGoals().first()
+                val currentDateTime = LocalDateTime.now()
+
+                val newState = when {
+                    LAUNCHER_PACKAGES.contains(newPackage) -> {
+                        Log.d(TAG, "Launcher package detected, setting NORMAL state")
+                        AppState.NORMAL
+                    }
+                    else -> determineAppState(goals, newPackage, currentDateTime)
+                }
+
+                if (currentState != newState) {
+                    Log.d(TAG, """
+                        State change:
+                        Previous package: $currentForegroundPackage
+                        New package: $newPackage
+                        From state: ${currentState.name}
+                        To state: ${newState.name}
+                        Is launcher: ${LAUNCHER_PACKAGES.contains(newPackage)}
+                        Active goals: ${goals.count { it.isEnabled }}
+                    """.trimIndent())
+
+                    currentState = newState
+                    lastStateUpdateTime = currentTime
+
+                    try {
+                        observerApi.updateMyStatus(newState.value)
+                        Log.d(TAG, "State updated to: ${newState.name}")
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Failed to update state", e)
+                    }
+                } else {
+                    Log.d(TAG, "State unchanged: ${currentState.name} for package: $newPackage")
+                }
+            } finally {
+                pendingStateChange = false
             }
         }
     }
 
-    private fun determineAppState(
+    private suspend fun determineAppState(
         goals: List<FocusGoal>,
         packageName: String,
         currentTime: LocalDateTime
     ): AppState {
-        val activeGoal = goals.firstOrNull { goal ->
+        val activeGoals = goals.filter { goal ->
             goal.isEnabled &&
                     currentTime.isAfter(goal.startDateTime) &&
                     currentTime.isBefore(goal.endDateTime)
         }
 
-        if (activeGoal == null) {
-            Log.d(TAG, "No active goal found")
+        if (activeGoals.isEmpty()) {
+            Log.d(TAG, "No active goals")
             return AppState.NORMAL
         }
 
-        return if (activeGoal.selectedApps.any { it.packageName == packageName }) {
-            Log.d(TAG, "Package $packageName is restricted")
+        val isRestricted = activeGoals.any { goal ->
+            goal.selectedApps.any { app ->
+                val isMatched = app.packageName == packageName
+                if (isMatched) {
+                    Log.d(TAG, "Package $packageName is restricted by goal: ${goal.id}")
+                }
+                isMatched
+            }
+        }
+
+        return if (isRestricted) {
+            Log.d(TAG, "Package $packageName is RESTRICTED")
             AppState.RESTRICTED
         } else {
-            Log.d(TAG, "Package $packageName is normal")
+            Log.d(TAG, "Package $packageName is NORMAL")
             AppState.NORMAL
-        }
-    }
-
-    private suspend fun updateStateIfChanged(newState: AppState) {
-        if (currentState != newState) {
-            Log.d(TAG, "State changing from ${currentState.name} to ${newState.name}")
-            currentState = newState
-            observerApi.updateMyStatus(newState.value)
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        Log.d(TAG, "Service being destroyed")
         isMonitoring = false
         serviceScope.cancel()
     }
