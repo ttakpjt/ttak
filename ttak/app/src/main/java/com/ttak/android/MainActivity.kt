@@ -42,6 +42,9 @@ import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
     private val TAG = "MainActivity"
+    private lateinit var webSocketManager: WebSocketManager
+    private lateinit var foregroundAppMonitor: ForegroundAppMonitor
+    private var isServiceRunning = false
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
@@ -53,36 +56,35 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private lateinit var webSocketManager: WebSocketManager
-    private lateinit var foregroundAppMonitor: ForegroundAppMonitor
-
     private fun askNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
-                PackageManager.PERMISSION_GRANTED
-            ) {
-//                getToken()
-                // FCM SDK (and your app) can post notifications.
-            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-                // TODO: display an educational UI
-            } else {
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            when {
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED -> {
+                    // Permission is already granted
+                }
+                shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
+                    // TODO: display an educational UI
+                }
+                else -> {
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
             }
-        } else {
-//            getToken()
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        Log.d(TAG, "onCreate called")  // 추가
+        Log.d(TAG, "onCreate called")
 
         // 초기화
         webSocketManager = WebSocketManager.getInstance(applicationContext)
-        Log.d(TAG, "WebSocketManager initialized")  // 추가
-
         foregroundAppMonitor = ForegroundAppMonitor(application)
+
+        // 권한 확인 후 서비스 시작
+        checkPermissionAndStartService()
 
         setContent {
             TtakTheme {
@@ -98,17 +100,16 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     // WebSocket 연결 및 이벤트 처리
                     LaunchedEffect(Unit) {
-                        Log.d(TAG, "LaunchedEffect for WebSocket triggered")  // 추가
+                        Log.d(TAG, "LaunchedEffect for WebSocket triggered")
                         try {
                             Log.d(TAG, "Attempting to connect to WebSocket...")
 
-                            // userId 로그 추가
                             val userId = UserPreferences(applicationContext).getUserId()
-                            Log.d(TAG, "Current userId: $userId")  // 추가
+                            Log.d(TAG, "Current userId: $userId")
 
                             webSocketManager.connect()
 
-                            Log.d(TAG, "Starting to collect WebSocket events")  // 추가
+                            Log.d(TAG, "Starting to collect WebSocket events")
                             webSocketManager.socketEvents.collect { event ->
                                 when (event) {
                                     is SocketEvent.Connected -> {
@@ -118,23 +119,23 @@ class MainActivity : ComponentActivity() {
                                         Log.d(TAG, "Received WebSocket message: ${event.data}")
                                     }
                                     is SocketEvent.Disconnected -> {
-                                        Log.e(TAG, "WebSocket disconnected, will attempt reconnect in 5s")  // 수정
+                                        Log.e(TAG, "WebSocket disconnected, will attempt reconnect in 5s")
                                         delay(5000)
-                                        Log.d(TAG, "Attempting reconnection after disconnect")  // 추가
+                                        Log.d(TAG, "Attempting reconnection after disconnect")
                                         webSocketManager.connect()
                                     }
                                     is SocketEvent.Error -> {
                                         Log.e(TAG, "WebSocket error occurred", event.error)
-                                        Log.e(TAG, "Error details: ${event.error.message}")  // 추가
+                                        Log.e(TAG, "Error details: ${event.error.message}")
                                         delay(5000)
-                                        Log.d(TAG, "Attempting reconnection after error")  // 추가
+                                        Log.d(TAG, "Attempting reconnection after error")
                                         webSocketManager.connect()
                                     }
                                 }
                             }
                         } catch (e: Exception) {
-                            Log.e(TAG, "Critical error in WebSocket setup", e)  // 수정
-                            Log.e(TAG, "Stack trace: ${e.stackTraceToString()}")  // 추가
+                            Log.e(TAG, "Critical error in WebSocket setup", e)
+                            Log.e(TAG, "Stack trace: ${e.stackTraceToString()}")
                         }
                     }
 
@@ -149,9 +150,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
-        startForegroundMonitorService()
-        startApiRequestWorker()
     }
 
     private fun checkPermissionAndStartService() {
@@ -159,89 +157,58 @@ class MainActivity : ComponentActivity() {
             Log.d(TAG, "Usage stats permission not granted, requesting...")
             foregroundAppMonitor.requestUsageStatsPermission(this)
         } else {
-            Log.d(TAG, "Usage stats permission granted, starting service...")
-            startForegroundMonitorService()
+            Log.d(TAG, "Usage stats permission granted")
+            safeStartService()
+        }
+    }
+
+    private fun safeStartService() {
+        if (isServiceRunning) {
+            Log.d(TAG, "Service is already running")
+            return
+        }
+
+        try {
+            Intent(this, ForegroundMonitorService::class.java).also { intent ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(intent)
+                } else {
+                    startService(intent)
+                }
+            }
+            isServiceRunning = true
+            Log.d(TAG, "Service started successfully")
+
+            // API 워커는 서비스 시작과 함께 한 번만 실행
             startApiRequestWorker()
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to start service", e)
+            isServiceRunning = false
         }
     }
 
     override fun onResume() {
         super.onResume()
-        // 웹소켓은 LaunchedEffect에서 관리하므로 여기서 제거
 
-        // 권한 체크 다시 수행
-        if (foregroundAppMonitor.hasUsageStatsPermission()) {
-            startForegroundMonitorService()
+        // 권한이 있고 서비스가 실행중이 아닌 경우에만 시작
+        if (foregroundAppMonitor.hasUsageStatsPermission() && !isServiceRunning) {
+            safeStartService()
         }
 
-        // 알림 권한 확인 및 요청
         askNotificationPermission()
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        Log.d(TAG, "onDestroy called")
         webSocketManager.disconnect()
-    }
-//    // FCM 토큰을 수동으로 가져오는 함수
-//    private fun getToken() {
-//        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-//            if (task.isSuccessful) {
-//                val token = task.result
-//                Log.d("MainActivity", "FCM 토큰: $token")
-//                Toast.makeText(this, "FCM 토큰: $token", Toast.LENGTH_SHORT).show()
-//
-//                // FCM 토큰을 서버로 전송
-//                CoroutineScope(Dispatchers.IO).launch {
-//                    sendRegistrationToServer(token)
-//                }
-//            } else {
-//                Log.w("MainActivity", "FCM 토큰 가져오기 실패", task.exception)
-//            }
-//        }
-//    }
-//
-//    private suspend fun sendRegistrationToServer(token: String) {
-//        Log.d(TAG, "Testing token generation: $token")
-//        val json = JSONObject().apply {
-//            put("token", token)
-//        }
-//
-//        val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
-//        val client = OkHttpClient()
-//
-//        val request = Request.Builder()
-//            .url("https://k11a509.p.ssafy.io/api/fcm/save")
-//            .addHeader("user", "1")  // 사용자 ID를 헤더에 추가 (예시)
-//            .post(requestBody)
-//            .build()
-//
-//        try {
-//            client.newCall(request).execute().use { response ->
-//                if (response.isSuccessful) {
-//                    Log.d(TAG, "토큰 전송 성공: ${response.body?.string()}")
-//                } else {
-//                    Log.e(TAG, "토큰 전송 실패: ${response.code}")
-//                }
-//            }
-//        } catch (e: Exception) {
-//            Log.e(TAG, "네트워크 요청 중 오류 발생", e)
-//        }
-//    }
-
-    // 포그라운드 구동 앱 감시
-    private fun startForegroundMonitorService() {
-        Intent(this, ForegroundMonitorService::class.java).also { intent ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(intent)
-            } else {
-                startService(intent)
-            }
-        }
+        // 서비스는 별도로 종료하지 않고 계속 실행
+        isServiceRunning = false
     }
 
-    // API 요청을 위한 Worker 시작
     private fun startApiRequestWorker() {
         val apiRequestWork = OneTimeWorkRequestBuilder<ApiRequestWorker>().build()
         WorkManager.getInstance(this).enqueue(apiRequestWork)
+        Log.d(TAG, "API request worker started")
     }
 }
