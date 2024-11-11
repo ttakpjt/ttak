@@ -18,7 +18,6 @@ import com.ttak.android.domain.model.GoalState
 import com.ttak.android.data.repository.PreviewFriendStoryRepository
 import com.ttak.android.data.repository.UserRepositoryImpl
 import com.ttak.android.domain.model.MessageData
-import com.ttak.android.domain.model.NotificationData
 import com.ttak.android.features.observer.ui.components.*
 import com.ttak.android.features.observer.viewmodel.FriendStoryViewModel
 import com.ttak.android.features.observer.viewmodel.FriendStoryViewModelFactory
@@ -108,6 +107,22 @@ private fun ObserverScreenContent(
                     },
                     onWaterBubbleClick = { friend ->
                         Log.d("ObserverScreen", "Water bubble clicked for: ${friend.name}")
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val messageData = MessageData(
+                                userId = selectedFriend!!.id,
+                                data = "WaterBalloon"
+                            )
+                            try {
+                                val response = messageApi.sendItem(messageData)
+                                if (response.isSuccessful) {
+                                    Log.d("ObserverScreen", "Item sent successfully")
+                                } else {
+                                    Log.e("ObserverScreen", "Failed to send Item: ${response.code()}")
+                                }
+                            } catch (e: Exception) {
+                                Log.e("ObserverScreen", "Error sending Item", e)
+                            }
+                        }
                     },
                     onSpeechBubbleClick = { friend ->
                         Log.d("ObserverScreen", "Speech bubble clicked for: ${friend.name}")
@@ -142,10 +157,7 @@ private fun ObserverScreenContent(
                             CoroutineScope(Dispatchers.IO).launch {
                                 val messageData = MessageData(
                                     userId = selectedFriend!!.id,
-                                    data = NotificationData(
-                                        title = "New Message",
-                                        body = message
-                                    )
+                                    data = message
                                 )
                                 try {
                                     val response = messageApi.sendMessage(messageData)
