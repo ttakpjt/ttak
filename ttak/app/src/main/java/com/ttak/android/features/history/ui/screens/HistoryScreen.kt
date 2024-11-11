@@ -32,8 +32,8 @@ fun HistoryScreen(
 ) {
 
     val weeklyPickCount by viewModel.weeklyPickCount.collectAsState()
+    val weeklyWatchingCount by viewModel.weeklyWatchingCount.collectAsState()
     val messages by viewModel.messages.collectAsState()
-    val systemNotification by viewModel.systemNotification.collectAsState()
 
     Column(
         modifier = Modifier
@@ -42,7 +42,7 @@ fun HistoryScreen(
     ) {
         SystemNotificationCard(
             notificationText = "주간 딱걸림\n${weeklyPickCount}번",
-            watchingCount = 5
+            watchingCountText = "${weeklyWatchingCount}명의 친구가\n지켜보고 있어요"
         )
 
         LazyColumn(

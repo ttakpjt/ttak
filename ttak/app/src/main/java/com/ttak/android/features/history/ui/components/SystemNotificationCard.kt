@@ -27,7 +27,7 @@ import com.ttak.android.R
 @Composable
 fun SystemNotificationCard(
     notificationText: String,
-    watchingCount: Int
+    watchingCountText: String
 ) {
     Card(
         modifier = Modifier
@@ -85,7 +85,7 @@ fun SystemNotificationCard(
                         modifier = Modifier.size(36.dp)
                     )
                     Text(
-                        text = "${watchingCount}명의 친구가\n지켜보고 있어요", // 친구가와 지켜보고 있어요를 줄 바꿈으로 나눔
+                        text = watchingCountText,
                         style = MaterialTheme.typography.bodyLarge,
                         color = Color.Black,
                         modifier = Modifier.padding(top = 8.dp),
