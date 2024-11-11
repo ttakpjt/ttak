@@ -33,6 +33,7 @@ public class ApplicationService {
 	public void register(Long userId, AppInfoReq appInfoReq){
 		User user = findUserById(userId);
 
+		// 요청한 유저의 사용금지 시간대 탐색
 		BanList banList = banListRepository.findBanListByUser(user)
 			.orElseGet(() -> {
 				BanList newList = BanList.toEntity(user, appInfoReq);
@@ -40,10 +41,18 @@ public class ApplicationService {
 				return newList;
 			});
 
-		List<BanApp> list = new ArrayList<>();
-		for(String app : appInfoReq.getAppName()){
-			list.add(BanApp.toEntity(banList, app));
+		// 해당 시간대에 할당된 사용금지 어플리케이션 리스트 삭제
+		banAppRepository.deleteAllByBanList(banList);
+
+		// 시작시간과 끝나는 시간이 다를경우 업데이트
+		if(!banList.getStartTime().equals(appInfoReq.getStartTime()) || !banList.getEndTime().equals(appInfoReq.getEndTime())){
+			banList.setTime(appInfoReq);
 		}
+
+		// 해당 banList 에 설정들어온 어플리케이션 등록
+		List<BanApp> list = appInfoReq.getAppName().stream()
+			.map(app -> BanApp.toEntity(banList, app))
+			.toList();
 
 		banAppRepository.saveAll(list);
 	}

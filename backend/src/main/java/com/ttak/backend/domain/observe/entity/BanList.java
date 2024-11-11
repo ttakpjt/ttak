@@ -50,4 +50,9 @@ public class BanList extends TimeBaseEntity {
 			.endTime(appInfoReq.getEndTime())
 			.build();
 	}
+
+	public void setTime(AppInfoReq appInfoReq) {
+		this.startTime = appInfoReq.getStartTime();
+		this.endTime = appInfoReq.getEndTime();
+	}
 }
