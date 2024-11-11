@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/history")
+@RequestMapping("/api/history")
 @Tag(name = "History API", description = "History 관련 API")
 @CrossOrigin("*")
 public class HistoryController {
