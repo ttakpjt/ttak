@@ -16,6 +16,9 @@ class HistoryViewModel(
     private val _weeklyPickCount = MutableStateFlow(0)
     val weeklyPickCount: StateFlow<Int> = _weeklyPickCount.asStateFlow()
 
+    private val _weeklyWatchingCount = MutableStateFlow(0)
+    val weeklyWatchingCount: StateFlow<Int> = _weeklyWatchingCount.asStateFlow()
+
     private val _messages = MutableStateFlow<List<HistoryInfo>>(emptyList())
     val messages: StateFlow<List<HistoryInfo>> = _messages.asStateFlow()
 
@@ -25,10 +28,12 @@ class HistoryViewModel(
     init {
         viewModelScope.launch {
             try {
-                val count = repository.getWeeklyPickCount()
-                _weeklyPickCount.value = count
+                val pickCount = repository.getWeeklyPickCount()
+                _weeklyPickCount.value = pickCount
+                val watchingCount = repository.getWeeklyWatchingCount()
+                _weeklyWatchingCount.value = watchingCount
             } catch (e: Exception) {
-                // 에러 처리
+
             }
         }
     }
