@@ -8,4 +8,7 @@ import retrofit2.http.POST
 interface MessageApi {
     @POST("fcm/send/message")
     suspend fun sendMessage(@Body data: MessageData): Response<Unit>
+
+    @POST("fcm/send/item")
+    suspend fun sendItem(@Body data: MessageData) : Response<Unit>
 }

@@ -1,7 +1,15 @@
 package com.ttak.android.service
 
+import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.content.pm.PackageManager
 import android.provider.Settings
 import android.util.Log
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.firebase.messaging.remoteMessage
@@ -92,6 +100,41 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val title = notification.title ?: "알림 제목 없음"
         val body = notification.body ?: "알림 내용 없음"
         Log.d("MyFirebaseMessagingService", "알림 제목: $title, 내용: $body")
-        // 알림을 UI에 표시하거나 추가 처리가 필요할 경우 로직 추가
+
+        // Android 13 이상에서 POST_NOTIFICATIONS 권한 체크
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                Log.w("MyFirebaseMessagingService", "알림 권한이 없어 알림을 표시할 수 없습니다.")
+                // 권한이 없는 경우는 알림을 표시하지 않고 종료
+                return
+            }
+        }
+
+        // 알림 채널 ID와 이름을 설정
+        val channelId = "fcm_default_channel"
+        val channelName = "Default Channel"
+
+        // 알림 채널 생성
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                channelName,
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        // 알림을 생성하여 표시
+        val notificationBuilder = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setContentTitle(title)
+            .setContentText(body)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+
+        with(NotificationManagerCompat.from(this)) {
+            notify(System.currentTimeMillis().toInt(), notificationBuilder.build())
+        }
     }
 }
