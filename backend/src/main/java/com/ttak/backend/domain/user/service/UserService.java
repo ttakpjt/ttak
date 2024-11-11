@@ -114,7 +114,10 @@ public class UserService{
 		fcmRepository.save(fcm);
 	}
 
-
+	/**
+	 * 닉네임 중복여부를 확인한다.
+	 * @param nickname 중복여부 확인할 닉네임
+	 */
 	public void checkNickname(String nickname) {
 		// 비어있는 닉네임은 불가
 		if(nickname.isBlank() || nickname.isEmpty()) throw new UnAuthorizedException(U005);
@@ -123,6 +126,11 @@ public class UserService{
 		if(userRepository.existsByNickname(nickname)) throw new UnAuthorizedException(U003);
 	}
 
+	/**
+	 * 요청 들어온 닉네임으로 해당 유저를 변경한다.
+	 * @param userId 변경할 유저
+	 * @param nickname 변경할 닉네임
+	 */
 	public void registerNickname(Long userId, String nickname) {
 		User user = findUserById(userId);
 
@@ -140,6 +148,21 @@ public class UserService{
 		}
 	}
 
+	/**
+	 * 해당 유저 닉네임 존재여부 확인 (존재할경우 True, null일경우 False)
+	 * @param userId 닉네임 확인할 유저
+	 * @return
+	 */
+	public boolean existNickname(Long userId){
+		// user 객체 탐색 후 닉네임이 존재한다면 True 반환
+		return findUserById(userId) != null;
+	}
+
+	/**
+	 * User 객체 반환
+	 * @param userId
+	 * @return
+	 */
 	private User findUserById(Long userId){
 		return userRepository.findById(userId)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.U001));
