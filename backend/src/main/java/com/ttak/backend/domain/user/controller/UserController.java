@@ -59,6 +59,15 @@ public class UserController {
 		return ResponseEntity.ok(CommonResponse.success(result));
 	}
 
+	@Operation(summary = "로그아웃 진행", description = "현재 로그인한 사용자 로그아웃 진행")
+	@GetMapping("/logout")
+	public ResponseEntity<CommonResponse<?>> logout(@UserPk final Long userId) {
+		log.info("========== 로그아웃 시작 ==========");
+		userService.logout(userId);
+		log.info("========== 로그아웃 종료 ==========");
+		return ResponseEntity.ok(CommonResponse.success());
+	}
+
 	@Operation(summary = "닉네임 중복확인", description = "들어온 닉네임과 동일한 닉네임이 존재하는지 확인, 중복 닉네임이 없다면 상태 200 반환")
 	@PostMapping("/check/nickname")
 	public ResponseEntity<CommonResponse<?>> checkNickname(@RequestBody final NicknameReq nicknameReq) {
