@@ -28,6 +28,6 @@ fun AppButton(
         colors = ButtonDefaults.buttonColors(containerColor = backgroundColor, contentColor = contentColor),
         shape = RoundedCornerShape(24.dp)  // 모서리 기울기
     ) {
-        Text(text = text, color = contentColor, style = MaterialTheme.typography.labelSmall)  // 텍스트 색상, 스타일 정의
+        Text(text = text, color = contentColor, style = MaterialTheme.typography.labelLarge)  // 텍스트 색상, 스타일 정의
     }
 }

@@ -18,7 +18,7 @@ import kotlin.math.absoluteValue
 @Composable
 fun ScreenTimeChangeComponent(username: String, hoursDifference: Int) {
     Column(modifier = Modifier.padding(8.dp)) {
-        Text(text = "${username}님", style = MaterialTheme.typography.labelSmall)
+        Text(text = "${username}님", style = MaterialTheme.typography.labelLarge)
         Text(
             text = buildAnnotatedString {
                 append("어제보다 ")

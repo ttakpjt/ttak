@@ -118,10 +118,10 @@ fun SetGoalScreen(
             ) {
                 Text(
                     text = "취소하기",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold,  // 더 진한 볼드체
-                    fontSize = 20.sp,  // 폰트 크기 증가
-                    color = Color.Black  // 텍스트 색상 명시적 지정
+                    style = MaterialTheme.typography.titleSmall,
+//                    fontWeight = FontWeight.ExtraBold,  // 더 진한 볼드체
+//                    fontSize = 20.sp,  // 폰트 크기 증가
+//                    color = Color.Black  // 텍스트 색상 명시적 지정
                 )
             }
 
@@ -141,9 +141,9 @@ fun SetGoalScreen(
             ) {
                 Text(
                     text = "등록하기",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold,  // 더 진한 볼드체
-                    fontSize = 20.sp,  // 폰트 크기 증가
+                    style = MaterialTheme.typography.titleSmall,
+//                    fontWeight = FontWeight.ExtraBold,  // 더 진한 볼드체
+//                    fontSize = 20.sp,  // 폰트 크기 증가
                     color = Color.Black  // 텍스트 색상 명시적 지정
                 )
             }

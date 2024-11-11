@@ -47,9 +47,9 @@ fun AppProfileItem(
         // 사용자 이름
         Text(
             text = nickname,
-            style = MaterialTheme.typography.bodyLarge,
-            color = White,
-            fontSize = 18.sp
+            style = MaterialTheme.typography.bodyMedium,
+//            color = White,
+//            fontSize = 18.sp
         )
     }
 }

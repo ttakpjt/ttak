@@ -47,9 +47,9 @@ fun AppListItemCard(
             // 중앙 텍스트 영역
             Text(
                 text = title,
-                style = MaterialTheme.typography.labelSmall,  // 텍스트 스타일 적용
-                fontSize = 20.sp,
-                color = White
+                style = MaterialTheme.typography.bodyLarge,  // 텍스트 스타일 적용
+//                fontSize = 20.sp,
+//                color = White
             )
 
             // 오른쪽 옵션 영역
