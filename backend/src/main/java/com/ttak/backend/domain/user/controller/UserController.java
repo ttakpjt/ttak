@@ -86,5 +86,14 @@ public class UserController {
 		return ResponseEntity.ok(CommonResponse.success());
 	}
 
+	@Operation(summary = "닉네임 유무", description = "해당 유저의 닉네임이 존재하는지 아닌지 반환")
+	@GetMapping("/exist/nickname")
+	public ResponseEntity<CommonResponse<?>> existNickname(@UserPk final Long userId) {
+		log.info("========== 닉네임 등록여부 확인 시작 ==========");
+		boolean check = userService.existNickname(userId);
+		log.info("========== 닉네임 등록여부 확인 종료 ==========");
+		return ResponseEntity.ok(CommonResponse.success(check));
+	}
+
 
 }
