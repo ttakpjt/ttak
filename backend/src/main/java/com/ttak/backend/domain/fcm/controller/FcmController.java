@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/fcm")
+@RequestMapping("/api/fcm")
 @Tag(name = "FCM API", description = "FireBase Cloud Message 토큰 관련 API")
 @CrossOrigin("*")
 public class FcmController {
