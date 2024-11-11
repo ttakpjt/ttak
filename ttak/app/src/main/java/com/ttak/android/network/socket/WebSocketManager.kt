@@ -11,22 +11,25 @@ import ua.naiksoftware.stomp.Stomp
 import ua.naiksoftware.stomp.StompClient
 import ua.naiksoftware.stomp.dto.LifecycleEvent
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import okhttp3.Interceptor
 
-class WebSocketManager private constructor() {
+class WebSocketManager private constructor(private val applicationContext: Context) {
     private val TAG = "WebSocketManager"
     private var stompClient: StompClient? = null
     private val disposables = CompositeDisposable()
+    private var lifecycleDisposable: Disposable? = null
+    private var topicDisposable: Disposable? = null
 
     private val _socketEvents = MutableSharedFlow<SocketEvent>()
     val socketEvents = _socketEvents.asSharedFlow()
 
     companion object {
-        private const val BASE_URL = "https://k11a509.p.ssafy.io/api"
-        private const val SOCKET_URL = "$BASE_URL/ws"
+        private const val BASE_URL = "https://k11a509.p.ssafy.io"
+        private const val SOCKET_URL = "$BASE_URL/wss/websocket"
         const val FRIEND_STATUS_TOPIC = "/topic/status"
         const val STATUS_FALSE = 0
         const val STATUS_TRUE = 1
@@ -34,61 +37,53 @@ class WebSocketManager private constructor() {
         @Volatile
         private var instance: WebSocketManager? = null
 
-        fun getInstance(): WebSocketManager {
+        fun getInstance(context: Context): WebSocketManager {
             return instance ?: synchronized(this) {
-                instance ?: WebSocketManager().also { instance = it }
+                instance ?: WebSocketManager(context.applicationContext).also { instance = it }
             }
         }
     }
 
-    fun connect(context: Context) {
-        val userId = UserPreferences(context).getUserId()
-
-        Log.d(TAG, "Connecting to WebSocket with userId: $userId")
-
-        // 로깅 인터셉터 설정
-        val loggingInterceptor = HttpLoggingInterceptor { message ->
-            Log.d(TAG, "WebSocket HTTP: $message")
-        }.apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        }
-
-        // 사용자 ID를 헤더에 추가하는 인터셉터
-        val userInterceptor = Interceptor { chain ->
-            val originalRequest = chain.request()
-            val requestBuilder = originalRequest.newBuilder()
-
-            if (userId != null) {
-                requestBuilder.addHeader("user", userId.toString())
-                Log.d(TAG, "Adding user header: $userId")
+    fun connect() {
+        try {
+            val userId = UserPreferences(applicationContext).getUserId()
+            if (userId == null) {
+                Log.e(TAG, "Failed to connect: userId is null")
+                return
             }
 
-            val request = requestBuilder.build()
-            Log.d(TAG, "Request URL: ${request.url}")
-            Log.d(TAG, "Request Headers: ${request.headers}")
+            Log.d(TAG, "Connecting to WebSocket with userId: $userId")
 
-            val response = chain.proceed(request)
-            Log.d(TAG, "Response Code: ${response.code}")
-            Log.d(TAG, "Response Headers: ${response.headers}")
+            // 이미 연결되어 있다면 먼저 연결 해제
+            disconnect()
 
-            response
-        }
+            // 로깅 인터셉터 설정
+            val loggingInterceptor = HttpLoggingInterceptor { message ->
+                Log.d(TAG, "WebSocket HTTP: $message")
+            }.apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            }
 
-        // OkHttpClient 설정
-        val client = OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
-            .addInterceptor(userInterceptor)
-            .build()
+            // OkHttpClient 설정
+            val client = OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .build()
 
-        // STOMP 클라이언트 생성
-        stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, SOCKET_URL, null, client).apply {
-            withClientHeartbeat(10000)
-            withServerHeartbeat(10000)
-        }
+            Log.d(TAG, "Attempting to create STOMP client with URL: $SOCKET_URL")
 
-        // 연결 상태 모니터링
-        disposables.add(
-            stompClient!!.lifecycle()
+            // STOMP 클라이언트 생성
+            stompClient = Stomp.over(
+                Stomp.ConnectionProvider.OKHTTP,
+                SOCKET_URL,
+                mapOf("user" to userId.toString()),
+                client
+            ).apply {
+                withClientHeartbeat(10000)
+                withServerHeartbeat(10000)
+            }
+
+            // 연결 상태 모니터링
+            lifecycleDisposable = stompClient!!.lifecycle()
                 .subscribeOn(Schedulers.io())
                 .subscribe { lifecycleEvent ->
                     when (lifecycleEvent.type) {
@@ -117,33 +112,64 @@ class WebSocketManager private constructor() {
                         else -> Log.d(TAG, "STOMP lifecycle event: ${lifecycleEvent.type}")
                     }
                 }
-        )
+            disposables.add(lifecycleDisposable!!)
 
-        Log.d(TAG, "Starting STOMP connection to: $SOCKET_URL")
-        stompClient?.connect()
+            Log.d(TAG, "Starting STOMP connection to: $SOCKET_URL")
+            stompClient?.connect()
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Error during connect", e)
+            CoroutineScope(Dispatchers.IO).launch {
+                _socketEvents.emit(SocketEvent.Error(e))
+            }
+        }
     }
 
     private fun subscribeToFriendStatus() {
-        Log.d(TAG, "Subscribing to: $FRIEND_STATUS_TOPIC")
-        disposables.add(
-            stompClient!!.topic(FRIEND_STATUS_TOPIC)
-                .subscribeOn(Schedulers.io())
-                .subscribe({ topicMessage ->
-                    Log.d(TAG, "Received message: ${topicMessage.payload}")
-                    CoroutineScope(Dispatchers.IO).launch {
-                        _socketEvents.emit(SocketEvent.MessageReceived(topicMessage.payload))
-                    }
-                }, { error ->
-                    Log.e(TAG, "Error on subscribe: ", error)
-                    error.printStackTrace()
-                    CoroutineScope(Dispatchers.IO).launch {
-                        _socketEvents.emit(SocketEvent.Error(error))
-                    }
-                })
-        )
+        Log.d(TAG, "Attempting to subscribe to: $FRIEND_STATUS_TOPIC")
+
+        if (stompClient == null) {
+            Log.e(TAG, "Failed to subscribe: stompClient is null")
+            return
+        }
+
+        if (!stompClient!!.isConnected) {
+            Log.e(TAG, "Failed to subscribe: STOMP client is not connected")
+            return
+        }
+
+        topicDisposable = stompClient!!.topic(FRIEND_STATUS_TOPIC)
+            .subscribeOn(Schedulers.io())
+            .subscribe({ topicMessage ->
+                Log.d(TAG, "Successfully subscribed and received message")
+                Log.d(TAG, "Message payload: ${topicMessage.payload}")
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    _socketEvents.emit(SocketEvent.MessageReceived(topicMessage.payload))
+                }
+            }, { error ->
+                Log.e(TAG, "Subscription error for topic $FRIEND_STATUS_TOPIC: ${error.message}")
+                Log.e(TAG, "Detailed subscription error: ", error)
+                error.printStackTrace()
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    _socketEvents.emit(SocketEvent.Error(error))
+                }
+            }, {
+                // onComplete
+                Log.d(TAG, "Subscription completed for topic: $FRIEND_STATUS_TOPIC")
+            })
+
+        disposables.add(topicDisposable!!)
+        Log.d(TAG, "Subscription request sent for topic: $FRIEND_STATUS_TOPIC")
     }
 
     fun sendStatusUpdate(state: Int, userId: Long) {
+        if (stompClient == null || !stompClient!!.isConnected) {
+            Log.e(TAG, "Cannot send status update: STOMP client is null or not connected")
+            return
+        }
+
         val message = """
             {
                 "state": $state,
@@ -151,16 +177,28 @@ class WebSocketManager private constructor() {
             }
         """.trimIndent()
 
+        Log.d(TAG, "Sending status update: $message")
+
         stompClient?.send("/app/status", message)?.subscribe(
-            { Log.d(TAG, "Status update sent successfully") },
-            { error -> Log.e(TAG, "Error sending status update", error) }
-        )
+            {
+                Log.d(TAG, "Status update sent successfully")
+            },
+            { error ->
+                Log.e(TAG, "Error sending status update", error)
+            }
+        )?.let { disposables.add(it) }
     }
 
     fun disconnect() {
         Log.d(TAG, "Disconnecting STOMP client")
-        disposables.clear()
-        stompClient?.disconnect()
-        stompClient = null
+        try {
+            lifecycleDisposable?.dispose()
+            topicDisposable?.dispose()
+            disposables.clear()
+            stompClient?.disconnect()
+            stompClient = null
+        } catch (e: Exception) {
+            Log.e(TAG, "Error during disconnect", e)
+        }
     }
 }

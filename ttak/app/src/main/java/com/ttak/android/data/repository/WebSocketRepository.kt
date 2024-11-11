@@ -6,18 +6,18 @@ import com.google.gson.Gson
 import com.ttak.android.domain.model.FriendStatus
 import com.ttak.android.domain.model.SocketMessage
 
-class WebSocketRepository private constructor() {
+class WebSocketRepository private constructor(private val applicationContext: Context) {
     private val TAG = "WebSocketRepository"
-    private val webSocketManager = WebSocketManager.getInstance()
+    private val webSocketManager = WebSocketManager.getInstance(applicationContext)
     val socketEvents = webSocketManager.socketEvents
 
     companion object {
         @Volatile
         private var instance: WebSocketRepository? = null
 
-        fun getInstance(): WebSocketRepository {
+        fun getInstance(context: Context): WebSocketRepository {
             return instance ?: synchronized(this) {
-                instance ?: WebSocketRepository().also { instance = it }
+                instance ?: WebSocketRepository(context.applicationContext).also { instance = it }
             }
         }
     }
@@ -43,8 +43,8 @@ class WebSocketRepository private constructor() {
         }
     }
 
-    // context 파라미터 추가
-    fun connect(context: Context) = webSocketManager.connect(context)
+    // context 파라미터 제거하고 저장된 applicationContext 사용
+    fun connect() = webSocketManager.connect()
 
     fun disconnect() = webSocketManager.disconnect()
 }

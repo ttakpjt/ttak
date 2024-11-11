@@ -18,7 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object ApiConfig {
-    const val BASE_URL = "https://k11a509.p.ssafy.io/api/"  // 실제 서버 URL로 변경
+    const val BASE_URL = "https://k11a509.p.ssafy.io/api"  // 실제 서버 URL로 변경
     const val TIMEOUT_SECONDS = 30L
 
     // 로그 인터셉터 설정
