@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
                 PackageManager.PERMISSION_GRANTED
             ) {
-                getToken()
+//                getToken()
                 // FCM SDK (and your app) can post notifications.
             } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
                 // TODO: display an educational UI explaining to the user the features that will be enabled
@@ -83,7 +83,7 @@ class MainActivity : ComponentActivity() {
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         } else {
-            getToken()
+//            getToken()
         }
     }
 
@@ -179,51 +179,51 @@ class MainActivity : ComponentActivity() {
         askNotificationPermission()
     }
 
-    // FCM 토큰을 수동으로 가져오는 함수
-    private fun getToken() {
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val token = task.result
-                Log.d("MainActivity", "FCM 토큰: $token")
-                Toast.makeText(this, "FCM 토큰: $token", Toast.LENGTH_SHORT).show()
-
-                // FCM 토큰을 서버로 전송
-                CoroutineScope(Dispatchers.IO).launch {
-                    sendRegistrationToServer(token)
-                }
-            } else {
-                Log.w("MainActivity", "FCM 토큰 가져오기 실패", task.exception)
-            }
-        }
-    }
-
-    private suspend fun sendRegistrationToServer(token: String) {
-        Log.d(TAG, "Testing token generation: $token")
-        val json = JSONObject().apply {
-            put("token", token)
-        }
-
-        val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
-        val client = OkHttpClient()
-
-        val request = Request.Builder()
-            .url("https://k11a509.p.ssafy.io/api/fcm/save")
-            .addHeader("user", "1")  // 사용자 ID를 헤더에 추가 (예시)
-            .post(requestBody)
-            .build()
-
-        try {
-            client.newCall(request).execute().use { response ->
-                if (response.isSuccessful) {
-                    Log.d(TAG, "토큰 전송 성공: ${response.body?.string()}")
-                } else {
-                    Log.e(TAG, "토큰 전송 실패: ${response.code}")
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "네트워크 요청 중 오류 발생", e)
-        }
-    }
+//    // FCM 토큰을 수동으로 가져오는 함수
+//    private fun getToken() {
+//        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+//            if (task.isSuccessful) {
+//                val token = task.result
+//                Log.d("MainActivity", "FCM 토큰: $token")
+//                Toast.makeText(this, "FCM 토큰: $token", Toast.LENGTH_SHORT).show()
+//
+//                // FCM 토큰을 서버로 전송
+//                CoroutineScope(Dispatchers.IO).launch {
+//                    sendRegistrationToServer(token)
+//                }
+//            } else {
+//                Log.w("MainActivity", "FCM 토큰 가져오기 실패", task.exception)
+//            }
+//        }
+//    }
+//
+//    private suspend fun sendRegistrationToServer(token: String) {
+//        Log.d(TAG, "Testing token generation: $token")
+//        val json = JSONObject().apply {
+//            put("token", token)
+//        }
+//
+//        val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
+//        val client = OkHttpClient()
+//
+//        val request = Request.Builder()
+//            .url("https://k11a509.p.ssafy.io/api/fcm/save")
+//            .addHeader("user", "1")  // 사용자 ID를 헤더에 추가 (예시)
+//            .post(requestBody)
+//            .build()
+//
+//        try {
+//            client.newCall(request).execute().use { response ->
+//                if (response.isSuccessful) {
+//                    Log.d(TAG, "토큰 전송 성공: ${response.body?.string()}")
+//                } else {
+//                    Log.e(TAG, "토큰 전송 실패: ${response.code}")
+//                }
+//            }
+//        } catch (e: Exception) {
+//            Log.e(TAG, "네트워크 요청 중 오류 발생", e)
+//        }
+//    }
 
     // 포그라운드 구동 앱 감시
     private fun startForegroundMonitorService() {
