@@ -86,7 +86,7 @@ public class FcmService{
 			.build();
 
 		try {
-			log.info("Sending message: {}", message.toString());
+			log.info("===Sending message: {}", message.toString());
 			firebaseMessaging.send(message);
 			idempotencyUtil.addRequest(messageKey);
 		} catch (FirebaseMessagingException | com.google.firebase.messaging.FirebaseMessagingException e) {
