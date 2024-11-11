@@ -96,6 +96,24 @@ public class UserService{
 		return user.getUserId();
 	}
 
+	/**
+	 * 해당 유저와 매핑된 FCM 테이블 데이터를 삭제한다.
+	 * 이후 해당 기기로 타 유저가 로그인했을 때 재매핑.
+	 * @param userId 로그아웃 요청한 사용자를 fcm 테이블에서 제외한다.
+	 */
+	public void logout(Long userId) {
+		// 해당 UserId를 가지는 User 객체를 찾는다.
+		User user = findUserById(userId);
+
+		// 해당 User 객체와 매핑되어있는 Fcm 객체를 찾는다. (없을경우 예외반환 F001)
+		Fcm fcm = fcmRepository.findByUser(user)
+			.orElseThrow(() -> new NotFoundException(F001));
+
+		// 해당 Fcm 객체의 User 값을 Null로 변경한다.
+		fcm.setUser(null);
+		fcmRepository.save(fcm);
+	}
+
 
 	public void checkNickname(String nickname) {
 		// 비어있는 닉네임은 불가
