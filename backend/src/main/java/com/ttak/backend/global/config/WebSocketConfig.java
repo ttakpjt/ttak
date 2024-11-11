@@ -22,7 +22,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		// 웹소켓 연결 엔드포인트
-		registry.addEndpoint("/wss", "/ws")
+		registry.addEndpoint("/api/wss", "/api/ws")
 			.setAllowedOriginPatterns("https://k11a509.p.ssafy.io", "http://localhost:3000")
 			.withSockJS();
 	}
