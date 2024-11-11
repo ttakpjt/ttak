@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
@@ -98,44 +100,30 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
-                    // WebSocket 연결 및 이벤트 처리
                     LaunchedEffect(Unit) {
-                        Log.d(TAG, "LaunchedEffect for WebSocket triggered")
                         try {
-                            Log.d(TAG, "Attempting to connect to WebSocket...")
-
-                            val userId = UserPreferences(applicationContext).getUserId()
-                            Log.d(TAG, "Current userId: $userId")
-
                             webSocketManager.connect()
-
-                            Log.d(TAG, "Starting to collect WebSocket events")
                             webSocketManager.socketEvents.collect { event ->
                                 when (event) {
-                                    is SocketEvent.Connected -> {
-                                        Log.d(TAG, "WebSocket connected successfully")
-                                    }
+                                    is SocketEvent.Connected -> Log.d(TAG, "WebSocket connected successfully")
                                     is SocketEvent.MessageReceived -> {
                                         Log.d(TAG, "Received WebSocket message: ${event.data}")
+                                        refreshState.value = !refreshState.value
                                     }
                                     is SocketEvent.Disconnected -> {
                                         Log.e(TAG, "WebSocket disconnected, will attempt reconnect in 5s")
                                         delay(5000)
-                                        Log.d(TAG, "Attempting reconnection after disconnect")
                                         webSocketManager.connect()
                                     }
                                     is SocketEvent.Error -> {
                                         Log.e(TAG, "WebSocket error occurred", event.error)
-                                        Log.e(TAG, "Error details: ${event.error.message}")
                                         delay(5000)
-                                        Log.d(TAG, "Attempting reconnection after error")
                                         webSocketManager.connect()
                                     }
                                 }
                             }
                         } catch (e: Exception) {
                             Log.e(TAG, "Critical error in WebSocket setup", e)
-                            Log.e(TAG, "Stack trace: ${e.stackTraceToString()}")
                         }
                     }
 
