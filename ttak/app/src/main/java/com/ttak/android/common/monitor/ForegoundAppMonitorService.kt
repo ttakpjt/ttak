@@ -13,7 +13,6 @@ import androidx.core.app.NotificationCompat
 import com.ttak.android.data.local.AppDatabase
 import com.ttak.android.data.repository.FocusGoalRepository
 import com.ttak.android.network.implementation.ObserverApiImpl
-import com.ttak.android.network.socket.WebSocketManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -29,7 +28,7 @@ class ForegroundMonitorService : Service() {
     private val serviceScope = CoroutineScope(Dispatchers.Default + Job())
     private lateinit var usageStatsManager: UsageStatsManager
     private var isMonitoring = false
-    private val webSocketManager = WebSocketManager.getInstance()
+//    private val webSocketManager = WebSocketManager.getInstance()
     private lateinit var repository: FocusGoalRepository
     private var previousStatus: Int? = null // 이전 상태를 저장하는 변수
     private var lastEventTime: Long = 0L

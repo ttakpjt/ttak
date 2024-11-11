@@ -56,16 +56,16 @@ class FriendStoryViewModel(
         _selectedFilterId.value = filterId
     }
 
-    fun loadInitialData() {
-        viewModelScope.launch {
-            // Sample initial data - in real app, this would come from a data source
-            repository.updateFriends(
-                listOf(
-                    FriendStory("1", "탁싸피", "url1", true),
-                    FriendStory("2", "황싸피", "url2", false),
-                    // ... more friends
-                )
-            )
-        }
-    }
+//    fun loadInitialData() {
+//        viewModelScope.launch {
+//            // Sample initial data - in real app, this would come from a data source
+//            repository.updateFriends(
+//                listOf(
+//                    FriendStory("1", "탁싸피", "url1", true),
+//                    FriendStory("2", "황싸피", "url2", false),
+//                    // ... more friends
+//                )
+//            )
+//        }
+//    }
 }

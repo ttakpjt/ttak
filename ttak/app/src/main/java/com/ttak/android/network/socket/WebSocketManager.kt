@@ -1,111 +1,214 @@
-package com.ttak.android.network.socket
-
+import android.content.Context
 import android.util.Log
+import com.ttak.android.network.socket.SocketEvent
+import com.ttak.android.network.util.UserPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import okhttp3.*
-import okhttp3.WebSocket
-import okhttp3.WebSocketListener
-import java.util.concurrent.TimeUnit
+import ua.naiksoftware.stomp.Stomp
+import ua.naiksoftware.stomp.StompClient
+import ua.naiksoftware.stomp.dto.LifecycleEvent
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.delay
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 
-class WebSocketManager private constructor() {
-    private var webSocket: WebSocket? = null
-    private val client = OkHttpClient.Builder()
-        .readTimeout(30, TimeUnit.SECONDS)
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .build()
+class WebSocketManager private constructor(private val applicationContext: Context) {
+    private val TAG = "WebSocketManager"
+    private var stompClient: StompClient? = null
+    private val disposables = CompositeDisposable()
+    private var lifecycleDisposable: Disposable? = null
+    private var topicDisposable: Disposable? = null
 
     private val _socketEvents = MutableSharedFlow<SocketEvent>()
     val socketEvents = _socketEvents.asSharedFlow()
 
     companion object {
-        private const val TAG = "WebSocketManager"
-        // 실제 서버 URL로 변경 필요
-        private const val SOCKET_URL = "ws://your-server-url/ws"
-        const val FRIEND_STORY_TOPIC = "/topic/friend-story"  // 토픽 이름 변경
-        const val STATUS_FALSE = 0    // hasNewStory = false
-        const val STATUS_TRUE = 1     // hasNewStory = true
-
+        private const val BASE_URL = "https://k11a509.p.ssafy.io"
+        private const val SOCKET_URL = "$BASE_URL/wss/websocket"
+        const val FRIEND_STATUS_TOPIC = "/topic/friend-status"
+        const val STATUS_FALSE = 0
+        const val STATUS_TRUE = 1
 
         @Volatile
         private var instance: WebSocketManager? = null
 
-        fun getInstance(): WebSocketManager {
+        fun getInstance(context: Context): WebSocketManager {
             return instance ?: synchronized(this) {
-                instance ?: WebSocketManager().also { instance = it }
+                instance ?: WebSocketManager(context.applicationContext).also { instance = it }
             }
         }
     }
 
     fun connect() {
-        val request = Request.Builder()
-            .url(SOCKET_URL)
-            .build()
-
-        webSocket = client.newWebSocket(request, object : WebSocketListener() {
-            override fun onOpen(webSocket: WebSocket, response: Response) {
-                Log.d(TAG, "WebSocket Connected")
-                CoroutineScope(Dispatchers.IO).launch {
-                    _socketEvents.emit(SocketEvent.Connected)
-                    subscribeFriendStoryStatus()  // 메서드 이름 변경
-                }
+        try {
+            val userId = UserPreferences(applicationContext).getUserId()
+            if (userId == null) {
+                Log.e(TAG, "Failed to connect: userId is null")
+                return
             }
 
-            override fun onMessage(webSocket: WebSocket, text: String) {
-                Log.d(TAG, "Message received: $text")
-                CoroutineScope(Dispatchers.IO).launch {
-                    _socketEvents.emit(SocketEvent.MessageReceived(text))
-                }
+            Log.d(TAG, "Connecting to WebSocket with userId: $userId")
+
+            // 이미 연결되어 있다면 먼저 연결 해제
+            disconnect()
+
+            // 로깅 인터셉터 설정
+            val loggingInterceptor = HttpLoggingInterceptor { message ->
+                Log.d(TAG, "WebSocket HTTP: $message")
+            }.apply {
+                level = HttpLoggingInterceptor.Level.BODY
             }
 
-            override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-                Log.d(TAG, "WebSocket Closing: $reason")
-                CoroutineScope(Dispatchers.IO).launch {
-                    _socketEvents.emit(SocketEvent.Disconnected)
-                }
+            // OkHttpClient 설정
+            val client = OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .build()
+
+            Log.d(TAG, "Attempting to create STOMP client with URL: $SOCKET_URL")
+
+            // STOMP 클라이언트 생성
+            stompClient = Stomp.over(
+                Stomp.ConnectionProvider.OKHTTP,
+                SOCKET_URL,
+                mapOf("user" to userId.toString()),
+                client
+            ).apply {
+                withClientHeartbeat(10000)
+                withServerHeartbeat(10000)
             }
 
-            override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-                Log.e(TAG, "WebSocket Error", t)
-                CoroutineScope(Dispatchers.IO).launch {
-                    _socketEvents.emit(SocketEvent.Error(t))
+            // 연결 상태 모니터링
+            lifecycleDisposable = stompClient!!.lifecycle()
+                .subscribeOn(Schedulers.io())
+                .subscribe { lifecycleEvent ->
+                    when (lifecycleEvent.type) {
+                        LifecycleEvent.Type.OPENED -> {
+                            Log.d(TAG, "STOMP connection opened")
+                            // 약간의 지연 후 구독 시도
+                            CoroutineScope(Dispatchers.IO).launch {
+                                delay(500) // 500ms 대기
+                                _socketEvents.emit(SocketEvent.Connected)
+                                Log.d(TAG, "Attempting to subscribe after connection opened")
+                                subscribeToFriendStatus()
+                            }
+                        }
+                        LifecycleEvent.Type.CLOSED -> {
+                            Log.d(TAG, "STOMP connection closed")
+                            CoroutineScope(Dispatchers.IO).launch {
+                                _socketEvents.emit(SocketEvent.Disconnected)
+                            }
+                        }
+                        LifecycleEvent.Type.ERROR -> {
+                            Log.e(TAG, "STOMP connection error: ${lifecycleEvent.exception}")
+                            lifecycleEvent.exception?.printStackTrace()
+                            CoroutineScope(Dispatchers.IO).launch {
+                                lifecycleEvent.exception?.let {
+                                    _socketEvents.emit(SocketEvent.Error(it))
+                                }
+                            }
+                        }
+                        else -> Log.d(TAG, "STOMP lifecycle event: ${lifecycleEvent.type}")
+                    }
                 }
+            disposables.add(lifecycleDisposable!!)
+
+            Log.d(TAG, "Starting STOMP connection to: $SOCKET_URL")
+            stompClient?.connect()
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Error during connect", e)
+            CoroutineScope(Dispatchers.IO).launch {
+                _socketEvents.emit(SocketEvent.Error(e))
             }
-        })
+        }
     }
 
-    private suspend fun subscribeFriendStoryStatus() {
-        val subscribeMessage = """
+    private fun subscribeToFriendStatus() {
+        Log.d(TAG, """
+        WebSocket Connection Details:
+        Base URL: $BASE_URL
+        WebSocket URL: $SOCKET_URL
+        Subscribe Topic: $FRIEND_STATUS_TOPIC
+        Full STOMP URL: ${SOCKET_URL}
+        Protocol: STOMP
+    """.trimIndent())
+
+        if (stompClient == null) {
+            Log.e(TAG, "Failed to subscribe: stompClient is null")
+            return
+        }
+
+        if (!stompClient!!.isConnected) {
+            Log.e(TAG, "Failed to subscribe: STOMP client is not connected")
+            return
+        }
+
+        topicDisposable = stompClient!!.topic(FRIEND_STATUS_TOPIC)
+            .subscribeOn(Schedulers.io())
+            .subscribe({ topicMessage ->
+                Log.d(TAG, "Successfully subscribed and received message")
+                Log.d(TAG, "Message payload: ${topicMessage.payload}")
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    _socketEvents.emit(SocketEvent.MessageReceived(topicMessage.payload))
+                }
+            }, { error ->
+                Log.e(TAG, "Subscription error for topic $FRIEND_STATUS_TOPIC: ${error.message}")
+                Log.e(TAG, "Detailed subscription error: ", error)
+                error.printStackTrace()
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    _socketEvents.emit(SocketEvent.Error(error))
+                }
+            }, {
+                // onComplete
+                Log.d(TAG, "Subscription completed for topic: $FRIEND_STATUS_TOPIC")
+            })
+
+        disposables.add(topicDisposable!!)
+        Log.d(TAG, "Subscription request sent for topic: $FRIEND_STATUS_TOPIC")
+    }
+
+    fun sendStatusUpdate(state: Int, userId: Long) {
+        if (stompClient == null || !stompClient!!.isConnected) {
+            Log.e(TAG, "Cannot send status update: STOMP client is null or not connected")
+            return
+        }
+
+        val message = """
             {
-                "destination": "$FRIEND_STORY_TOPIC",
-                "id": "sub-detection",
-                "type": "SUBSCRIBE"
+                "state": $state,
+                "userId": $userId
             }
         """.trimIndent()
-        Log.d(TAG, "Subscribing to friend story status: $subscribeMessage")
-        webSocket?.send(subscribeMessage)
+
+        Log.d(TAG, "Sending status update: $message")
+
+        stompClient?.send("/app/status", message)?.subscribe(
+            {
+                Log.d(TAG, "Status update sent successfully")
+            },
+            { error ->
+                Log.e(TAG, "Error sending status update", error)
+            }
+        )?.let { disposables.add(it) }
     }
 
     fun disconnect() {
-        Log.d(TAG, "Disconnecting WebSocket")
-        webSocket?.close(1000, "User disconnected")
-        webSocket = null
-    }
-
-    // 상태 변경을 서버에 전송하는 함수
-    fun sendStatusUpdate(status: Int) {
-        val statusMessage = """
-            {
-                "destination": "/friends/status",
-                "body": {
-                    "status": $status
-                }
-            }
-        """.trimIndent()
-        Log.d(TAG, "Sending status update message: $statusMessage")
-        webSocket?.send(statusMessage)
+        Log.d(TAG, "Disconnecting STOMP client")
+        try {
+            lifecycleDisposable?.dispose()
+            topicDisposable?.dispose()
+            disposables.clear()
+            stompClient?.disconnect()
+            stompClient = null
+        } catch (e: Exception) {
+            Log.e(TAG, "Error during disconnect", e)
+        }
     }
 }

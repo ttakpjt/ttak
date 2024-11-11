@@ -1,8 +1,11 @@
 package com.ttak.android.domain.model
 
 data class FriendStory(
-    val id: String,
-    val name: String,
-    val profileImageUrl: String,
-    val hasNewStory: Boolean = false
-)
+    val friendId: Int,
+    val friendName: String,
+    val friendImg: String,
+    val status: Int
+) {
+    val hasNewStory: Boolean
+        get() = status == 1
+}
