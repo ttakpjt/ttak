@@ -30,7 +30,7 @@ class WebSocketManager private constructor(private val applicationContext: Conte
     companion object {
         private const val BASE_URL = "https://k11a509.p.ssafy.io"
         private const val SOCKET_URL = "$BASE_URL/wss/websocket"
-        const val FRIEND_STATUS_TOPIC = "/topic/status"
+        const val FRIEND_STATUS_TOPIC = "/topic/friend-status"
         const val STATUS_FALSE = 0
         const val STATUS_TRUE = 1
 
@@ -89,10 +89,13 @@ class WebSocketManager private constructor(private val applicationContext: Conte
                     when (lifecycleEvent.type) {
                         LifecycleEvent.Type.OPENED -> {
                             Log.d(TAG, "STOMP connection opened")
+                            // 약간의 지연 후 구독 시도
                             CoroutineScope(Dispatchers.IO).launch {
+                                delay(500) // 500ms 대기
                                 _socketEvents.emit(SocketEvent.Connected)
+                                Log.d(TAG, "Attempting to subscribe after connection opened")
+                                subscribeToFriendStatus()
                             }
-                            subscribeToFriendStatus()
                         }
                         LifecycleEvent.Type.CLOSED -> {
                             Log.d(TAG, "STOMP connection closed")
@@ -126,7 +129,14 @@ class WebSocketManager private constructor(private val applicationContext: Conte
     }
 
     private fun subscribeToFriendStatus() {
-        Log.d(TAG, "Attempting to subscribe to: $FRIEND_STATUS_TOPIC")
+        Log.d(TAG, """
+        WebSocket Connection Details:
+        Base URL: $BASE_URL
+        WebSocket URL: $SOCKET_URL
+        Subscribe Topic: $FRIEND_STATUS_TOPIC
+        Full STOMP URL: ${SOCKET_URL}
+        Protocol: STOMP
+    """.trimIndent())
 
         if (stompClient == null) {
             Log.e(TAG, "Failed to subscribe: stompClient is null")

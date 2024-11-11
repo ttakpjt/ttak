@@ -26,17 +26,38 @@ class ObserverApiImpl private constructor() : ObserverApi {
     override suspend fun updateMyStatus(state: Int): Result<Unit> {
         return try {
             val request = Request.Builder()
-                .url("${ApiConfig.BASE_URL}/my/status?state=$state")
-                .post(ByteArray(0).toRequestBody())  // create() 대신 toRequestBody() 사용
+                .url("${ApiConfig.BASE_URL}my/status?state=$state")
+                .post(ByteArray(0).toRequestBody())
                 .build()
 
+            // Request 로깅
+            Log.d(TAG, """
+            ===== Update Status Request =====
+            URL: ${request.url}
+            Method: ${request.method}
+            Headers: ${request.headers}
+        """.trimIndent())
+
             val response = client.newCall(request).execute()
+
+            // Response 로깅
+            Log.d(TAG, """
+            ===== Update Status Response =====
+            Code: ${response.code}
+            Message: ${response.message}
+            Headers: ${response.headers}
+            Body: ${response.body?.string()}
+        """.trimIndent())
 
             if (response.isSuccessful) {
                 Log.d(TAG, "My status update success: $state")
                 Result.success(Unit)
             } else {
-                Log.e(TAG, "My status update failed: ${response.code}")
+                Log.e(TAG, """
+                My status update failed:
+                Code: ${response.code}
+                Error Body: ${response.body?.string()}
+            """.trimIndent())
                 Result.failure(Exception("API failed: ${response.code}"))
             }
         } catch (e: Exception) {

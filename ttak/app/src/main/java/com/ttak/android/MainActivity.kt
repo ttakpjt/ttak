@@ -88,6 +88,11 @@ class MainActivity : ComponentActivity() {
             TtakTheme {
                 val navController = rememberNavController()
 
+                // NavController 초기화
+                LaunchedEffect(navController) {
+                    NavigationManager.setNavController(navController)
+                }
+
                 Scaffold(
                     modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->

@@ -163,7 +163,7 @@ private fun ObserverScreenContent(
                             showMessageDialog = false
                             CoroutineScope(Dispatchers.IO).launch {
                                 val messageData = MessageData(
-                                    userId = selectedFriend!!.friendId.toString(),  // id -> friendId.toString()
+                                    userId = selectedFriend!!.friendId,
                                     data = message
                                 )
                                 try {
