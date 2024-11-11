@@ -66,6 +66,7 @@ public class HistoryCustomRepositoryImpl implements HistoryCustomRepository{
 				history._super.createdAt))
 			.from(history)
 			.where(history.receiveId.eq(userId))
+			.orderBy(history.createdAt.desc())
 			.fetch();
 	}
 
