@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.ttak.backend.domain.history.dto.request.HistoryCount;
 import com.ttak.backend.domain.history.dto.response.HistoryListRes;
+import com.ttak.backend.domain.history.entity.History;
 import com.ttak.backend.domain.history.repository.HistoryRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -62,5 +63,16 @@ public class HistoryService {
 		Long myCount = historyRepository.getMyCount(userId, startOfWeek, endOfToday);
 
 		return myCount;
+	}
+
+	/**
+	 * 전달된 fcmMessage를 Histroy 테이블에 저장한다.
+	 * @param sendId 보내는 사람 Id (AttackId)
+	 * @param data 데이터 내용
+	 * @param receiveId 받는 사람 ID
+	 * @param type 데이터 타입 (메세지, 물풍선, ...)
+	 */
+	public void addAttackHistory(final Long sendId, final String data, final Long receiveId, final String type){
+		historyRepository.save(History.of(sendId, receiveId, type, data));
 	}
 }
