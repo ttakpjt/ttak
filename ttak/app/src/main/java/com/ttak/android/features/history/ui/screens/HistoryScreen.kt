@@ -11,20 +11,21 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ttak.android.data.repository.HistoryRepositoryImpl
 import com.ttak.android.features.history.ui.components.HistoryMessageItem
 import com.ttak.android.features.history.ui.components.SystemNotificationCard
 import com.ttak.android.features.history.viewmodel.HistoryViewModel
 import com.ttak.android.features.history.viewmodel.HistoryViewModelFactory
-import com.ttak.android.network.api.NetworkModule
+import com.ttak.android.network.util.ApiConfig
 
 @Composable
 fun HistoryScreen(
     viewModel: HistoryViewModel = viewModel(
         factory = HistoryViewModelFactory(
             repository = HistoryRepositoryImpl(
-                api = NetworkModule.provideHistoryApi()
+                api = ApiConfig.createHistoryApi(context = LocalContext.current)
             )
         )
     )
