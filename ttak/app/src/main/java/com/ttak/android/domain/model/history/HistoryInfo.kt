@@ -1,4 +1,4 @@
-package com.ttak.android.domain.model
+package com.ttak.android.domain.model.history
 
 data class HistoryInfo(
     val id: String,

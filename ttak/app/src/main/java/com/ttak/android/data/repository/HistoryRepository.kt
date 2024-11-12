@@ -1,6 +1,6 @@
 package com.ttak.android.data.repository
 
-import com.ttak.android.domain.model.HistoryInfo
+import com.ttak.android.domain.model.history.HistoryInfo
 
 interface HistoryRepository {
 

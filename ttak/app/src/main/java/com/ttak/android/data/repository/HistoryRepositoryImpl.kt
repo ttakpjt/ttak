@@ -1,11 +1,9 @@
 package com.ttak.android.data.repository
 
-import android.util.Log
-import com.ttak.android.domain.model.HistoryInfo
+import com.ttak.android.domain.model.history.HistoryInfo
 import com.ttak.android.network.api.HistoryApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlin.math.log
 
 class HistoryRepositoryImpl(
     private val api: HistoryApi

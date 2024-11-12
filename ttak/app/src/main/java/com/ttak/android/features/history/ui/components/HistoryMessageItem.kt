@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.ttak.android.R
-import com.ttak.android.domain.model.HistoryInfo
+import com.ttak.android.domain.model.history.HistoryInfo
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

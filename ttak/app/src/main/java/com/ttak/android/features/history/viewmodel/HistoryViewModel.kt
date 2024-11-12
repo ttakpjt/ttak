@@ -3,7 +3,7 @@ package com.ttak.android.features.history.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ttak.android.data.repository.HistoryRepository
-import com.ttak.android.domain.model.HistoryInfo
+import com.ttak.android.domain.model.history.HistoryInfo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

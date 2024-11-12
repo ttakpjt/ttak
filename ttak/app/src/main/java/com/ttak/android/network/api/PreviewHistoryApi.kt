@@ -1,10 +1,10 @@
 package com.ttak.android.network.api
 
 import com.ttak.android.data.repository.HistoryRepository
-import com.ttak.android.domain.model.HistoryInfo
-import com.ttak.android.domain.model.HistoryType
-import com.ttak.android.domain.model.WeeklyPickData
-import com.ttak.android.domain.model.WeeklyPickResponse
+import com.ttak.android.domain.model.history.HistoryInfo
+import com.ttak.android.domain.model.history.HistoryType
+import com.ttak.android.domain.model.history.WeeklyPickData
+import com.ttak.android.domain.model.history.WeeklyPickResponse
 
 class PreviewHistoryApi : HistoryRepository {
 

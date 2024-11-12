@@ -1,8 +1,8 @@
 package com.ttak.android.network.api
 
-import com.ttak.android.domain.model.HistoryInfo
-import com.ttak.android.domain.model.WeeklyPickResponse
-import com.ttak.android.domain.model.WeeklyWatchingResponse
+import com.ttak.android.domain.model.history.HistoryInfo
+import com.ttak.android.domain.model.history.WeeklyPickResponse
+import com.ttak.android.domain.model.history.WeeklyWatchingResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
