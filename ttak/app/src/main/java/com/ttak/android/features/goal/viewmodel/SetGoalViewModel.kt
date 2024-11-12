@@ -10,6 +10,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.ttak.android.data.local.AppDatabase
@@ -49,6 +50,9 @@ class SetGoalViewModel(application: Application) : AndroidViewModel(application)
 
     private val _selectedApps = MutableStateFlow<Set<String>>(emptySet())
     val selectedApps = _selectedApps.asStateFlow()
+
+    private val _saveSuccess = MutableStateFlow<Boolean?>(null)
+    val saveSuccess = _saveSuccess.asStateFlow()
 
     init {
         loadInstalledApps()
@@ -118,42 +122,54 @@ class SetGoalViewModel(application: Application) : AndroidViewModel(application)
         _selectedApps.value = currentSelection
     }
 
-    fun saveGoal() {
-        viewModelScope.launch {
-            runCatching {
-                // 기존의 로컬 저장 로직
-                val today = LocalDate.now()
-                val startDateTime = LocalDateTime.of(today, startTime.value)
-                val endDateTime = LocalDateTime.of(today, endTime.value)
-                val adjustedEndDateTime = if (endDateTime.isBefore(startDateTime)) {
-                    endDateTime.plusDays(1)
-                } else {
-                    endDateTime
-                }
+    suspend fun saveGoal(): Boolean {
+        return try {
+            val today = LocalDate.now()
+            val startDateTime = LocalDateTime.of(today, startTime.value)
+            val endDateTime = LocalDateTime.of(today, endTime.value)
+            val adjustedEndDateTime = if (endDateTime.isBefore(startDateTime)) {
+                endDateTime.plusDays(1)
+            } else {
+                endDateTime
+            }
 
-                val selectedAppsList = installedApps.value.filter {
-                    selectedApps.value.contains(it.packageName)
-                }
+            val selectedAppsList = installedApps.value.filter {
+                selectedApps.value.contains(it.packageName)
+            }
 
-                // 로컬 저장
+            // 서버 저장 먼저 시도
+            val appNames = selectedAppsList.map { it.appName }
+            val apiResponse = goalApiImpl.saveApplicationSetting(
+                appNames = appNames,
+                startTime = startTime.value,
+                endTime = endTime.value
+            )
+
+            // 서버 저장이 성공한 경우에만 로컬 저장
+            if (apiResponse.isSuccess) {
                 val focusGoal = FocusGoal(
                     startDateTime = startDateTime,
                     endDateTime = adjustedEndDateTime,
                     selectedApps = selectedAppsList
                 )
                 repository.saveFocusGoal(focusGoal)
-
-                // 서버 저장 - LocalTime 직접 전달
-                val appNames = selectedAppsList.map { it.appName }
-
-                goalApiImpl.saveApplicationSetting(
-                    appNames = appNames,
-                    startTime = startTime.value,  // LocalTime 직접 전달
-                    endTime = endTime.value       // LocalTime 직접 전달
-                )
-            }.onFailure { e ->
-                Log.e("SetGoalViewModel", "Error saving goal", e)
+                showToast("목표가 성공적으로 저장되었습니다!")
+                _saveSuccess.value = true
+                true
+            } else {
+                showToast("잠시 후 다시 시도해주세요...!")
+                _saveSuccess.value = false
+                false
             }
+        } catch (e: Exception) {
+            Log.e("SetGoalViewModel", "Error saving goal", e)
+            showToast("네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.")
+            _saveSuccess.value = false
+            false
         }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(getApplication(), message, Toast.LENGTH_SHORT).show()
     }
 }
