@@ -1,4 +1,4 @@
-package com.ttak.android.data.repository
+package com.ttak.android.data.repository.history
 
 import com.ttak.android.domain.model.history.HistoryInfo
 import com.ttak.android.network.api.HistoryApi

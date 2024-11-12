@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.ttak.android.data.repository.HistoryRepositoryImpl
+import com.ttak.android.data.repository.history.HistoryRepositoryImpl
 import com.ttak.android.features.history.ui.components.HistoryMessageItem
 import com.ttak.android.features.history.ui.components.SystemNotificationCard
 import com.ttak.android.features.history.viewmodel.HistoryViewModel

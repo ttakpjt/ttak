@@ -2,7 +2,7 @@ package com.ttak.android.features.history.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.ttak.android.data.repository.HistoryRepository
+import com.ttak.android.data.repository.history.HistoryRepository
 
 class HistoryViewModelFactory (
     private val repository: HistoryRepository
