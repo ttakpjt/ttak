@@ -23,6 +23,7 @@ import com.ttak.android.common.ui.theme.White
 import com.ttak.android.features.auth.LoginActivity
 import com.ttak.android.features.auth.SplashActivity
 import com.ttak.android.features.mypage.ProfileSetupActivity
+import com.ttak.android.network.util.UserPreferences
 
 @Composable
 fun SplashScreen(
@@ -38,8 +39,8 @@ fun SplashScreen(
         delay(1000)
 
         if (hasPermissions && hasOverlayPermission) {
-            val sharedPreferences = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
-            val isProfileSetupComplete = sharedPreferences.getBoolean("isProfileSetupComplete", false)
+            val isProfileSetupComplete =
+                UserPreferences(context.applicationContext).getNickname() != null
 
             val nextActivity = when {
                 isLoggedIn && isProfileSetupComplete -> MainActivity::class.java    // 로그인과 프로필 설정 완료

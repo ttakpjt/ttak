@@ -18,16 +18,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ttak.android.MainActivity
 import com.ttak.android.R
 import com.ttak.android.common.ui.components.AppButton
 import com.ttak.android.common.ui.components.AppSearchBar
 import com.ttak.android.common.ui.theme.Blue
 import com.ttak.android.common.ui.theme.Black
-import com.ttak.android.common.ui.theme.White
 import com.ttak.android.features.mypage.ui.components.ProfileImagePicker
 import com.ttak.android.features.mypage.viewmodel.NicknameViewModel
 import com.ttak.android.network.util.UserPreferences
@@ -56,9 +53,6 @@ fun ProfileSetupScreen(
         Text(
             text = "프로필 설정",
             style = MaterialTheme.typography.titleLarge,
-//            fontSize = 32.sp,
-//            fontWeight = FontWeight.Bold,
-//            color = White,
             modifier = Modifier.align(Alignment.Start)
         )
 
@@ -105,11 +99,6 @@ fun ProfileSetupScreen(
                     viewModel.registerNickname(nickname) { isRegistered ->
                         if (isRegistered) {
                             UserPreferences(context.applicationContext).saveNickname(nickname)
-
-                            val sharedPreferences =
-                                context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
-                            sharedPreferences.edit().putBoolean("isProfileSetupComplete", true)
-                                .apply()
 
                             context.startActivity(Intent(context, MainActivity::class.java))
                             (context as? Activity)?.finish()

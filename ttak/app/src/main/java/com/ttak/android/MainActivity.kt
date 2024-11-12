@@ -37,7 +37,6 @@ import com.ttak.android.features.observer.viewmodel.FriendStoryViewModel
 import com.ttak.android.network.util.ApiConfig
 import android.os.Handler
 import android.os.Looper
-import com.ttak.android.network.util.UserPreferences
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
