@@ -32,14 +32,10 @@ import com.ttak.android.network.socket.SocketEvent
 import android.Manifest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.ttak.android.data.repository.FriendStoryRepositoryImpl
-import com.ttak.android.features.observer.viewmodel.FriendStoryViewModel
 import com.ttak.android.network.implementation.FriendApiImpl
+import com.ttak.android.features.observer.viewmodel.FriendStoryViewModel
 import com.ttak.android.network.util.ApiConfig
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     private val TAG = "MainActivity"
@@ -77,7 +73,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate called")
@@ -97,11 +92,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         )[FriendStoryViewModel::class.java]
-
-        // 친구 목록 초기 로딩
-        CoroutineScope(Dispatchers.IO).launch {
-            (repository as FriendApiImpl).fetchFriends()
-        }
 
         // 권한 확인 후 서비스 시작
         checkPermissionAndStartService()

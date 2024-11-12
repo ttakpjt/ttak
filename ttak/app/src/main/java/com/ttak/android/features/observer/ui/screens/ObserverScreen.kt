@@ -70,6 +70,21 @@ private fun ObserverScreenContent(
     var showMessageDialog by remember { mutableStateOf(false) }
     var selectedFriend by remember { mutableStateOf<FriendStory?>(null) }
 
+
+
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is UserViewModel.UiState.Success -> {
+                // 친구 추가 성공 시 친구 목록 새로고침
+                friendStoryViewModel.refreshFriends()
+            }
+            is UserViewModel.UiState.Error -> {
+                Log.e("ObserverScreen", "Friend add error: ${(uiState as UserViewModel.UiState.Error).message}")
+            }
+            else -> {}
+        }
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier.fillMaxSize()

@@ -8,6 +8,7 @@ import com.ttak.android.domain.model.FilterOption
 import com.ttak.android.domain.model.FriendStory
 import com.ttak.android.data.repository.FriendStoryRepository
 import com.ttak.android.domain.model.FriendStatusUpdate
+import com.ttak.android.network.implementation.FriendApiImpl
 import com.ttak.android.network.socket.SocketEvent
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -28,8 +29,21 @@ class FriendStoryViewModel(
     val friends: StateFlow<List<FriendStory>> = _friends.asStateFlow()
 
     init {
+        refreshFriends()  // 초기 데이터 로딩
         setupFilterOptionsFlow()
         setupFriendsFlow()
+    }
+
+    fun refreshFriends() {
+        viewModelScope.launch {
+            try {
+                if (repository is FriendApiImpl) {
+                    repository.fetchFriends()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to refresh friends", e)
+            }
+        }
     }
 
     private fun setupFilterOptionsFlow() {
