@@ -87,7 +87,7 @@ fun ProfileSetupScreen(
                     if (isAvailable) {
                         nickname = inputNickname  // 사용 가능한 닉네임을 저장
                     } else {
-                        errorMessage = serverMessage ?: "이미 존재하는 닉네임입니다."
+                        errorMessage = serverMessage ?: "닉네임 중복을 확인할 수 없습니다."
                     }
                 }
             }

@@ -20,6 +20,7 @@ import com.ttak.android.common.ui.theme.TtakTheme
 import com.ttak.android.domain.model.MemberRequest
 import com.ttak.android.features.auth.viewmodel.MemberViewModel
 import com.ttak.android.features.auth.viewmodel.MemberViewModelFactory
+import com.ttak.android.features.mypage.ProfileSetupActivity
 import com.ttak.android.network.util.UserPreferences
 
 
@@ -101,9 +102,8 @@ class LoginActivity : ComponentActivity() {
                                             finish()
                                         }
                                     } else {
-                                        Log.e("귯", "로그인 처리 실패 - 화면 전환 중단")
-                                        // 로그인 실패 시 Google 로그인 세션 초기화
-                                        googleSignInClient.signOut()
+                                        Log.e("귯", "프로필 설정 필요")
+                                        startActivity(Intent(this, ProfileSetupActivity::class.java))
                                     }
                                 }
                             } else {
@@ -113,6 +113,8 @@ class LoginActivity : ComponentActivity() {
                     }
                 } else {
                     Log.e("귯", "로그인이 실패했습니다.$task")
+                    // 로그인 실패 시 Google 로그인 세션 초기화
+                    googleSignInClient.signOut()
                 }
             }
     }
