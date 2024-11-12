@@ -22,16 +22,31 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.ttak.android.R
 import com.ttak.android.domain.model.history.HistoryInfo
+import com.ttak.android.domain.model.history.HistoryType
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
 @Composable
 fun HistoryMessageItem(
-    message: HistoryInfo,
+    data: HistoryInfo,
     modifier: Modifier = Modifier
 ) {
-    val currentDateTime = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault()).format(Date())
+
+    val iconResource = when (data.type) {
+        HistoryType.WATER_BOOM -> R.drawable.water_bubble_icon
+        HistoryType.USER_MESSAGE -> R.drawable.speech_bubble_icon
+        else -> R.drawable.ttak_icon
+    }
+
+    val serverDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+    val displayDateFormat = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
+
+    val formattedDate = try {
+        val date = serverDateFormat.parse(data.createAt)
+        date?.let { displayDateFormat.format(it) }
+    } catch (e: Exception) {
+        data.createAt
+    }
 
     Column(
         modifier = modifier
@@ -51,8 +66,8 @@ fun HistoryMessageItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.water_bubble_icon),
-                    contentDescription = "감시자",
+                    painter = painterResource(id = iconResource),
+                    contentDescription = "아이콘",
                     modifier = Modifier.size(32.dp)
                 )
 
@@ -60,7 +75,7 @@ fun HistoryMessageItem(
 
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        text = message.content,
+                        text = data.message,
                         color = Color.White,
                         style = MaterialTheme.typography.bodyLarge
                     )
@@ -70,7 +85,7 @@ fun HistoryMessageItem(
                         horizontalArrangement = Arrangement.End
                     ) {
                         Text(
-                            text = currentDateTime,
+                            text = formattedDate ?: "",
                             style = MaterialTheme.typography.bodySmall,
                             color = Color.White
                         )
