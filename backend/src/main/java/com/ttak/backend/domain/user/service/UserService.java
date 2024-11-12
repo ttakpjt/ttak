@@ -153,9 +153,9 @@ public class UserService{
 	 * @param userId 닉네임 확인할 유저
 	 * @return
 	 */
-	public boolean existNickname(Long userId){
-		// user 객체 탐색 후 닉네임이 존재한다면 True 반환
-		return findUserById(userId) != null;
+	public String existNickname(Long userId){
+		// user 객체 탐색 후 닉네임이 존재한다면 닉네임, 없다면 Null 반환
+		return findUserById(userId).getNickname();
 	}
 
 	/**
