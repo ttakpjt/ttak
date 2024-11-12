@@ -64,12 +64,15 @@ public class UserService{
 	@PostConstruct
 	@Scheduled(cron = "0 0 0 * * *") // 매일 정오 00시 00분에 실행
 	public void initializeAllUsers() {
+		log.info("********* Initializing all users *********");
 		// 모든 사용자 ID를 가져와 초기화
 		List<Long> allUserIds = userRepository.findAllUserIds();
 		for (Long userId : allUserIds) {
 			//기본값은 0:green
+			log.info("Resetting status for user ID: {}", userId);
 			setUserStatus(userId, 0, 86400); // 24시간 TTL 설정
 		}
+		log.info("********* Finished all users *********");
 	}
 
 	/**
