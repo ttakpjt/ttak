@@ -1,10 +1,8 @@
 package com.ttak.backend.domain.observe.entity;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 import com.ttak.backend.domain.observe.dto.reqeust.AppInfoReq;
-import com.ttak.backend.domain.observe.repository.BanListRepository;
-import com.ttak.backend.domain.user.dto.reqeust.GoogleUserRequest;
 import com.ttak.backend.domain.user.entity.User;
 import com.ttak.backend.global.common.TimeBaseEntity;
 import com.ttak.backend.global.util.RandomPkUtil;
@@ -12,8 +10,6 @@ import com.ttak.backend.global.util.RandomPkUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -37,9 +33,9 @@ public class BanList extends TimeBaseEntity {
 	@JoinColumn(name="user_id")
 	private User user;
 
-	private LocalTime startTime;
+	private LocalDateTime startTime;
 
-	private LocalTime endTime;
+	private LocalDateTime endTime;
 
 
 	public static BanList toEntity (User user, AppInfoReq appInfoReq) {
