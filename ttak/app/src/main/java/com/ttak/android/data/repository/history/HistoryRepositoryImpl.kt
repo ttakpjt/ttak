@@ -27,24 +27,12 @@ class HistoryRepositoryImpl(
         }.getOrElse { 0 } ?: 0
     }
 
-    override suspend fun getMessages(): List<HistoryInfo> = withContext(Dispatchers.IO) {
-        try {
-            api.getMessages()
-        } catch (e: Exception) {
-            emptyList()
-        }
-    }
-
-    override suspend fun sendMessage(message: String): Unit = withContext(Dispatchers.IO) {
-        try {
-            val response = api.sendMessage(message)
+    override suspend fun getHistoryList(): List<HistoryInfo> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.getHistoryList()
             if (response.isSuccessful) {
-                Result.success(true)
-            } else {
-                Result.failure(Exception("Failed to send message"))
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+                response.body()?.takeIf { it.code == "200" }?.data
+            } else null
+        }.getOrElse { emptyList() } ?: emptyList()
     }
 }

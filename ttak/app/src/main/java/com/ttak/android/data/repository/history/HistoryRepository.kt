@@ -6,6 +6,5 @@ interface HistoryRepository {
 
     suspend fun getWeeklyPickCount(): Int
     suspend fun getWeeklyWatchingCount(): Int
-    suspend fun getMessages(): List<HistoryInfo>
-    suspend fun sendMessage(message: String)
+    suspend fun getHistoryList(): List<HistoryInfo>
 }
