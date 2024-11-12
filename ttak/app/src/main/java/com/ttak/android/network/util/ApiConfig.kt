@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import com.ttak.android.network.api.FriendApi
 import com.ttak.android.network.api.GoalApi
+import com.ttak.android.network.api.HistoryApi
 import com.ttak.android.network.api.MemberApi
 import com.ttak.android.network.api.MessageApi
 import com.ttak.android.network.api.MyPageApi
@@ -18,6 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object ApiConfig {
+
     const val BASE_URL = "https://k11a509.p.ssafy.io/api/"  // 실제 서버 URL로 변경
     const val TIMEOUT_SECONDS = 30L
 
@@ -98,6 +100,11 @@ object ApiConfig {
     // GoalApi 인스턴스 생성
     fun createGoalApi(context: Context): GoalApi {
         return createRetrofit(context).create(GoalApi::class.java)
+    }
+
+    // HistoryApi 인스턴스 생성
+    fun createHistoryApi(context: Context): HistoryApi {
+        return createRetrofit(context).create(HistoryApi::class.java)
     }
 
     // ObserverApi 인스턴스 생성
