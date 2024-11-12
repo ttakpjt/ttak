@@ -33,7 +33,7 @@ fun HistoryScreen(
 
     val weeklyPickCount by viewModel.weeklyPickCount.collectAsState()
     val weeklyWatchingCount by viewModel.weeklyWatchingCount.collectAsState()
-    val messages by viewModel.messages.collectAsState()
+    val historyList by viewModel.historyList.collectAsState()
 
     Column(
         modifier = Modifier
@@ -51,8 +51,8 @@ fun HistoryScreen(
                 .fillMaxWidth(),
             reverseLayout = true
         ) {
-            items(messages) { message ->
-                HistoryMessageItem(message = message)
+            items(historyList) { historyInfo ->
+                HistoryMessageItem(data = historyInfo)
             }
         }
     }
