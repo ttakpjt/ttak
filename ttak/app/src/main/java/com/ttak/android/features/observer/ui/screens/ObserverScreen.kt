@@ -89,6 +89,8 @@ private fun ObserverScreenContent(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
+            Spacer(modifier = Modifier.height(20.dp))
+
             AnimatedVisibility(
                 visible = !isListExpanded,
                 enter = fadeIn() + slideInVertically(),
@@ -100,6 +102,8 @@ private fun ObserverScreenContent(
                         .padding(vertical = 16.dp)
                 )
             }
+
+            Spacer(modifier = Modifier.height(20.dp))
 
             Box(modifier = Modifier.fillMaxSize()) {
                 ExpandableFriendListContainer(

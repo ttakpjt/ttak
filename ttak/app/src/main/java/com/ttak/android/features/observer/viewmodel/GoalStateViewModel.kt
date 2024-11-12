@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ttak.android.data.local.AppDatabase
 import com.ttak.android.data.repository.FocusGoalRepository
+import com.ttak.android.data.repository.history.HistoryRepository
 import com.ttak.android.domain.model.FocusGoal
 import com.ttak.android.domain.model.GoalState
 import com.ttak.android.domain.model.Time
@@ -16,7 +17,10 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.LocalTime
 
-class GoalStateViewModel(application: Application) : AndroidViewModel(application) {
+class GoalStateViewModel(
+    application: Application,
+    private val historyRepository: HistoryRepository? = null
+) : AndroidViewModel(application) {
     private val database = AppDatabase.getDatabase(application)
     private val repository = FocusGoalRepository(
         focusGoalDao = database.focusGoalDao(),
@@ -50,8 +54,12 @@ class GoalStateViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    private fun updateGoalState(goals: List<FocusGoal>) {
+    private suspend fun updateGoalState(goals: List<FocusGoal>) {
         val currentDateTime = LocalDateTime.now()
+
+        // historyRepository가 null이면 관찰자 수를 0으로 처리
+        val observerCount = historyRepository?.getWeeklyWatchingCount() ?: 0
+
 
         viewModelScope.launch {
             goals.forEach { goal ->
@@ -76,8 +84,7 @@ class GoalStateViewModel(application: Application) : AndroidViewModel(applicatio
         _goalState.value = when {
             activeGoal != null -> GoalState(
                 isSet = true,
-                // 이규석
-                observerCount = 3,
+                observerCount = observerCount,  // API에서 가져온 관찰자 수 사용
                 startTime = Time(activeGoal.startDateTime.hour, activeGoal.startDateTime.minute),
                 endTime = Time(activeGoal.endDateTime.hour, activeGoal.endDateTime.minute),
                 currentTime = Time(currentDateTime.hour, currentDateTime.minute),
@@ -85,7 +92,7 @@ class GoalStateViewModel(application: Application) : AndroidViewModel(applicatio
             )
             nextGoal != null -> GoalState(
                 isSet = true,
-                observerCount = 0,
+                observerCount = 0,  // 다음 예정된 목표의 경우 관찰자 수는 0
                 startTime = Time(nextGoal.startDateTime.hour, nextGoal.startDateTime.minute),
                 endTime = Time(nextGoal.endDateTime.hour, nextGoal.endDateTime.minute),
                 currentTime = Time(nextGoal.startDateTime.hour, nextGoal.startDateTime.minute),
