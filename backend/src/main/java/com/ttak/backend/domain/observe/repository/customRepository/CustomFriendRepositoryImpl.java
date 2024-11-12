@@ -1,5 +1,6 @@
 package com.ttak.backend.domain.observe.repository.customRepository;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class CustomFriendRepositoryImpl implements CustomFriendRepository{
 	private final JPAQueryFactory jpaQueryFactory;
 
 	@Override
-	public List<FriendInfoResponse> findBannedFriends(User user, LocalTime currentTime) {
+	public List<FriendInfoResponse> findBannedFriendsByLocalTime(User user, LocalTime currentTime) {
 		QFriend friend = QFriend.friend;
 		QBanList banList = QBanList.banList;
 		QUser followingUser = QUser.user;
@@ -46,6 +47,27 @@ public class CustomFriendRepositoryImpl implements CustomFriendRepository{
 						)
 				)
 			)
+			.fetch();
+	}
+
+	@Override
+	public List<FriendInfoResponse> findBannedFriendsByLocalDateTime(User user, LocalDateTime currentTime) {
+		QFriend friend = QFriend.friend;
+		QBanList banList = QBanList.banList;
+		QUser followingUser = QUser.user;
+
+		return jpaQueryFactory
+			.select(new QFriendInfoResponse(
+				followingUser.nickname,
+				followingUser.userId,
+				followingUser.profilePic
+			))
+			.from(friend)
+			.join(friend.followingId, followingUser)
+			.join(banList).on(banList.user.eq(followingUser))
+			.where(friend.userId.eq(user)
+				.and(banList.startTime.loe(currentTime))
+				.and(banList.endTime.gt(currentTime)))
 			.fetch();
 	}
 
