@@ -90,9 +90,9 @@ public class UserController {
 	@GetMapping("/exist/nickname")
 	public ResponseEntity<CommonResponse<?>> existNickname(@UserPk final Long userId) {
 		log.info("========== 닉네임 등록여부 확인 시작 ==========");
-		boolean check = userService.existNickname(userId);
+		String nickname = userService.existNickname(userId);
 		log.info("========== 닉네임 등록여부 확인 종료 ==========");
-		return ResponseEntity.ok(CommonResponse.success(check));
+		return ResponseEntity.ok(CommonResponse.success(nickname));
 	}
 
 
