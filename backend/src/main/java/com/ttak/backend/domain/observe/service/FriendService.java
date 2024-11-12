@@ -2,6 +2,7 @@ package com.ttak.backend.domain.observe.service;
 
 import static com.ttak.backend.global.common.ErrorCode.*;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -68,8 +69,8 @@ public class FriendService{
 	}
 
 	public List<FriendInfoResponse> getBannedFriends(User user){
-		LocalTime currentTime = LocalTime.now();
-		List<FriendInfoResponse> bannedFriends = friendRepository.findBannedFriends(user, currentTime);
+		LocalDateTime currentTime = LocalDateTime.now();
+		List<FriendInfoResponse> bannedFriends = friendRepository.findBannedFriendsByLocalDateTime(user, currentTime);
 
 		//Redis에서 상태 값을 가져와서 응답 객체에 설정
 		for (FriendInfoResponse friend : bannedFriends) {
