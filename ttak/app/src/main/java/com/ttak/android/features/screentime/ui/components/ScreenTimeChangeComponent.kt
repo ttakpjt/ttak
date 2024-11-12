@@ -28,7 +28,7 @@ fun ScreenTimeChangeComponent(username: String, hoursDifference: Int) {
                 append(if (hoursDifference >= 0) " 더" else " 덜")
                 append(" 보셨네요!")
             },
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleSmall
         )
     }
 }

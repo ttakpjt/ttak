@@ -47,7 +47,7 @@ fun WeeklyUsageBarChartComponent(dailyUsageList: List<Int>) {
                     ) {
                         Box(
                             modifier = Modifier
-                                .height(if (maxUsage > 0) (usage * 150 / maxUsage).dp else 0.dp)
+                                .height(if (maxUsage > 0) (usage * 100 / maxUsage).dp else 0.dp)
                                 .width(30.dp)
                                 .background(barColor)
 //                            모서리 추가 좀 해주세요.

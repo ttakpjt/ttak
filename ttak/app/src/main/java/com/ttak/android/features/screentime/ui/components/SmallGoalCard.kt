@@ -19,7 +19,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
@@ -83,9 +82,7 @@ fun SmallGoalCard(
 
                     Text(
                         text = "목표를 설정하고 집중해보세요!",
-                        style = MaterialTheme.typography.bodyLarge,
-//                        color = Color.White,
-//                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                 }
 
@@ -118,15 +115,11 @@ fun SmallGoalCard(
                     Text(
                         text = "${String.format("%02d:%02d", goalState.startTime.hour, goalState.startTime.minute)} - ${String.format("%02d:%02d", goalState.endTime.hour, goalState.endTime.minute)}",
                         style = MaterialTheme.typography.bodyLarge,
-//                        color = Color.White,
-//                        fontWeight = FontWeight.Bold
                     )
 
                     Text(
                         text = "(",
                         style = MaterialTheme.typography.bodyLarge,
-//                        color = Color.White,
-//                        fontWeight = FontWeight.Bold
                     )
 
                     // 앱 아이콘들
@@ -148,8 +141,6 @@ fun SmallGoalCard(
                             Text(
                                 text = "...",
                                 style = MaterialTheme.typography.bodyLarge,
-//                                color = Color.White,
-//                                fontWeight = FontWeight.Bold
                             )
                         }
                     }
@@ -157,8 +148,6 @@ fun SmallGoalCard(
                     Text(
                         text = ")",
                         style = MaterialTheme.typography.bodyLarge,
-//                        color = Color.White,
-//                        fontWeight = FontWeight.Bold
                     )
                 }
             }
