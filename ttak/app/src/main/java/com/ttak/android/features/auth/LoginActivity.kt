@@ -13,13 +13,16 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.messaging.FirebaseMessaging
+import com.ttak.android.MainActivity
 import com.ttak.android.R
 import com.ttak.android.features.auth.ui.screens.LoginScreen
 import com.ttak.android.common.ui.theme.TtakTheme
-import com.ttak.android.domain.model.UserModel
-import com.ttak.android.features.mypage.ProfileSetupActivity
+import com.ttak.android.domain.model.MemberRequest
 import com.ttak.android.features.auth.viewmodel.MemberViewModel
 import com.ttak.android.features.auth.viewmodel.MemberViewModelFactory
+import com.ttak.android.features.mypage.ProfileSetupActivity
+import com.ttak.android.network.util.UserPreferences
+
 
 class LoginActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
@@ -80,37 +83,38 @@ class LoginActivity : ComponentActivity() {
                             Log.d("귯", "FCM 토큰은? : ${tokenTask.result}")
                             if (tokenTask.isSuccessful) {
                                 val fcmToken = tokenTask.result
-                                // UserModel 생성, FCM 토큰 포함
-                                val userModel = UserModel(
+                                // userModel 생성, FCM 토큰 포함
+                                val userModel = MemberRequest(
                                     id = user.uid,
                                     email = user.email ?: "",
                                     profileImage = user.photoUrl.toString(),
                                     fcmToken = fcmToken // FCM 토큰 추가
                                 )
                                 // 서버로 전송 후 성공 시에만 화면 전환
-                                // (추가) 내 계정으로 된 닉네임이 있다면 로그인 성공 시 프로필을 설정하러 이동
+                                // 내 계정이 이미 존재한다면 닉네임이 있다면 로그인 성공 시 프로필을 설정하러 이동
                                 memberViewModel.signIn(userModel) { isSignInSuccessful ->
                                     if (isSignInSuccessful) {
-                                        startActivity(
-                                            Intent(
-                                                this,
-                                                ProfileSetupActivity::class.java
+                                        memberViewModel.existNickname { nickname ->
+                                            UserPreferences(applicationContext).saveNickname(
+                                                nickname
                                             )
-                                        )
-                                        finish()
+                                            startActivity(Intent(this, MainActivity::class.java))
+                                            finish()
+                                        }
                                     } else {
-                                        Log.e("이규석", "로그인 처리 실패 - 화면 전환 중단")
-                                        // 로그인 실패 시 Google 로그인 세션 초기화
-                                        googleSignInClient.signOut()
+                                        Log.e("귯", "프로필 설정 필요")
+                                        startActivity(Intent(this, ProfileSetupActivity::class.java))
                                     }
                                 }
                             } else {
-                                Log.e("이규석", "FCM 토큰 가져오기 실패", tokenTask.exception)
+                                Log.e("귯", "FCM 토큰 가져오기 실패", tokenTask.exception)
                             }
                         }
                     }
                 } else {
-                    Log.e("이규석", "로그인이 실패했습니다.$task")
+                    Log.e("귯", "로그인이 실패했습니다.$task")
+                    // 로그인 실패 시 Google 로그인 세션 초기화
+                    googleSignInClient.signOut()
                 }
             }
     }

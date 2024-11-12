@@ -18,16 +18,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ttak.android.MainActivity
 import com.ttak.android.R
 import com.ttak.android.common.ui.components.AppButton
 import com.ttak.android.common.ui.components.AppSearchBar
 import com.ttak.android.common.ui.theme.Blue
 import com.ttak.android.common.ui.theme.Black
-import com.ttak.android.common.ui.theme.White
 import com.ttak.android.features.mypage.ui.components.ProfileImagePicker
 import com.ttak.android.features.mypage.viewmodel.NicknameViewModel
 import com.ttak.android.network.util.UserPreferences
@@ -56,9 +53,6 @@ fun ProfileSetupScreen(
         Text(
             text = "프로필 설정",
             style = MaterialTheme.typography.titleLarge,
-//            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
-            color = White,
             modifier = Modifier.align(Alignment.Start)
         )
 
@@ -80,14 +74,14 @@ fun ProfileSetupScreen(
             errorMessage = errorMessage,
             // 닉네임 중복 여부 확인
             onIconClick = { inputNickname ->
-                viewModel.checkNickname(inputNickname) { isAvailable, serverMessage  ->
+                viewModel.checkNickname(inputNickname) { isAvailable, serverMessage ->
                     isError = !isAvailable  // 닉네임 중복 확인 결과에 따라 경고 문구 표시
                     onNicknameCheck(isAvailable)  // 결과 콜백
                     isNicknameAvailable = isAvailable  // 닉네임 중복 결과 저장
                     if (isAvailable) {
                         nickname = inputNickname  // 사용 가능한 닉네임을 저장
                     } else {
-                        errorMessage = serverMessage ?: "이미 존재하는 닉네임입니다."
+                        errorMessage = serverMessage ?: "닉네임 중복을 확인할 수 없습니다."
                     }
                 }
             }
@@ -105,11 +99,6 @@ fun ProfileSetupScreen(
                     viewModel.registerNickname(nickname) { isRegistered ->
                         if (isRegistered) {
                             UserPreferences(context.applicationContext).saveNickname(nickname)
-
-                            val sharedPreferences =
-                                context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
-                            sharedPreferences.edit().putBoolean("isProfileSetupComplete", true)
-                                .apply()
 
                             context.startActivity(Intent(context, MainActivity::class.java))
                             (context as? Activity)?.finish()

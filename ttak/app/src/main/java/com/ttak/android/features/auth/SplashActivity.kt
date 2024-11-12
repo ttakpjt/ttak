@@ -24,7 +24,7 @@ class SplashActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         // 앱 재설치 시 인증 상태 초기화
-        FirebaseAuth.getInstance().signOut()
+//        FirebaseAuth.getInstance().signOut()
 
         foregroundAppMonitor = ForegroundAppMonitor(application)
 
@@ -107,7 +107,11 @@ class SplashActivity : ComponentActivity() {
     // 사용 시간 권한 확인
     private fun checkUsageStatsPermission(context: Context): Boolean {
         val appOpsManager = context.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
-        val mode = appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, android.os.Process.myUid(), context.packageName)
+        val mode = appOpsManager.checkOpNoThrow(
+            AppOpsManager.OPSTR_GET_USAGE_STATS,
+            android.os.Process.myUid(),
+            context.packageName
+        )
         return mode == AppOpsManager.MODE_ALLOWED
     }
 
