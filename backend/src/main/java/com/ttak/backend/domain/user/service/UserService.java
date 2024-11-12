@@ -45,30 +45,49 @@ public class UserService{
 		return userRepository.findAll();
 	}
 
+	/**
+	 * UserInfoResponse 객체 반환
+	 * @param nickname 검색할 단어
+	 * @param currentUserId 현재 사용자의 PK
+	 * @return 닉네임기반 유저들의 검색 결과를, 관계와 함께 반환한다(친구인지, 자기 자신인지, 친구가 아닌지)
+	 */
 	public List<UserInfoResponse> searchUsersByNickname(String nickname, Long currentUserId) {
 		System.out.println(nickname);
 		return userRepository.findUsersWithRelation(currentUserId, nickname);
 	}
 
+	/**
+	 * @PostConstruct 서버가 실행될 때, 자동으로 실행된다
+	 * @Scheduled(cron = "0 0 0 * * *") // 매일 정오 00시 00분에 실행
+	 * 사용자의 상태관리: 사용자의 상태가 Redis에 저장된다
+	 */
 	@PostConstruct
 	@Scheduled(cron = "0 0 0 * * *") // 매일 정오 00시 00분에 실행
 	public void initializeAllUsers() {
+		log.info("********* Initializing all users *********");
 		// 모든 사용자 ID를 가져와 초기화
 		List<Long> allUserIds = userRepository.findAllUserIds();
 		for (Long userId : allUserIds) {
 			//기본값은 0:green
+			log.info("Resetting status for user ID: {}", userId);
 			setUserStatus(userId, 0, 86400); // 24시간 TTL 설정
 		}
+		log.info("********* Finished all users *********");
 	}
 
-
+	/**
+	 * @param userId
+	 * @param status 유저의 상태
+	 * @param ttlInSeconds 만료시간
+	 * 사용자의 상태를 Redis에 저장한다.
+	 */
 	private void setUserStatus(Long userId, int status, long ttlInSeconds) {
 		// Redis에 상태 저장 로직
 		redisTemplate.opsForValue().set("user:status:" + userId, String.valueOf(status), Duration.ofSeconds(ttlInSeconds));
 	}
 
 	/**
-	 * 로그인당시 해당 회원정보를 DB에 이관한다. 이 때, FcmToken도 저장하게 된다.
+	 * 로그인당시 해당 회원정보를 DB에 이관한다. 이 때, FcmToken도 저장하게 된다. Redis에도 상태가 추가된다.
 	 * @param googleUserRequest
 	 * @return
 	 */
