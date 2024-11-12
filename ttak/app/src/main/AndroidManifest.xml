@@ -40,7 +40,7 @@
             android:name="com.ttak.android.common.monitor.ForegroundMonitorService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="dataSync"></service>
+            android:foregroundServiceType="dataSync" />
 
         <!-- FirebaseMessagingService 등록-->
         <service
