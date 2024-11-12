@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ttak.android.R
+import com.ttak.android.common.ui.theme.White
 
 @Composable
 fun LoginScreen(onLoginClick: () -> Unit) {
@@ -48,7 +49,7 @@ fun LoginScreen(onLoginClick: () -> Unit) {
                         shape = RoundedCornerShape(24.dp)
                     ),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White
+                    containerColor = White
                 ),
                 shape = RoundedCornerShape(24.dp)
             ) {

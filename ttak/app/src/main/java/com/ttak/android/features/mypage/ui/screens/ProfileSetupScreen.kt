@@ -57,8 +57,8 @@ fun ProfileSetupScreen(
             text = "프로필 설정",
             style = MaterialTheme.typography.titleLarge,
 //            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
-            color = White,
+//            fontWeight = FontWeight.Bold,
+//            color = White,
             modifier = Modifier.align(Alignment.Start)
         )
 
@@ -80,7 +80,7 @@ fun ProfileSetupScreen(
             errorMessage = errorMessage,
             // 닉네임 중복 여부 확인
             onIconClick = { inputNickname ->
-                viewModel.checkNickname(inputNickname) { isAvailable, serverMessage  ->
+                viewModel.checkNickname(inputNickname) { isAvailable, serverMessage ->
                     isError = !isAvailable  // 닉네임 중복 확인 결과에 따라 경고 문구 표시
                     onNicknameCheck(isAvailable)  // 결과 콜백
                     isNicknameAvailable = isAvailable  // 닉네임 중복 결과 저장
