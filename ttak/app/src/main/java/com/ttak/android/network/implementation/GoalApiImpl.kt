@@ -6,24 +6,24 @@ import com.ttak.android.network.api.GoalApi
 import com.ttak.android.network.api.ApplicationSettingRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.time.LocalTime
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.runCatching
 
 class GoalApiImpl(private val api: GoalApi) {
     private val gson = Gson()
-    private val timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME
+    private val dateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME  // ISO 형식으로 변경
 
     suspend fun saveApplicationSetting(
         appNames: List<String>,
-        startTime: LocalTime,
-        endTime: LocalTime
+        startTime: LocalDateTime,
+        endTime: LocalDateTime
     ): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
             val request = ApplicationSettingRequest(
                 appName = appNames,
-                startTime = startTime.format(timeFormatter),
-                endTime = endTime.format(timeFormatter)
+                startTime = startTime.format(dateTimeFormatter),
+                endTime = endTime.format(dateTimeFormatter)
             )
 
             val response = api.saveApplicationSetting(request)

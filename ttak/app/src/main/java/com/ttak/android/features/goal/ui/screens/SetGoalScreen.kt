@@ -17,6 +17,7 @@ import com.ttak.android.R
 import com.ttak.android.features.goal.ui.components.AppSelectItem
 import com.ttak.android.features.goal.ui.components.TimeRangeSelector
 import com.ttak.android.features.goal.viewmodel.SetGoalViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun SetGoalScreen(
@@ -27,6 +28,7 @@ fun SetGoalScreen(
     val endTime by viewModel.endTime.collectAsState()
     val installedApps by viewModel.installedApps.collectAsState()
     val selectedApps by viewModel.selectedApps.collectAsState()
+    val scope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -46,8 +48,7 @@ fun SetGoalScreen(
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "제한시간 설정",
-                style = MaterialTheme.typography.titleMedium,
-//                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.titleMedium
             )
         }
 
@@ -78,15 +79,14 @@ fun SetGoalScreen(
             Text(
                 text = "앱 선택",
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(vertical = 8.dp),
-//                fontWeight = FontWeight.Bold
+                modifier = Modifier.padding(vertical = 8.dp)
             )
         }
 
         // App list with weight modifier
         LazyColumn(
             modifier = Modifier
-                .weight(1f)  // 남은 공간의 비율 설정
+                .weight(1f)
                 .fillMaxWidth()
         ) {
             items(installedApps) { app ->
@@ -105,7 +105,6 @@ fun SetGoalScreen(
                 .padding(vertical = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // 취소하기 버튼
             Button(
                 onClick = onNavigateBack,
                 modifier = Modifier
@@ -113,39 +112,52 @@ fun SetGoalScreen(
                     .height(56.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFB2B2B4),
-                    contentColor = Color.Black  // 텍스트 색상을 검은색으로 설정
+                    contentColor = Color.Black
                 )
             ) {
                 Text(
                     text = "취소하기",
-                    style = MaterialTheme.typography.titleSmall,
-//                    fontWeight = FontWeight.ExtraBold,  // 더 진한 볼드체
-//                    fontSize = 20.sp,  // 폰트 크기 증가
-//                    color = Color.Black  // 텍스트 색상 명시적 지정
+                    style = MaterialTheme.typography.titleSmall
                 )
             }
 
-            // 등록하기 버튼
+            var isLoading by remember { mutableStateOf(false) }
+
             Button(
                 onClick = {
-                    viewModel.saveGoal()
-                    onNavigateBack()
+                    scope.launch {
+                        isLoading = true
+                        try {
+                            val success = viewModel.saveGoal()
+                            if (success) {
+                                onNavigateBack()
+                            }
+                        } finally {
+                            isLoading = false
+                        }
+                    }
                 },
                 modifier = Modifier
                     .weight(1f)
                     .height(56.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF8CD5FE),
-                    contentColor = Color.Black  // 텍스트 색상을 검은색으로 설정
-                )
+                    contentColor = Color.Black
+                ),
+                enabled = !isLoading
             ) {
-                Text(
-                    text = "등록하기",
-                    style = MaterialTheme.typography.titleSmall,
-//                    fontWeight = FontWeight.ExtraBold,  // 더 진한 볼드체
-//                    fontSize = 20.sp,  // 폰트 크기 증가
-                    color = Color.Black  // 텍스트 색상 명시적 지정
-                )
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = Color.Black
+                    )
+                } else {
+                    Text(
+                        text = "등록하기",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = Color.Black
+                    )
+                }
             }
         }
     }
