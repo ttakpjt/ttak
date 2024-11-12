@@ -1,7 +1,6 @@
 package com.ttak.android.features.auth.ui.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -14,10 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ttak.android.R
+import com.ttak.android.common.ui.theme.White
 
 @Composable
 fun LoginScreen(onLoginClick: () -> Unit) {
@@ -48,7 +46,7 @@ fun LoginScreen(onLoginClick: () -> Unit) {
                         shape = RoundedCornerShape(24.dp)
                     ),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White
+                    containerColor = White
                 ),
                 shape = RoundedCornerShape(24.dp)
             ) {
@@ -67,8 +65,6 @@ fun LoginScreen(onLoginClick: () -> Unit) {
                         "Google로 시작하기",
                         color = Color.Black,
                         style = MaterialTheme.typography.bodySmall
-//                        fontWeight = FontWeight.Bold,
-//                        fontSize = 16.sp
                     )
                 }
             }

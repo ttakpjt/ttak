@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 <!-- 검은색 -->
-    <color name="black">#FF0E181E</color>
+    <color name="black">#FF000000</color>
 <!-- 흰색 -->
     <color name="white">#FFFFFFFF</color>
 <!-- 회색 -->

@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import android.util.Log
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.ttak.android.common.ui.theme.Black
 import com.ttak.android.domain.model.FriendStory
 
 @Composable
@@ -59,13 +60,11 @@ fun MessageDialog(
                         text = friendStory.friendName,
                         style = MaterialTheme.typography.titleLarge,  // 더 큰 글씨체로 변경
 //                        color = Color.White,
-//                        fontSize = 20.sp
                     )
                     Text(
                         text = "님에게",
                         style = MaterialTheme.typography.bodySmall,  // 더 작은 글씨체로 변경
 //                        color = Color.White,
-//                        fontSize = 16.sp
                     )
                 }
 
@@ -90,7 +89,9 @@ fun MessageDialog(
                     focusedBorderColor = Color.Transparent,
                     unfocusedBorderColor = Color.Transparent,
                     focusedContainerColor = Color(0xFFF5F378),
-                    unfocusedContainerColor = Color(0xFFF5F378)
+                    unfocusedContainerColor = Color(0xFFF5F378),
+                    focusedTextColor = Black,   // 박스 안의 텍스트
+                    unfocusedTextColor = Black, // 박스 밖의 텍스트
                 )
             )
         },

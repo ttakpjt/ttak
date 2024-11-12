@@ -35,10 +35,13 @@ import androidx.lifecycle.ViewModelProvider
 import com.ttak.android.network.implementation.FriendApiImpl
 import com.ttak.android.features.observer.viewmodel.FriendStoryViewModel
 import com.ttak.android.network.util.ApiConfig
+import android.os.Handler
+import android.os.Looper
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
     private val TAG = "MainActivity"
+    private var doubleBackToExitPressedOnce = false // 두 번 눌렀는지 체크하는 변수
     private lateinit var webSocketManager: WebSocketManager
     private lateinit var foregroundAppMonitor: ForegroundAppMonitor
     private var isServiceRunning = false
@@ -196,6 +199,22 @@ class MainActivity : ComponentActivity() {
         }
 
         askNotificationPermission()
+    }
+
+    // 뒤로 가기 버튼을 처리하는 메서드
+    override fun onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed() // 두 번째로 뒤로 가기 버튼을 눌렀을 때 앱 종료
+            return
+        }
+
+        doubleBackToExitPressedOnce = true
+        Toast.makeText(this, "한 번 더 누르면 앱을 종료합니다.", Toast.LENGTH_SHORT).show()
+
+        // 2초 이내에 다시 뒤로 가기 버튼을 누르면 앱을 종료
+        Handler(Looper.getMainLooper()).postDelayed({
+            doubleBackToExitPressedOnce = false // 2초가 지나면 다시 초기화
+        }, 2000)
     }
 
     override fun onDestroy() {
