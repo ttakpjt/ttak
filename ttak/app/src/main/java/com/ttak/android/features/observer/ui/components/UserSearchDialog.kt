@@ -37,7 +37,7 @@ fun UserSearchDialog(
     onDismiss: () -> Unit,
     onUserSelect: (User) -> Unit,
     searchUsers: (String) -> Unit,
-    searchResults: List<User>,  // val parameter
+    searchResults: List<User>,
     modifier: Modifier = Modifier
 ) {
     if (!isVisible) return
@@ -48,22 +48,27 @@ fun UserSearchDialog(
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
 
-    val performSearch = { query: String ->
-        if (query.length <= 20) {
+    // Dialog가 표시될 때마다 검색어만 초기화
+    LaunchedEffect(isVisible) {
+        if (isVisible) {
+            searchQuery = ""
+        }
+    }
+
+    // 검색 실행 함수
+    val performSearch = {
+        if (searchQuery.length <= 20) {
             searchJob?.cancel()
             searchJob = scope.launch {
                 try {
-                    if (query.isBlank()) {
-                        return@launch
-                    }
-
                     isLoading = true
-                    Log.d("UserSearchDialog", "Starting search for query: $query")
+                    Log.d("UserSearchDialog", "Starting search for query: $searchQuery")
 
                     delay(300)
-                    searchUsers(query)  // ViewModel의 searchUsers 호출
+                    searchUsers(searchQuery)
 
                     isLoading = false
+                    focusManager.clearFocus()
                 } catch (e: Exception) {
                     Log.e("UserSearchDialog", "Search error", e)
                     isLoading = false
@@ -124,61 +129,92 @@ fun UserSearchDialog(
                 }
 
                 // Search Bar
-                TextField(
-                    value = searchQuery,
-                    onValueChange = { query ->
-                        searchQuery = query
-                    },
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 16.dp),
-                    placeholder = { Text("닉네임을 입력해주세요") },
-                    leadingIcon = {
-                        Icon(
-                            Icons.Default.Search,
-                            contentDescription = "Search",
-                            tint = Color.Black
-                        )
-                    },
-                    trailingIcon = if (searchQuery.isNotEmpty()) {
-                        {
-                            Row {
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedTextField(
+                        value = searchQuery,
+                        onValueChange = { query ->
+                            if (query.length <= 20) {
+                                searchQuery = query
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        placeholder = { Text("닉네임을 입력해주세요") },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Default.Search,
+                                contentDescription = "Search",
+                                tint = Color.Black
+                            )
+                        },
+                        trailingIcon = if (searchQuery.isNotEmpty()) {
+                            {
                                 IconButton(
-                                    onClick = {
-                                        searchQuery = ""  // 검색어만 지우기
-                                        searchUsers("")   // 빈 검색어로 검색하여 결과 초기화
-                                    }
+                                    onClick = { searchQuery = "" }
                                 ) {
                                     Icon(
                                         Icons.Default.Close,
                                         contentDescription = "Clear search",
-                                        tint = Color.Black
+                                        tint = Color.Gray
                                     )
                                 }
                             }
-                        }
-                    } else null,
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Search
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onSearch = {
-                            performSearch(searchQuery)
-                            focusManager.clearFocus()  // 키보드 닫기
-                        }
-                    ),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color(0xFFD9D9D9),
-                        unfocusedContainerColor = Color(0xFFD9D9D9),
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.Black,
-                        focusedPlaceholderColor = Color.Gray,
-                        unfocusedPlaceholderColor = Color.Gray
-                    ),
-                    shape = RoundedCornerShape(8.dp),
-                    enabled = !isLoading
-                )
+                        } else null,
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Search
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onSearch = {
+                                if (searchQuery.isNotBlank()) {
+                                    performSearch()
+                                }
+                            }
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = Color(0xFFD9D9D9),
+                            unfocusedContainerColor = Color(0xFFD9D9D9),
+                            focusedTextColor = Color.Black,
+                            unfocusedTextColor = Color.Black,
+                            focusedPlaceholderColor = Color.Gray,
+                            unfocusedPlaceholderColor = Color.Gray,
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                        enabled = !isLoading
+                    )
+
+                    // 검색 버튼
+                    Button(
+                        onClick = {
+                            if (searchQuery.isNotBlank()) {
+                                performSearch()
+                            }
+                        },
+                        modifier = Modifier
+                            .height(56.dp)
+                            .width(56.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF7FEC93),
+                            disabledContainerColor = Color(0xFF7FEC93).copy(alpha = 0.5f)
+                        ),
+                        enabled = searchQuery.isNotBlank() && !isLoading,
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Search,
+                            contentDescription = "Perform search",
+                            tint = Color.Black
+                        )
+                    }
+                }
 
                 // Results or Loading
                 Box(
@@ -196,24 +232,34 @@ fun UserSearchDialog(
                             )
                         }
                         searchResults.isNotEmpty() -> {
-                            LazyColumn(
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                items(
-                                    items = searchResults,
-                                    key = { it.userId }
-                                ) { user ->
-                                    UserSearchItem(
-                                        user = user,
-                                        onUserSelect = {
-                                            searchJob?.cancel()
-                                            onUserSelect(user)
-                                        }
-                                    )
+                            val filteredResults = searchResults.filter { it.relation != "Self" }
+                            if (filteredResults.isEmpty()) {
+                                Text(
+                                    text = "검색 결과가 없습니다",
+                                    color = Color.Gray,
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .padding(16.dp),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            } else {
+                                LazyColumn(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    items(
+                                        items = filteredResults,
+                                        key = { user -> user.userId }
+                                    ) { user ->
+                                        UserSearchItem(
+                                            user = user,
+                                            onUserSelect = onUserSelect
+                                        )
+                                    }
                                 }
                             }
                         }
-                        searchQuery.isNotBlank() -> {
+                        searchQuery.isNotBlank() && !isLoading -> {
                             Text(
                                 text = "검색 결과가 없습니다",
                                 color = Color.Gray,
@@ -233,14 +279,13 @@ fun UserSearchDialog(
 @Composable
 private fun UserSearchItem(
     user: User,
-    onUserSelect: () -> Unit,
+    onUserSelect: (User) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
-            .height(64.dp)
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(horizontal = 8.dp, vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -253,7 +298,8 @@ private fun UserSearchItem(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+//                error = painterResource(id = R.drawable.default_profile)
             )
 
             Spacer(modifier = Modifier.width(12.dp))
@@ -265,22 +311,31 @@ private fun UserSearchItem(
             )
         }
 
-        Button(
-            onClick = onUserSelect,
-            modifier = Modifier
-                .height(32.dp)
-                .width(50.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF7FEC93)
-            ),
-            contentPadding = PaddingValues(0.dp),
-            shape = RoundedCornerShape(8.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.plus_icon),
-                contentDescription = "Add user",
-                tint = Color.Black,
-                modifier = Modifier.size(20.dp)
+        if (user.relation != "Friend") {
+            Button(
+                onClick = { onUserSelect(user) },
+                modifier = Modifier
+                    .height(32.dp)
+                    .width(50.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF7FEC93)
+                ),
+                contentPadding = PaddingValues(0.dp),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.plus_icon),
+                    contentDescription = "Add user",
+                    tint = Color.Black,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        } else {
+            Text(
+                text = "친구",
+                color = Color.Gray,
+                modifier = Modifier.padding(end = 8.dp),
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }

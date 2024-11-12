@@ -20,6 +20,8 @@ class UserViewModel(
     val uiState = _uiState.asStateFlow()
 
     fun searchUsers(query: String) {
+        if (query.isBlank()) return  // 빈 검색어일 경우 아무 것도 하지 않음
+
         viewModelScope.launch {
             try {
                 _uiState.value = UiState.Loading
@@ -31,6 +33,12 @@ class UserViewModel(
                 _uiState.value = UiState.Error(e.message ?: "검색 중 오류가 발생했습니다")
             }
         }
+    }
+
+    // 검색 결과 초기화 함수 추가
+    fun clearSearchResults() {
+        _searchResults.value = emptyList()
+        _uiState.value = UiState.Idle
     }
 
     fun addFriend(user: User) {
