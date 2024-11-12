@@ -5,21 +5,10 @@
         <destination>k11a509.p.ssafy.io:5000</destination>
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
-                <mdc />
-                <context />
                 <logLevel />
                 <loggerName />
-                <pattern>
-                    <pattern>
-                        {
-                        "app": "test-log"
-                        }
-                    </pattern>
-                </pattern>
                 <threadName />
                 <message />
-                <logstashMarkers />
-                <stackTrace />
             </providers>
         </encoder>
     </appender>
