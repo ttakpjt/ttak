@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
@@ -32,21 +30,19 @@ import com.ttak.android.common.ui.components.BottomNavigationBar
 import com.ttak.android.data.worker.ApiRequestWorker
 import com.ttak.android.network.socket.SocketEvent
 import android.Manifest
-import com.ttak.android.network.util.UserPreferences
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.ttak.android.network.implementation.FriendApiImpl
+import com.ttak.android.features.observer.viewmodel.FriendStoryViewModel
+import com.ttak.android.network.util.ApiConfig
 import kotlinx.coroutines.delay
-
-/*
-1. 앱 실행 시 필요한 권한들을 확인
-2. 권한이 없으면 각각의 권한 요청 다이얼로그 표시
-3. 모든 권한이 허용되면 모니터링 서비스 시작
-4. 서비스는 백그라운드에서 2초마다 현재 실행 중인 앱을 체크하고 로그 출력
- */
 
 class MainActivity : ComponentActivity() {
     private val TAG = "MainActivity"
     private lateinit var webSocketManager: WebSocketManager
     private lateinit var foregroundAppMonitor: ForegroundAppMonitor
     private var isServiceRunning = false
+    private lateinit var friendStoryViewModel: FriendStoryViewModel
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
@@ -85,13 +81,24 @@ class MainActivity : ComponentActivity() {
         webSocketManager = WebSocketManager.getInstance(applicationContext)
         foregroundAppMonitor = ForegroundAppMonitor(application)
 
+        // ViewModel 초기화
+        val friendApi = ApiConfig.createFriendApi(applicationContext)
+        val repository = FriendApiImpl(friendApi)
+        friendStoryViewModel = ViewModelProvider(
+            this,
+            object : ViewModelProvider.Factory {
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return FriendStoryViewModel(repository) as T
+                }
+            }
+        )[FriendStoryViewModel::class.java]
+
         // 권한 확인 후 서비스 시작
         checkPermissionAndStartService()
 
         setContent {
             TtakTheme {
                 val navController = rememberNavController()
-                val refreshState = remember { mutableStateOf(false) }
 
                 // NavController 초기화
                 LaunchedEffect(navController) {
@@ -106,10 +113,11 @@ class MainActivity : ComponentActivity() {
                             webSocketManager.connect()
                             webSocketManager.socketEvents.collect { event ->
                                 when (event) {
-                                    is SocketEvent.Connected -> Log.d(TAG, "WebSocket connected successfully")
+                                    is SocketEvent.Connected ->
+                                        Log.d(TAG, "WebSocket connected successfully")
                                     is SocketEvent.MessageReceived -> {
                                         Log.d(TAG, "Received WebSocket message: ${event.data}")
-                                        refreshState.value = !refreshState.value
+                                        friendStoryViewModel.handleWebSocketMessage(event)
                                     }
                                     is SocketEvent.Disconnected -> {
                                         Log.e(TAG, "WebSocket disconnected, will attempt reconnect in 5s")
@@ -131,7 +139,10 @@ class MainActivity : ComponentActivity() {
                     Box(modifier = Modifier.padding(innerPadding)) {
                         Column(modifier = Modifier.fillMaxSize()) {
                             Box(modifier = Modifier.weight(1f)) {
-                                AppNavHost(navController)
+                                AppNavHost(
+                                    navController = navController,
+                                    friendStoryViewModel = friendStoryViewModel
+                                )
                             }
                             BottomNavigationBar(navController = navController)
                         }

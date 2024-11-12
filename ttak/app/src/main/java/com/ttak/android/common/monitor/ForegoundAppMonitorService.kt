@@ -7,6 +7,8 @@ import android.content.Intent
 import android.os.IBinder
 import android.app.usage.UsageStatsManager
 import android.content.Context
+import android.content.IntentFilter
+import android.content.BroadcastReceiver
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -37,6 +39,8 @@ class ForegroundMonitorService : Service() {
     private var currentState: AppState = AppState.NORMAL
     private var lastStateUpdateTime: Long = 0
     private var pendingStateChange: Boolean = false
+    private var isScreenLocked: Boolean = false
+    private var lastRestrictedPackage: String? = null
 
     private val observerApi by lazy {
         ObserverApiImpl.getInstance(this)
@@ -48,6 +52,31 @@ class ForegroundMonitorService : Service() {
 
         companion object {
             fun fromValue(value: Int) = values().find { it.value == value } ?: NORMAL
+        }
+    }
+
+    private val screenStateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            when (intent?.action) {
+                Intent.ACTION_SCREEN_OFF -> {
+                    Log.d(TAG, "Screen turned OFF")
+                    serviceScope.launch {
+                        handleScreenLockState(true)
+                    }
+                }
+                Intent.ACTION_SCREEN_ON -> {
+                    Log.d(TAG, "Screen turned ON")
+                    serviceScope.launch {
+                        handleScreenLockState(false)
+                    }
+                }
+                Intent.ACTION_USER_PRESENT -> {
+                    Log.d(TAG, "Device unlocked")
+                    serviceScope.launch {
+                        handleDeviceUnlock()
+                    }
+                }
+            }
         }
     }
 
@@ -69,7 +98,17 @@ class ForegroundMonitorService : Service() {
     override fun onCreate() {
         super.onCreate()
         initializeService()
+        registerScreenStateReceiver()
         startMonitoring()
+    }
+
+    private fun registerScreenStateReceiver() {
+        val filter = IntentFilter().apply {
+            addAction(Intent.ACTION_SCREEN_OFF)
+            addAction(Intent.ACTION_SCREEN_ON)
+            addAction(Intent.ACTION_USER_PRESENT)
+        }
+        registerReceiver(screenStateReceiver, filter)
     }
 
     private fun initializeService() {
@@ -131,6 +170,45 @@ class ForegroundMonitorService : Service() {
         }
     }
 
+    private suspend fun handleScreenLockState(locked: Boolean) {
+        stateMutex.withLock {
+            isScreenLocked = locked
+            if (locked) {
+                // 화면이 잠겼을 때는 마지막 제한 앱 상태를 저장하고 NORMAL 상태로 변경
+                if (currentState == AppState.RESTRICTED) {
+                    lastRestrictedPackage = currentForegroundPackage
+                }
+                updateState(AppState.NORMAL)
+            }
+        }
+    }
+
+    private suspend fun handleDeviceUnlock() {
+        stateMutex.withLock {
+            isScreenLocked = false
+            // 잠금해제 시 마지막으로 실행 중이던 앱이 제한 앱이었다면 RESTRICTED 상태로 복원
+            if (lastRestrictedPackage == currentForegroundPackage && currentForegroundPackage != null) {
+                val goals = repository.getAllGoals().first()
+                val currentDateTime = LocalDateTime.now()
+                val newState = determineAppState(goals, currentForegroundPackage!!, currentDateTime)
+                updateState(newState)
+            }
+        }
+    }
+
+    private suspend fun updateState(newState: AppState) {
+        if (currentState != newState) {
+            currentState = newState
+            lastStateUpdateTime = System.currentTimeMillis()
+            try {
+                observerApi.updateMyStatus(newState.value)
+                Log.d(TAG, "State updated to: ${newState.name}")
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to update state", e)
+            }
+        }
+    }
+
     private fun checkForNewEvents() {
         if (!hasUsageStatsPermission()) return
 
@@ -184,7 +262,6 @@ class ForegroundMonitorService : Service() {
                 pendingStateChange = true
                 val currentTime = System.currentTimeMillis()
 
-                // 마지막 상태 업데이트로부터 충분한 시간이 지났는지 확인
                 if ((currentTime - lastStateUpdateTime) < STATE_UPDATE_THRESHOLD) {
                     Log.d(TAG, "Too soon for state update, waiting...")
                     return
@@ -195,6 +272,10 @@ class ForegroundMonitorService : Service() {
                 val currentDateTime = LocalDateTime.now()
 
                 val newState = when {
+                    isScreenLocked -> {
+                        Log.d(TAG, "Screen is locked, keeping NORMAL state")
+                        AppState.NORMAL
+                    }
                     LAUNCHER_PACKAGES.contains(newPackage) -> {
                         Log.d(TAG, "Launcher package detected, setting NORMAL state")
                         AppState.NORMAL
@@ -210,18 +291,11 @@ class ForegroundMonitorService : Service() {
                         From state: ${currentState.name}
                         To state: ${newState.name}
                         Is launcher: ${LAUNCHER_PACKAGES.contains(newPackage)}
+                        Is screen locked: $isScreenLocked
                         Active goals: ${goals.count { it.isEnabled }}
                     """.trimIndent())
 
-                    currentState = newState
-                    lastStateUpdateTime = currentTime
-
-                    try {
-                        observerApi.updateMyStatus(newState.value)
-                        Log.d(TAG, "State updated to: ${newState.name}")
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Failed to update state", e)
-                    }
+                    updateState(newState)
                 } else {
                     Log.d(TAG, "State unchanged: ${currentState.name} for package: $newPackage")
                 }
@@ -271,5 +345,6 @@ class ForegroundMonitorService : Service() {
         Log.d(TAG, "Service being destroyed")
         isMonitoring = false
         serviceScope.cancel()
+        unregisterReceiver(screenStateReceiver)
     }
 }
