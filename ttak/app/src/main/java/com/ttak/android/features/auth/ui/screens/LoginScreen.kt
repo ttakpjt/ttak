@@ -30,8 +30,10 @@ fun LoginScreen(onLoginClick: () -> Unit) {
         ) {
             // 로고 섹션
             Image(
-                painter = painterResource(id = R.drawable.ttak_logo_icon),
+//                painter = painterResource(id = R.drawable.ttak_logo_icon),
+                painter = painterResource(id = R.drawable.ttak_logo_no_bg),
                 contentDescription = "Ttak 로고",
+
                 modifier = Modifier.size(300.dp)
             )
 

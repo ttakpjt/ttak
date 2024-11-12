@@ -3,23 +3,15 @@ package com.ttak.android.features.auth.ui.screens
 import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ttak.android.R
 import kotlinx.coroutines.delay
 import com.ttak.android.MainActivity
-import com.ttak.android.common.ui.theme.Grey
-import com.ttak.android.common.ui.theme.White
 import com.ttak.android.features.auth.LoginActivity
 import com.ttak.android.features.auth.SplashActivity
 import com.ttak.android.features.mypage.ProfileSetupActivity
@@ -69,7 +61,8 @@ fun SplashScreen(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
-                painter = painterResource(id = R.drawable.ttak_logo_icon),
+//                painter = painterResource(id = R.drawable.ttak_logo_icon),
+                painter = painterResource(id = R.drawable.ttak_logo_no_bg),
                 contentDescription = "Ttak 로고",
                 modifier = Modifier.size(300.dp)
             )
