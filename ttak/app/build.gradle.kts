@@ -66,6 +66,8 @@ dependencies {
     // Also add the dependency for the Google Play services library and specify its version
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
+    implementation("androidx.compose.material:material-icons-extended:1.4.3")
+
     // ViewModel과 LiveData
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
