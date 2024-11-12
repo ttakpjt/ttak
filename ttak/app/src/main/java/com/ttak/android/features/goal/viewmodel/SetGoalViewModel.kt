@@ -126,7 +126,11 @@ class SetGoalViewModel(application: Application) : AndroidViewModel(application)
         return try {
             val today = LocalDate.now()
             val startDateTime = LocalDateTime.of(today, startTime.value)
+                .withSecond(0)
+                .withNano(0)
             val endDateTime = LocalDateTime.of(today, endTime.value)
+                .withSecond(0)
+                .withNano(0)
             val adjustedEndDateTime = if (endDateTime.isBefore(startDateTime)) {
                 endDateTime.plusDays(1)
             } else {
@@ -141,8 +145,8 @@ class SetGoalViewModel(application: Application) : AndroidViewModel(application)
             val appNames = selectedAppsList.map { it.appName }
             val apiResponse = goalApiImpl.saveApplicationSetting(
                 appNames = appNames,
-                startTime = startTime.value,
-                endTime = endTime.value
+                startTime = startDateTime,
+                endTime = adjustedEndDateTime
             )
 
             // 서버 저장이 성공한 경우에만 로컬 저장
