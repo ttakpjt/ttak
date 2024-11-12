@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.ttak.backend.domain.fcm.entity.enumType.Item;
 import com.ttak.backend.domain.history.dto.request.HistoryCount;
 import com.ttak.backend.domain.history.dto.response.HistoryListRes;
 import com.ttak.backend.domain.history.entity.History;
@@ -72,7 +73,7 @@ public class HistoryService {
 	 * @param receiveId 받는 사람 ID
 	 * @param type 데이터 타입 (메세지, 물풍선, ...)
 	 */
-	public void addAttackHistory(final Long sendId, final String data, final Long receiveId, final String type){
+	public void addAttackHistory(final Long sendId, final String data, final Long receiveId, final Item type){
 		historyRepository.save(History.of(sendId, receiveId, type, data));
 	}
 }

@@ -1,10 +1,13 @@
 package com.ttak.backend.domain.history.entity;
 
+import com.ttak.backend.domain.fcm.entity.enumType.Item;
 import com.ttak.backend.global.common.TimeBaseEntity;
 
 import jakarta.persistence.Access;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,12 +36,13 @@ public class History extends TimeBaseEntity {
 	private Long receiveId;
 
 	@Column(name = "type")
-	private String type;
+	@Enumerated(EnumType.STRING)
+	private Item type;
 
 	@Column(name = "message")
 	private String message;
 
-	public static History of(Long attackId, Long receiveId, String type, String message) {
+	public static History of(Long attackId, Long receiveId, Item type, String message) {
 		return History.builder()
 			.attackId(attackId)
 			.receiveId(receiveId)
