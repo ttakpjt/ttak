@@ -11,6 +11,7 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import com.ttak.backend.domain.fcm.dto.request.FcmTokenReq;
 import com.ttak.backend.domain.fcm.entity.Fcm;
+import com.ttak.backend.domain.fcm.entity.enumType.Item;
 import com.ttak.backend.domain.fcm.repository.FcmRepository;
 import com.ttak.backend.domain.history.entity.History;
 import com.ttak.backend.domain.history.service.HistoryService;
@@ -50,22 +51,6 @@ public class FcmService{
 		fcmRepository.save(fcm);
 	}
 
-	// public void saveFcmToken(final Long userId, final String fcmToken) {
-	// 	// 유저 객체 불러오기 (없다면 오류 발생 404)
-	// 	User user = userRepository.findById(userId)
-	// 		.orElseThrow(() -> new NotFoundException(U001));
-	//
-	// 	// 해당 유저가 가지고 있는 Fcm객체 불러오기 (없다면 객체 생성)
-	// 	Fcm fcm = fcmRepository.findByUser(user)
-	// 		.orElseGet(() -> Fcm.of(user, fcmToken));
-	//
-	// 	// fcmToken이 비어있거나 바뀌었다면 fcm객체의 token을 변경한다.
-	// 	if(fcm.getFcmToken() == null || !fcm.getFcmToken().equals(fcmToken)){
-	// 		fcm.changeFcmToken(fcmToken);
-	// 	}
-	// 	fcmRepository.save(fcm);
-	// }
-
 	/**
 	 * [메세지] 해당 인원에게 메세지 전송
 	 * @param sendId
@@ -89,9 +74,10 @@ public class FcmService{
 				.build())
 			.build();
 
+		// 멱등키가 존재하지 않는다면 히스토리 저장, 존재한다면 패스
 		try {
 			firebaseMessaging.send(message);
-			if(idempotencyUtil.addRequest(messageKey)) historyService.addAttackHistory(sendId, data, receiveId, "message");
+			if(idempotencyUtil.addRequest(messageKey)) historyService.addAttackHistory(sendId, data, receiveId, Item.USER_MESSAGE);
 		} catch (FirebaseMessagingException | com.google.firebase.messaging.FirebaseMessagingException e) {
 			throw new FirebaseMessagingException(FCM001);
 		}
@@ -118,9 +104,10 @@ public class FcmService{
 			.putData("animation", data)
 			.build();
 
+		// 멱등키가 존재하지 않는다면 히스토리 저장, 존재한다면 패스
 		try {
 			firebaseMessaging.send(message);
-			if(idempotencyUtil.addRequest(messageKey)) historyService.addAttackHistory(sendId, null, receiveId, data);
+			if(idempotencyUtil.addRequest(messageKey)) historyService.addAttackHistory(sendId, data + "공격을 받았습니다.", receiveId, Item.valueOf(data));
 		} catch (FirebaseMessagingException | com.google.firebase.messaging.FirebaseMessagingException e) {
 			throw new FirebaseMessagingException(FCM001);
 		}
@@ -142,7 +129,5 @@ public class FcmService{
 
 		return fcm.getFcmToken();
 	}
-
-
 
 }
