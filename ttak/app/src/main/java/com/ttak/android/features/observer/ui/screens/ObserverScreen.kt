@@ -31,27 +31,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun ObserverScreen() {
+fun ObserverScreen(
+    friendStoryViewModel: FriendStoryViewModel
+) {
     val context = LocalContext.current
 
     // API 및 Repository 초기화
     val userApi = ApiConfig.createUserApi(context)
-    val friendApi = ApiConfig.createFriendApi(context)
     val userRepository = UserApiImpl(userApi)
-    val friendStoryRepository = FriendApiImpl(friendApi)
 
-    // ViewModel 초기화
+    // UserViewModel만 초기화
     val userViewModel: UserViewModel = viewModel(
         factory = UserViewModelFactory(userRepository)
     )
-    val friendStoryViewModel: FriendStoryViewModel = viewModel(
-        factory = FriendStoryViewModelFactory(friendStoryRepository)
-    )
-
-    // 친구 목록 초기 로딩
-    LaunchedEffect(Unit) {
-        (friendStoryRepository as FriendApiImpl).fetchFriends()
-    }
 
     ObserverScreenContent(
         friendStoryViewModel = friendStoryViewModel,
