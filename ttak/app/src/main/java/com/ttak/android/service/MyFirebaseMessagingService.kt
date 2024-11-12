@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.provider.Settings
 import android.util.Log
@@ -23,6 +24,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
+//import com.ttak.android.UnityPlayerActivity
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -52,7 +54,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         // JSON 데이터를 문자열로 변환 후, 실제 JSON을 포함한 requestBody 생성
         val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
-        Log.d("MyFirebaseMessagingService", "Request body: $$requestBody")
+        Log.d("MyFirebaseMessagingService", "Request body: $requestBody")
 
         val client = OkHttpClient()
         val request = Request.Builder()
@@ -106,6 +108,16 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val customData = data["animation"] ?: "waterBalloon" // 예: 데이터 메시지의 특정 키 값 가져오기
         Log.d("MyFirebaseMessagingService", "데이터 메시지 - customKey: $customData")
         // 필요한 데이터 처리 로직 추가
+//
+//        val animationType = data["animation"] ?: "waterBomb"
+//
+//        if (animationType == "waterBomb") {
+//            // UnityPlayerActivity를 실행하여 Unity 애니메이션을 실행
+////            val intent = Intent(this, UnityPlayerActivity::class.java).apply {
+//                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) // 백그라운드에서 Activity 실행
+//            }
+//            startActivity(intent)
+//        }
     }
 
     // 알림 메시지를 처리하는 함수

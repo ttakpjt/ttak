@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.ttak.android">
 
     <!--    설치한 모든 패키지 가져오는 권한, 추가할 지 논의 필요함-->
     <uses-permission
