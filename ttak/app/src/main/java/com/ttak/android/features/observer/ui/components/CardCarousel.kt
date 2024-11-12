@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ttak.android.data.local.AppDatabase
 import com.ttak.android.data.repository.FocusGoalRepository
+import com.ttak.android.data.repository.history.HistoryRepositoryImpl
 import com.ttak.android.domain.model.CountResponse
 import com.ttak.android.domain.model.CountResponseData
 import com.ttak.android.features.observer.ui.components.Dashboard
@@ -28,6 +29,8 @@ import com.ttak.android.features.observer.viewmodel.GoalStateViewModel
 import com.ttak.android.features.observer.viewmodel.GoalStateViewModelFactory
 import com.ttak.android.features.observer.viewmodel.ObserverViewModel
 import com.ttak.android.features.observer.viewmodel.ObserverViewModelFactory
+import com.ttak.android.network.api.HistoryApi  // API 클래스 import 필요
+import com.ttak.android.network.util.ApiConfig
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -35,13 +38,15 @@ fun CardCarousel(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-
-    // Application context 가져오기
     val application = context.applicationContext as Application
 
-    // ViewModel 생성
+    // API 인스턴스 생성
+    val historyApi = ApiConfig.createHistoryApi(context)
+    val historyRepository = HistoryRepositoryImpl(historyApi)
+
+    // ViewModel 생성 - historyRepository 주입
     val viewModel: GoalStateViewModel = viewModel(
-        factory = GoalStateViewModelFactory(application)
+        factory = GoalStateViewModelFactory(application, historyRepository)
     )
 
     // 주간 딱걸림 횟수 가져오기
@@ -51,7 +56,7 @@ fun CardCarousel(
     observerViewModel.getPickRank()
 
     val goalState by viewModel.goalState.collectAsState()
-    val countData by observerViewModel.countData.collectAsState()   // history/pick-rank
+    val countData by observerViewModel.countData.collectAsState()
     val pagerState = rememberPagerState(pageCount = { 2 })
 
     HorizontalPager(
@@ -78,13 +83,11 @@ fun CardCarousel(
                         }
                     }
                     1 -> {
-
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(24.dp)
                         ) {
-                            // 계기판                                                                                                                                                                                                                                                                                                                                                                                                                                                컴포넌트 만들기
                             countData?.let { data ->
                                 Dashboard(countData = data)
                             }
