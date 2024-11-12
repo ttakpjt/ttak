@@ -41,7 +41,7 @@ out/
 ### VS Code ###
 .vscode/
 
-.ttak-440401-firebase-adminsdk-a7dv0-b4b7563f3b
+./src/main/resources/*.json
 .env
 .DS_Store
 ._.DS_Store
@@ -167,3 +167,6 @@ $RECYCLE.BIN/
 
 # docker-compose file
 docker-compose.yml
+
+# firebase
+
