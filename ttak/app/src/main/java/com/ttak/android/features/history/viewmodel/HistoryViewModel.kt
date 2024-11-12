@@ -19,11 +19,8 @@ class HistoryViewModel(
     private val _weeklyWatchingCount = MutableStateFlow(0)
     val weeklyWatchingCount: StateFlow<Int> = _weeklyWatchingCount.asStateFlow()
 
-    private val _messages = MutableStateFlow<List<HistoryInfo>>(emptyList())
-    val messages: StateFlow<List<HistoryInfo>> = _messages.asStateFlow()
-
-    private val _systemNotification = MutableStateFlow<String>("")
-    val systemNotification: StateFlow<String> = _systemNotification.asStateFlow()
+    private val _historyList = MutableStateFlow<List<HistoryInfo>>(emptyList())
+    val historyList: StateFlow<List<HistoryInfo>> = _historyList.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -32,28 +29,10 @@ class HistoryViewModel(
                 _weeklyPickCount.value = pickCount
                 val watchingCount = repository.getWeeklyWatchingCount()
                 _weeklyWatchingCount.value = watchingCount
+                val historyList = repository.getHistoryList()
+                _historyList.value = historyList
             } catch (e: Exception) {
 
-            }
-        }
-    }
-
-    private suspend fun loadMessages() {
-        try {
-            val messageList = repository.getMessages()
-            _messages.value = messageList
-        } catch (e: Exception) {
-            // Handle error
-        }
-    }
-
-    fun sendMessage(content: String) {
-        viewModelScope.launch {
-            try {
-                repository.sendMessage(content)
-                loadMessages() // Reload messages after sending
-            } catch (e: Exception) {
-                // Handle error
             }
         }
     }

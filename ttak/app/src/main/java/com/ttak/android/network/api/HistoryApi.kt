@@ -1,12 +1,10 @@
 package com.ttak.android.network.api
 
-import com.ttak.android.domain.model.history.HistoryInfo
+import com.ttak.android.domain.model.history.HistoryListResponse
 import com.ttak.android.domain.model.history.WeeklyPickResponse
 import com.ttak.android.domain.model.history.WeeklyWatchingResponse
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
 import retrofit2.Response
+import retrofit2.http.GET
 
 interface HistoryApi {
 
@@ -15,10 +13,7 @@ interface HistoryApi {
 
     @GET("friends/follower")
     suspend fun getWeeklyWatchingCount(): Response<WeeklyWatchingResponse>
-    
-    @GET("messages")
-    suspend fun getMessages(): List<HistoryInfo>
 
-    @POST("messages/send")
-    suspend fun sendMessage(@Body message: String): Response<Unit>
+    @GET("history/list")
+    suspend fun getHistoryList(): Response<HistoryListResponse>
 }
