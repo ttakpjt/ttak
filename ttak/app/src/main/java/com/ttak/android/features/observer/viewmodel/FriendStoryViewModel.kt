@@ -53,7 +53,7 @@ class FriendStoryViewModel(
                 repository.getFriendsWithNewStories()
             ) { allFriends, newStoryFriends ->
                 _filterOptions.value = listOf(
-                    FilterOption(1, "전체", allFriends.size),
+                    FilterOption(1, "활성", allFriends.size),
                     FilterOption(2, "감지", newStoryFriends.size)
                 )
             }.collect()

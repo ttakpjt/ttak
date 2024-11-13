@@ -41,7 +41,7 @@ fun LoginScreen(onLoginClick: () -> Unit) {
             Button(
                 onClick = onLoginClick,
                 modifier = Modifier
-                    .width(230.dp)
+                    .width(250.dp)
                     .height(48.dp)
                     .shadow(
                         elevation = 4.dp,

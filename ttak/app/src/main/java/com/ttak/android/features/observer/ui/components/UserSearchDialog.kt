@@ -110,7 +110,7 @@ fun UserSearchDialog(
                 ) {
                     Text(
                         text = "친구 검색",
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )

@@ -3,8 +3,10 @@ package com.ttak.android.features.history.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -65,9 +67,18 @@ fun HistoryScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+
+                Spacer(modifier = Modifier.height(50.dp))
+
                 Text(
-                    text = "잘 하고 있습니다.\n걸린 기록이 없군요.",
-                    style = MaterialTheme.typography.bodySmall,
+                    text = "잘 하고 있습니다.",
+                    style = MaterialTheme.typography.bodyMedium,
+//                    modifier = Modifier.padding(8.dp)
+                )
+
+                Text(
+                    text = "걸린 기록이 없군요.",
+                    style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(16.dp)
                 )
                 // 이거 배포할 때 지우셈

@@ -51,7 +51,7 @@ fun AddFriendItem(
     ) {
         Box(
             modifier = Modifier
-                .size(80.dp)
+                .size(90.dp)
                 .border(
                     width = 2.dp,
                     color = Color.White,
