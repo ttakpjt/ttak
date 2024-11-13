@@ -20,6 +20,7 @@ fun WeeklyUsageBarChartComponent(dailyUsageList: List<Int>) {
     val daysOfWeek = listOf("일", "월", "화", "수", "목", "금", "토")
     // 최대 사용 시간에 비례하여 막대의 상대적 높이를 계산
     val maxUsage = dailyUsageList.maxOrNull() ?: 1
+    val maxHeight = 100.dp // 막대의 최대 높이를 200dp로 제한
 
     Column(
         modifier = Modifier.padding(8.dp),
@@ -47,7 +48,7 @@ fun WeeklyUsageBarChartComponent(dailyUsageList: List<Int>) {
                     ) {
                         Box(
                             modifier = Modifier
-                                .height(if (maxUsage > 0) (usage * 100 / maxUsage).dp else 0.dp)
+                                .height(if (maxUsage > 0) (usage * maxHeight.value / maxUsage).dp else 0.dp)
                                 .width(30.dp)
                                 .background(barColor)
 //                            모서리 추가 좀 해주세요.
@@ -64,7 +65,6 @@ fun WeeklyUsageBarChartComponent(dailyUsageList: List<Int>) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = daysOfWeek[index],
-//                        text = usage.toString(),
                             style = MaterialTheme.typography.labelSmall,
                         )
                     }
