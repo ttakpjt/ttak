@@ -58,7 +58,7 @@ fun SystemNotificationCard(
                     )
                     Text(
                         text = notificationText,
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.labelLarge,
                         color = Color.Black,
                         modifier = Modifier.padding(top = 8.dp),
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center,
@@ -86,7 +86,7 @@ fun SystemNotificationCard(
                     )
                     Text(
                         text = watchingCountText,
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.labelLarge,
                         color = Color.Black,
                         modifier = Modifier.padding(top = 8.dp),
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center,

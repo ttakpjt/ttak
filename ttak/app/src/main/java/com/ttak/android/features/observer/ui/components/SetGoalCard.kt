@@ -59,13 +59,13 @@ fun SetGoalCard(
             // 이규석
             Text(
                 text = "${goalState.observerCount}명이 지켜보고 있어요",
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 color = Color.White,
                 maxLines = 1,
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         // 선택된 앱 아이콘들을 가로로 표시
         Row(
@@ -83,7 +83,7 @@ fun SetGoalCard(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         TimeProgress(
             startTime = goalState.startTime,

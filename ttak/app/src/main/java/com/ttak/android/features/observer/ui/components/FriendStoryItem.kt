@@ -48,7 +48,7 @@ fun FriendStoryItem(
         ) {
             Box(
                 modifier = Modifier
-                    .size(80.dp)
+                    .size(90.dp)
                     .border(
                         width = 2.dp,
                         color = if (friend.hasNewStory) Color(0xFFFF5E5E) else Color(0xFF7FEC93),
@@ -76,7 +76,7 @@ fun FriendStoryItem(
                 text = friend.friendName,
                 color = Color.White,
 //                fontSize = 18.sp,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()

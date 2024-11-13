@@ -36,7 +36,7 @@ fun Dashboard(
 @Composable
 fun GaugeComponent(title: String, total: Int, my: Int) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = title, style = MaterialTheme.typography.bodyLarge)
+        Text(text = title, style = MaterialTheme.typography.titleSmall)
 
         Canvas(
             modifier = Modifier

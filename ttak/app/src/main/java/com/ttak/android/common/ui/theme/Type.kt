@@ -70,7 +70,7 @@ fun getScaledTypography(context: Context): Typography {
         titleSmall = TextStyle(
             fontFamily = Pretendard,
             fontWeight = FontWeight.Bold,
-            fontSize = (20 * scaleFactor).sp,
+            fontSize = (16 * scaleFactor).sp,
             lineHeight = (28 * scaleFactor).sp,
             letterSpacing = 0.sp
         ),
