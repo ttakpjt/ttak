@@ -98,8 +98,10 @@ class LoginActivity : ComponentActivity() {
                                             UserPreferences(applicationContext).saveNickname(
                                                 nickname
                                             )
-                                            startActivity(Intent(this, MainActivity::class.java))
-                                            finish()
+                                            val intent = Intent(this, MainActivity::class.java)
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                            startActivity(intent)
+                                            finish() // 현재 Activity 종료
                                         }
                                     } else {
                                         Log.e("귯", "프로필 설정 필요")
