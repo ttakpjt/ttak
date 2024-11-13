@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/ban")
+@RequestMapping("/api/bug")
 @Tag(name = "bug API", description = "버그 제보 및 설정 관련 api")
 @CrossOrigin("*")
 public class BanController {
@@ -28,7 +28,7 @@ public class BanController {
 	private final BugService bugService;
 
 	@Operation(summary = "버그 제보 API", description = "사용중 예상치 못한 버그가 발생했을 경우 해당 시간과 사용자 정보를 기록하기 위한 API")
-	@PostMapping("/test")
+	@PostMapping("/report")
 	public ResponseEntity<CommonResponse<?>> saveBug(@UserPk final Long userId, final BugContentsRequest bugContentsRequest) {
 		log.info("========== 테스트 시작 ==========");
 		bugService.saveBugReport(userId, bugContentsRequest.getContents());
