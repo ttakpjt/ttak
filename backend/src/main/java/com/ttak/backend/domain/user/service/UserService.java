@@ -2,13 +2,25 @@ package com.ttak.backend.domain.user.service;
 
 import static com.ttak.backend.global.common.ErrorCode.*;
 
+import java.net.URL;
 import java.time.Duration;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.amazonaws.HttpMethod;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.Headers;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.ttak.backend.domain.fcm.entity.Fcm;
 import com.ttak.backend.domain.fcm.repository.FcmRepository;
 import com.ttak.backend.domain.observe.repository.FriendRepository;
@@ -30,6 +42,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class UserService{
 
+	@Value("${AWS_S3_BUCKET}")
+	private String bucket; //s3 버킷 이름
+	private final AmazonS3 amazonS3;
 	private final UserRepository userRepository;
 	private final FriendRepository friendRepository;
 	private final FcmRepository fcmRepository;
@@ -185,5 +200,103 @@ public class UserService{
 	private User findUserById(Long userId){
 		return userRepository.findById(userId)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.U001));
+	}
+
+	/**
+	 * PresignedUrl을 반환한다.
+	 * @param prefix //폴더 명
+	 * @param imageName //저장할 이미지 이름
+	 * @param userId
+	 * @return String
+	 */
+	public Map<String, String> getPresignedUrl(String prefix, String imageName, Long userId) {
+		String fileName = "";
+		if (!prefix.isEmpty()) {
+			fileName = createPath(prefix, imageName);
+		}else{
+
+		}
+
+		GeneratePresignedUrlRequest generatePresignedUrlRequest = getGeneratePresignedUrlRequest(bucket, fileName);
+		URL url = amazonS3.generatePresignedUrl(generatePresignedUrlRequest); //url 생성
+
+		//user ProfilePic 변경
+		saveUrlToUser(url, userId);
+
+
+		return Map.of("url", url.toString());
+	}
+
+	/**
+	 * 폴더명과 이미지 이름, 고유번호(UUID)를 합친 path를 반환한다.
+	 * @param prefix //폴더 명
+	 * @param imageName //이미지 이름
+	 * @return String
+	 */
+	private String createPath(String prefix, String imageName) {
+		String fileId = createFileId();
+		return String.format("%s/%s", prefix, fileId + "-" + imageName);
+	}
+
+	/**
+	 * 이미지를 고유하게 해줄 UUID를 반환해준다.
+	 * @return String
+	 */
+	private String createFileId() {
+		return UUID.randomUUID().toString();
+	}
+
+	/**
+	 * 이미지를 저장할 수 있는 인증 정보를 담은 GeneratePresignedUrlRequest객체를 발급해준다.
+	 * @param bucket //S3 bucket 이름
+	 * @param fileName //이미지 이름
+	 * @return GeneratePresignedUrlRequest
+	 */
+	private GeneratePresignedUrlRequest getGeneratePresignedUrlRequest(String bucket, String fileName) {
+		GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucket, fileName)
+			.withMethod(HttpMethod.PUT)
+			.withExpiration(getPresignedUrlExpiration());
+
+		generatePresignedUrlRequest.addRequestParameter(
+			Headers.S3_CANNED_ACL,
+			CannedAccessControlList.PublicRead.toString()
+		);
+
+		return generatePresignedUrlRequest;
+	}
+
+	/**
+	 * 인증정보 담은 url의 유효기간을 설정한다. (2분)
+	 * @return Date
+	 */
+	private Date getPresignedUrlExpiration() {
+		Date expiration = new Date();
+		long expTimeMillis = expiration.getTime();
+		expTimeMillis += 1000 * 60 * 2;
+		expiration.setTime(expTimeMillis);
+
+		return expiration;
+	}
+
+	/**
+	 * 인증 파라미터가 없는 순수 이미지 URL(parts[0])을 User 엔티티에 저장
+	 * @param url 이미지 저장 url
+	 * @param userId 사용자의 아이디
+	 */
+	@Transactional
+	public void saveUrlToUser(URL url, Long userId) {
+		String fullUrl = url.toString();
+		String[] parts = fullUrl.split("\\?");
+		User user = userRepository.findById(userId)
+			.orElseThrow(()->new NotFoundException(ErrorCode.U001));;
+		if(user.getProfilePic()!=null){
+			//delete 로직
+			String deleteFullUrl = user.getProfilePic();
+			String splitStr = ".com/";
+			String fileName = deleteFullUrl.substring(deleteFullUrl.lastIndexOf(splitStr) + splitStr.length());
+			amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileName));
+		}
+		user.changeProfilePic(parts[0]);
+		userRepository.save(user);
 	}
 }
