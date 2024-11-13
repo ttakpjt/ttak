@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ttak.android.common.navigation.AppScreens
 import com.ttak.android.domain.model.FriendStory
 import com.ttak.android.domain.model.GoalState
 //import com.ttak.android.data.repository.PreviewFriendStoryRepository
@@ -21,6 +22,7 @@ import com.ttak.android.domain.model.MessageData
 import com.ttak.android.features.observer.ui.components.*
 import com.ttak.android.features.observer.viewmodel.FriendStoryViewModel
 import com.ttak.android.features.observer.viewmodel.FriendStoryViewModelFactory
+import com.ttak.android.features.observer.viewmodel.ObserverViewModel
 import com.ttak.android.features.observer.viewmodel.UserViewModel
 import com.ttak.android.features.observer.viewmodel.UserViewModelFactory
 import com.ttak.android.network.implementation.FriendApiImpl
@@ -40,14 +42,20 @@ fun ObserverScreen(
     val userApi = ApiConfig.createUserApi(context)
     val userRepository = UserApiImpl(userApi)
 
-    // UserViewModel만 초기화
+    // UserViewModel 초기화
     val userViewModel: UserViewModel = viewModel(
         factory = UserViewModelFactory(userRepository)
     )
 
+    LaunchedEffect(Unit) {
+        // 화면에 진입할 때마다 데이터 새로고침
+        friendStoryViewModel.refreshFriends()
+    }
+
     ObserverScreenContent(
         friendStoryViewModel = friendStoryViewModel,
-        userViewModel = userViewModel
+        userViewModel = userViewModel,
+        goalState = GoalState()
     )
 }
 
