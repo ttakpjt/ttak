@@ -1,7 +1,9 @@
 package com.ttak.backend.domain.user.controller;
 
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -95,5 +97,10 @@ public class UserController {
 		return ResponseEntity.ok(CommonResponse.success(nickname));
 	}
 
+	@GetMapping("s3")
+	public ResponseEntity<CommonResponse<?>> getPresignedUrl(@UserPk Long userId, @RequestParam String prefix, @RequestParam String imageName) {
+		Map<String, String> presignedUrl = userService.getPresignedUrl( prefix, imageName, userId);
+		return ResponseEntity.ok(CommonResponse.success(presignedUrl));
+	}
 
 }

@@ -117,4 +117,7 @@ public class User extends TimeBaseEntity {
 		this.nickname = nickname;
 	}
 
+	public void changeProfilePic(String profilePic) {
+		this.profilePic = profilePic;
+	}
 }
