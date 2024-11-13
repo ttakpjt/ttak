@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService{
 
 	@Value("${AWS_S3_BUCKET}")
-	private String bucket;
+	private String bucket; //s3 버킷 이름
 	private final AmazonS3 amazonS3;
 	private final UserRepository userRepository;
 	private final FriendRepository friendRepository;
@@ -202,6 +202,13 @@ public class UserService{
 			.orElseThrow(() -> new NotFoundException(ErrorCode.U001));
 	}
 
+	/**
+	 * PresignedUrl을 반환한다.
+	 * @param prefix //폴더 명
+	 * @param imageName //저장할 이미지 이름
+	 * @param userId
+	 * @return String
+	 */
 	public Map<String, String> getPresignedUrl(String prefix, String imageName, Long userId) {
 		String fileName = "";
 		if (!prefix.isEmpty()) {
@@ -211,24 +218,40 @@ public class UserService{
 		}
 
 		GeneratePresignedUrlRequest generatePresignedUrlRequest = getGeneratePresignedUrlRequest(bucket, fileName);
-		URL url = amazonS3.generatePresignedUrl(generatePresignedUrlRequest);
+		URL url = amazonS3.generatePresignedUrl(generatePresignedUrlRequest); //url 생성
 
-		//user에 url 저장
+		//user ProfilePic 변경
 		saveUrlToUser(url, userId);
 
 
 		return Map.of("url", url.toString());
 	}
 
-	private String createPath(String prefix, String fileName) {
+	/**
+	 * 폴더명과 이미지 이름, 고유번호(UUID)를 합친 path를 반환한다.
+	 * @param prefix //폴더 명
+	 * @param imageName //이미지 이름
+	 * @return String
+	 */
+	private String createPath(String prefix, String imageName) {
 		String fileId = createFileId();
-		return String.format("%s/%s", prefix, fileId + "-" + fileName);
+		return String.format("%s/%s", prefix, fileId + "-" + imageName);
 	}
 
+	/**
+	 * 이미지를 고유하게 해줄 UUID를 반환해준다.
+	 * @return String
+	 */
 	private String createFileId() {
 		return UUID.randomUUID().toString();
 	}
 
+	/**
+	 * 이미지를 저장할 수 있는 인증 정보를 담은 GeneratePresignedUrlRequest객체를 발급해준다.
+	 * @param bucket //S3 bucket 이름
+	 * @param fileName //이미지 이름
+	 * @return GeneratePresignedUrlRequest
+	 */
 	private GeneratePresignedUrlRequest getGeneratePresignedUrlRequest(String bucket, String fileName) {
 		GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucket, fileName)
 			.withMethod(HttpMethod.PUT)
@@ -242,6 +265,10 @@ public class UserService{
 		return generatePresignedUrlRequest;
 	}
 
+	/**
+	 * 인증정보 담은 url의 유효기간을 설정한다. (2분)
+	 * @return Date
+	 */
 	private Date getPresignedUrlExpiration() {
 		Date expiration = new Date();
 		long expTimeMillis = expiration.getTime();
@@ -251,6 +278,11 @@ public class UserService{
 		return expiration;
 	}
 
+	/**
+	 * 인증 파라미터가 없는 순수 이미지 URL(parts[0])을 User 엔티티에 저장
+	 * @param url 이미지 저장 url
+	 * @param userId 사용자의 아이디
+	 */
 	@Transactional
 	public void saveUrlToUser(URL url, Long userId) {
 		String fullUrl = url.toString();
