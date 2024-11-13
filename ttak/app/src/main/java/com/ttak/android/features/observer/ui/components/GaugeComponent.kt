@@ -53,7 +53,7 @@ fun GaugeComponent(title: String, total: Int, my: Int) {
             )
 
             // 바늘 각도 계산 (부동 소수점으로 계산)
-            val percentage = (my.toFloat() / total.toFloat()) * 100
+            val percentage = if (total == 0) 0f else (my.toFloat() / total.toFloat()) * 100
             val needleAngle = 270f + percentage * 180f / 100
 
             // 바늘 그리기

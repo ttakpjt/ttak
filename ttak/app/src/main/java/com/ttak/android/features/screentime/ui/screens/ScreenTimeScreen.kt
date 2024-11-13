@@ -2,9 +2,10 @@ package com.ttak.android.features.screentime.ui.screens
 
 import SmallGoalCard
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -21,7 +22,8 @@ fun ScreenTimeScreen() {
         factory = ScreenTimeViewModelFactory(context)
     )
     val screenTimeData = viewModel.screenTimeData.collectAsState().value
-    val nickname = UserPreferences(context.applicationContext).getNickname().toString() // nickname 가져오기
+    val nickname =
+        UserPreferences(context.applicationContext).getNickname().toString() // nickname 가져오기
 
     screenTimeData?.let { data ->
         Column(
@@ -38,7 +40,10 @@ fun ScreenTimeScreen() {
             Spacer(modifier = Modifier.height(16.dp))
 
             // 2. 사용 시간 변화 표시
-            ScreenTimeChangeComponent(username = nickname, hoursDifference = data.todayUsageDifference)
+            ScreenTimeChangeComponent(
+                username = nickname,
+                hoursDifference = data.todayUsageDifference
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -48,12 +53,27 @@ fun ScreenTimeScreen() {
             Spacer(modifier = Modifier.height(16.dp))
 
             // 4. 기간별 사용 시간 요약
-            TimeUsageSummaryComponent(monthUsage = data.monthUsage, weekUsage = data.weekUsage, todayUsage = data.todayUsage)
+            TimeUsageSummaryComponent(
+                monthUsage = data.monthUsage,
+                weekUsage = data.weekUsage,
+                todayUsage = data.todayUsage
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // 5. 요일별 스마트폰 사용량 막대 차트
             WeeklyUsageBarChartComponent(data.dailyUsageList)
         }
-    } ?: Text("Loading...") // 데이터가 로딩 중일 때 표시
+        // 화면 로딩 중 표시할 원형 프로그레스 바
+    } ?: Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .wrapContentSize()
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier
+                .size(64.dp) // 크기 조절
+                .align(Alignment.Center) // 화면 중앙에 위치
+        )
+    }
 }
