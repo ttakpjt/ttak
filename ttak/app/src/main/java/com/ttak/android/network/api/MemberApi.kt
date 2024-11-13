@@ -16,7 +16,7 @@ interface MemberApi {
     suspend fun signIn(@Body user: MemberRequest): Response<SignInResponse>
 
     // 로그아웃
-    @GET("logout")
+    @GET("user/logout")
     suspend fun logout(): Response<MemberResponse>
 
     // 닉네임이 존재하는지 확인

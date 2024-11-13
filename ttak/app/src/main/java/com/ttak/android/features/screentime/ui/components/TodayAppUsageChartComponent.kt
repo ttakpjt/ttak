@@ -29,7 +29,9 @@ fun TodayAppUsageChartComponent(topSixAppsUsage: Map<String, Int>) {
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(16.dp)
+        modifier = Modifier
+            .padding(16.dp)
+            .padding(start = 16.dp) // 왼쪽 부분만 패딩을 넣음
     ) {
         // 도넛 차트
         Box(modifier = Modifier.size(100.dp)) {
@@ -49,7 +51,7 @@ fun TodayAppUsageChartComponent(topSixAppsUsage: Map<String, Int>) {
             }
         }
 
-        Spacer(modifier = Modifier.width(40.dp))
+        Spacer(modifier = Modifier.width(48.dp))
 
         Column {
             topSixAppsUsage.entries.forEachIndexed { index, (packageName, usage) ->

@@ -23,8 +23,7 @@ fun getScaledTypography(context: Context): Typography {
 
     // 화면 크기에 따른 폰트 크기 비율을 계산
     val scaleFactor = when {
-        screenWidthDp >= 600 -> 1.5f  // 예: 태블릿 등 큰 화면
-        screenWidthDp >= 360 -> 1.2f  // 예: 중간 크기 스마트폰
+        screenWidthDp >= 600 -> 1.5f  // 태블릿 등 큰 화면
         else -> 1.0f                  // 작은 화면 스마트폰
     }
 

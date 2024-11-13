@@ -42,7 +42,7 @@ fun SplashScreen(
 
     // 모든 권한이 승인된 후 다음 화면으로 이동
     LaunchedEffect(hasPermissions, hasOverlayPermission) {
-        delay(3000)
+        delay(2500)
 
         if (hasPermissions && hasOverlayPermission) {
             val isProfileSetupComplete =
