@@ -15,4 +15,6 @@ public interface FcmRepository extends JpaRepository<Fcm, Long> {
 
 	Optional<Fcm> findByFcmToken(String fcmToken);
 
+	boolean existsByUser(User user);
+
 }

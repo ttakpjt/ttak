@@ -115,6 +115,11 @@ public class UserService{
 					return newUser;
 				});
 
+		// 이미 해당 유저 ID로 등록된 fcm 토큰이 있다면 해당 fcm의 User값을 NULL로 바꾼다.
+		if(fcmRepository.existsByUser(user)){
+			fcmRepository.findByUser(user).ifPresent(fcm -> {fcm.setUser(null);});
+		}
+
 		// 파라미터로 들어온 fcm정보를 DB에서 찾아온다. 만약 정보가 없다면 오류반환 (F001)
 		Fcm fcm = fcmRepository.findByFcmToken(googleUserRequest.getFcmToken())
 			.orElseThrow(() -> new NotFoundException(F001));
