@@ -3,19 +3,26 @@ package com.ttak.android.features.auth.ui.screens
 import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.ttak.android.R
-import kotlinx.coroutines.delay
+import coil.ImageLoader
+import coil.compose.rememberAsyncImagePainter
+import coil.decode.GifDecoder
+import coil.request.ImageRequest
 import com.ttak.android.MainActivity
+import com.ttak.android.R
 import com.ttak.android.features.auth.LoginActivity
 import com.ttak.android.features.auth.SplashActivity
 import com.ttak.android.features.mypage.ProfileSetupActivity
 import com.ttak.android.network.util.UserPreferences
+import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(
@@ -26,9 +33,16 @@ fun SplashScreen(
     onPermissionsConfirmed: () -> Unit,
     onOverlayPermissionConfirmed: () -> Unit
 ) {
+
+    val imageLoader = ImageLoader.Builder(context)
+        .components {
+            add(GifDecoder.Factory())
+        }
+        .build()
+
     // 모든 권한이 승인된 후 다음 화면으로 이동
     LaunchedEffect(hasPermissions, hasOverlayPermission) {
-        delay(1000)
+        delay(3000)
 
         if (hasPermissions && hasOverlayPermission) {
             val isProfileSetupComplete =
@@ -61,8 +75,12 @@ fun SplashScreen(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
-//                painter = painterResource(id = R.drawable.ttak_logo_icon),
-                painter = painterResource(id = R.drawable.ttak_logo_no_bg),
+                painter = rememberAsyncImagePainter(
+                    ImageRequest.Builder(context)
+                        .data(R.drawable.ttak_logo)
+                        .build(),
+                    imageLoader = imageLoader
+                ),
                 contentDescription = "Ttak 로고",
                 modifier = Modifier.size(300.dp)
             )
