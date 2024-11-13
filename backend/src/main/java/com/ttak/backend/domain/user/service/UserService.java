@@ -42,7 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class UserService{
 
-	@Value("${AWS_S3_BUCKET}")
+	@Value("${aws.s3.bucket}")
 	private String bucket; //s3 버킷 이름
 	private final AmazonS3 amazonS3;
 	private final UserRepository userRepository;
