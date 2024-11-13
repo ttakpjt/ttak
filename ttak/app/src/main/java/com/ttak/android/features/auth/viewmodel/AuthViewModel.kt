@@ -69,8 +69,7 @@ class MemberViewModel(application: Application) : AndroidViewModel(application) 
             // 닉네임 존재 여부 확인 후 전달
             response?.let {
                 val nickname = it.data
-                // 닉네임이 빈 문자열일 경우 null로 처리
-                if (nickname.isEmpty()) {
+                if (nickname==null) {
                     onNicknameChecked(null)
                 } else {
                     onNicknameChecked(nickname)
