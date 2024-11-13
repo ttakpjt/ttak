@@ -48,8 +48,7 @@ fun HistoryScreen(
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth(),
-            reverseLayout = true
+                .fillMaxWidth()
         ) {
             items(historyList) { historyInfo ->
                 HistoryMessageItem(data = historyInfo)
