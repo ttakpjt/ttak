@@ -44,7 +44,7 @@ fun SmallGoalCard(
         modifier = Modifier
             .padding(horizontal = 10.dp)
             .fillMaxWidth()
-            .height(80.dp)
+            .height(65.dp)
             .then(
                 if (!goalState.isSet) {
                     Modifier.clickable {
@@ -75,14 +75,14 @@ fun SmallGoalCard(
                     Image(
                         painter = painterResource(id = R.drawable.prohibition_icon),
                         contentDescription = "Friends Icon",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(20.dp)
                     )
 
                     Spacer(modifier = Modifier.width(12.dp))
 
                     Text(
                         text = "목표를 설정하고 집중해보세요!",
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.labelLarge,
                     )
                 }
 
@@ -108,18 +108,18 @@ fun SmallGoalCard(
                     Image(
                         painter = painterResource(id = R.drawable.prohibition_icon),
                         contentDescription = "Friends Icon",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(20.dp)
                     )
 
                     // 시간 텍스트
                     Text(
                         text = "${String.format("%02d:%02d", goalState.startTime.hour, goalState.startTime.minute)} - ${String.format("%02d:%02d", goalState.endTime.hour, goalState.endTime.minute)}",
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.labelLarge,
                     )
 
                     Text(
                         text = "(",
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.labelLarge,
                     )
 
                     // 앱 아이콘들
@@ -140,14 +140,14 @@ fun SmallGoalCard(
                         if (goalState.selectedApps.size > 3) {
                             Text(
                                 text = "...",
-                                style = MaterialTheme.typography.bodyLarge,
+                                style = MaterialTheme.typography.labelLarge,
                             )
                         }
                     }
 
                     Text(
                         text = ")",
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.labelLarge,
                     )
                 }
             }

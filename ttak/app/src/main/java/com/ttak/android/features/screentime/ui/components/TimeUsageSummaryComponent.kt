@@ -35,10 +35,13 @@ fun TimeUsageSummaryComponent(monthUsage: Int, weekUsage: Int, todayUsage: Int) 
             ) {
                 Text(
                     text = "이번 달",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.titleSmall,
                     color = Black,
                 )
-                Text(text = formatDuration(monthUsage), style = MaterialTheme.typography.bodyMedium, color = Black)
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(text = formatDuration(monthUsage), style = MaterialTheme.typography.labelMedium, color = Black)
             }
 
             Spacer(
@@ -54,10 +57,13 @@ fun TimeUsageSummaryComponent(monthUsage: Int, weekUsage: Int, todayUsage: Int) 
             ) {
                 Text(
                     text = "지난 주",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.titleSmall,
                     color = Black,
                 )
-                Text(text = formatDuration(weekUsage), style = MaterialTheme.typography.bodyMedium, color = Black)
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(text = formatDuration(weekUsage), style = MaterialTheme.typography.labelMedium, color = Black)
             }
 
             Spacer(
@@ -72,10 +78,13 @@ fun TimeUsageSummaryComponent(monthUsage: Int, weekUsage: Int, todayUsage: Int) 
                 modifier = Modifier.weight(1f)
             ) {
                 Text(text = "오늘",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.titleSmall,
                     color = Black,
                 )
-                Text(text = formatDuration(todayUsage), style = MaterialTheme.typography.bodyMedium, color = Red)
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(text = formatDuration(todayUsage), style = MaterialTheme.typography.labelMedium, color = Red)
             }
         }
     }

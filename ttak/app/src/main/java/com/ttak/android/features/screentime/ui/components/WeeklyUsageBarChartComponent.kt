@@ -25,7 +25,7 @@ fun WeeklyUsageBarChartComponent(dailyUsageList: List<Int>) {
         modifier = Modifier.padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("이번 주에는...", style = MaterialTheme.typography.labelSmall)
+        Text("이번 주에는...", style = MaterialTheme.typography.titleSmall)
 
         Column(modifier = Modifier.fillMaxWidth()) {
 
