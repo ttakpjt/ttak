@@ -9,6 +9,7 @@ spring:
     redis:
       host: ${SPRING_DATA_REDIS_HOST}
       port: ${SPRING_DATA_REDIS_PORT}
+      password: ${SPRING_DATA_REDIS_PASSWORD}
       jedis:
         pool:
           max-active: ${SPRING_DATA_REDIS_JEDIS_POOL_MAX_ACTIVE}
