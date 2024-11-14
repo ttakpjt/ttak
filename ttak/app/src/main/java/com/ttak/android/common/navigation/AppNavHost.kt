@@ -18,18 +18,24 @@ fun AppNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = AppScreens.ScreenTime.route  // 앱 시작점은 스크린타임 화면으로
+        startDestination = AppScreens.ScreenTime.route
     ) {
         composable(AppScreens.History.route) { HistoryScreen() }
         composable(AppScreens.MyPage.route) { MyPageScreen() }
         composable(AppScreens.Observer.route) {
-            ObserverScreen(friendStoryViewModel = friendStoryViewModel)  // ViewModel 전달
+            ObserverScreen(friendStoryViewModel = friendStoryViewModel)
         }
         composable(AppScreens.ScreenTime.route) { ScreenTimeScreen() }
         composable(AppScreens.SetGoal.route) {
             SetGoalScreen(
                 onNavigateBack = {
                     NavigationManager.navigateBack()
+                },
+                onNavigateToObserver = {
+                    navController.navigate(AppScreens.Observer.route) {
+                        // 백스택에서 SetGoal 화면을 제거하여 뒤로가기 시 SetGoal로 돌아가지 않도록 함
+                        popUpTo(AppScreens.SetGoal.route) { inclusive = true }
+                    }
                 }
             )
         }

@@ -21,14 +21,23 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SetGoalScreen(
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToObserver: () -> Unit  // 새로운 네비게이션 콜백 추가
 ) {
     val viewModel: SetGoalViewModel = viewModel()
     val startTime by viewModel.startTime.collectAsState()
     val endTime by viewModel.endTime.collectAsState()
     val installedApps by viewModel.installedApps.collectAsState()
     val selectedApps by viewModel.selectedApps.collectAsState()
+    val saveSuccess by viewModel.saveSuccess.collectAsState()
     val scope = rememberCoroutineScope()
+
+    // saveSuccess 상태 관찰
+    LaunchedEffect(saveSuccess) {
+        if (saveSuccess == true) {
+            onNavigateToObserver()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -128,10 +137,7 @@ fun SetGoalScreen(
                     scope.launch {
                         isLoading = true
                         try {
-                            val success = viewModel.saveGoal()
-                            if (success) {
-                                onNavigateBack()
-                            }
+                            viewModel.saveGoal()
                         } finally {
                             isLoading = false
                         }
