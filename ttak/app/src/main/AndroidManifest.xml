@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
@@ -32,7 +33,7 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_ttak"
-        android:label="@string/app_name"
+        android:label="TTAK"
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_ttak_round"
         android:supportsRtl="true"
@@ -83,5 +84,9 @@
     <meta-data
         android:name="firebase_analytics_collection_enabled"
         android:value="false" />
+    <meta-data
+        android:name="com.google.firebase.messaging.default_notification_icon"
+        android:resource="@drawable/ttak_noti_logo2"
+        />
 
 </manifest>
