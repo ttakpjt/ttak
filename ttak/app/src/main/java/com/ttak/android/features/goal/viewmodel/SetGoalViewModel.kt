@@ -157,7 +157,7 @@ class SetGoalViewModel(application: Application) : AndroidViewModel(application)
                     selectedApps = selectedAppsList
                 )
                 repository.saveFocusGoal(focusGoal)
-                showToast("목표가 성공적으로 저장되었습니다!")
+                showToast("목표가 성공적으로 등록되었습니다!")
                 _saveSuccess.value = true
                 true
             } else {
