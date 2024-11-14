@@ -3,29 +3,36 @@ package com.ttak.android.features.observer.ui.screens
 import CardCarousel
 import MessageDialog
 import android.util.Log
-import androidx.compose.animation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.ttak.android.common.navigation.AppScreens
 import com.ttak.android.domain.model.FriendStory
 import com.ttak.android.domain.model.GoalState
-//import com.ttak.android.data.repository.PreviewFriendStoryRepository
-import com.ttak.android.data.repository.UserRepositoryImpl
 import com.ttak.android.domain.model.MessageData
-import com.ttak.android.features.observer.ui.components.*
+import com.ttak.android.features.observer.ui.components.ExpandableFriendListContainer
 import com.ttak.android.features.observer.viewmodel.FriendStoryViewModel
-import com.ttak.android.features.observer.viewmodel.FriendStoryViewModelFactory
-import com.ttak.android.features.observer.viewmodel.ObserverViewModel
 import com.ttak.android.features.observer.viewmodel.UserViewModel
 import com.ttak.android.features.observer.viewmodel.UserViewModelFactory
-import com.ttak.android.network.implementation.FriendApiImpl
 import com.ttak.android.network.implementation.UserApiImpl
 import com.ttak.android.network.util.ApiConfig
 import kotlinx.coroutines.CoroutineScope
@@ -42,7 +49,7 @@ fun ObserverScreen(
     val userApi = ApiConfig.createUserApi(context)
     val userRepository = UserApiImpl(userApi)
 
-    // UserViewModel 초기화
+    // UserViewModel만 초기화
     val userViewModel: UserViewModel = viewModel(
         factory = UserViewModelFactory(userRepository)
     )
