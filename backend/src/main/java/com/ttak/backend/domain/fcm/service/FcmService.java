@@ -1,11 +1,14 @@
 package com.ttak.backend.domain.fcm.service;
 
+import static com.google.firebase.messaging.AndroidConfig.Priority.*;
 import static com.ttak.backend.global.common.ErrorCode.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.google.firebase.messaging.AndroidConfig;
+import com.google.firebase.messaging.AndroidNotification;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
@@ -13,13 +16,12 @@ import com.ttak.backend.domain.fcm.dto.request.FcmTokenReq;
 import com.ttak.backend.domain.fcm.entity.Fcm;
 import com.ttak.backend.domain.fcm.entity.enumType.Item;
 import com.ttak.backend.domain.fcm.repository.FcmRepository;
-import com.ttak.backend.domain.history.entity.History;
 import com.ttak.backend.domain.history.service.HistoryService;
-import com.ttak.backend.global.util.IdempotencyUtil;
 import com.ttak.backend.domain.user.entity.User;
 import com.ttak.backend.domain.user.repository.UserRepository;
 import com.ttak.backend.global.exception.FirebaseMessagingException;
 import com.ttak.backend.global.exception.NotFoundException;
+import com.ttak.backend.global.util.IdempotencyUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -72,7 +74,20 @@ public class FcmService{
 			.setNotification(Notification.builder()
 				.setBody(data)
 				.build())
+			.setAndroidConfig(
+				AndroidConfig.builder()
+					.setPriority(HIGH)
+					.setNotification(
+						AndroidNotification.builder()
+							.setChannelId("default_channel")
+							.setSound("default")
+							.setClickAction("OPEN_ACTIVITY")
+							.build()
+					)
+					.build()
+			)
 			.build();
+
 
 		// 멱등키가 존재하지 않는다면 히스토리 저장, 존재한다면 패스
 		try {
@@ -101,6 +116,18 @@ public class FcmService{
 		// message 객체 생성 (firebase)
 		Message message = Message.builder()
 			.setToken(getFcmToken(receiveId))
+			.setAndroidConfig(
+				AndroidConfig.builder()
+					.setPriority(HIGH)
+					.setNotification(
+						AndroidNotification.builder()
+							.setChannelId("default_channel")
+							.setSound("default")
+							.setClickAction("OPEN_ACTIVITY")
+							.build()
+					)
+					.build()
+			)
 			.putData("animation", data)
 			.build();
 
