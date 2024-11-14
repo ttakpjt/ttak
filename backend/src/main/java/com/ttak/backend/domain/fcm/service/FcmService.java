@@ -71,21 +71,12 @@ public class FcmService{
 		// message 객체 생성 (firebase)
 		Message message = Message.builder()
 			.setToken(getFcmToken(receiveId))
+			.setAndroidConfig(makeAndroidConfig(data))  // Android 설정 적용
 			.setNotification(Notification.builder()
 				.setBody(data)
 				.build())
-			.setAndroidConfig(
-				AndroidConfig.builder()
-					.setPriority(HIGH)
-					.setNotification(
-						AndroidNotification.builder()
-							.setChannelId("default_channel")
-							.setSound("default")
-							.setClickAction("OPEN_ACTIVITY")
-							.build()
-					)
-					.build()
-			)
+			.putData("channel_id", "incoming_call_channel")
+			.putData("priority", "high")
 			.build();
 
 
@@ -116,18 +107,12 @@ public class FcmService{
 		// message 객체 생성 (firebase)
 		Message message = Message.builder()
 			.setToken(getFcmToken(receiveId))
-			.setAndroidConfig(
-				AndroidConfig.builder()
-					.setPriority(HIGH)
-					.setNotification(
-						AndroidNotification.builder()
-							.setChannelId("default_channel")
-							.setSound("default")
-							.setClickAction("OPEN_ACTIVITY")
-							.build()
-					)
-					.build()
-			)
+			.setAndroidConfig(makeAndroidConfig(data))  // Android 설정 적용
+			.setNotification(Notification.builder()
+				.setBody(data)
+				.build())
+			.putData("channel_id", "incoming_call_channel")
+			.putData("priority", "high")
 			.putData("animation", data)
 			.build();
 
@@ -155,6 +140,20 @@ public class FcmService{
 			.orElseThrow(() -> new NotFoundException(FCM000));
 
 		return fcm.getFcmToken();
+	}
+
+	private AndroidConfig makeAndroidConfig(String data) {
+		return AndroidConfig.builder()
+			.setPriority(AndroidConfig.Priority.HIGH)  // 높은 우선순위
+			.setNotification(AndroidNotification.builder()
+				.setChannelId("incoming_call_channel")  // 안드로이드와 동일한 채널 ID
+				.setBody(data)
+				.setPriority(AndroidNotification.Priority.HIGH)  // 알림 우선순위도 높게
+				.setVisibility(AndroidNotification.Visibility.PUBLIC)  // 잠금화면에서도 표시
+				.setDefaultVibrateTimings(true)
+				.setDefaultSound(true)
+				.build())
+			.build();
 	}
 
 }
