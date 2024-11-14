@@ -56,7 +56,7 @@
         </service>
 
         <activity
-            android:name="com.ttak.android.features.auth.SplashActivity"
+            android:name="com.ttak.android.features.splash.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

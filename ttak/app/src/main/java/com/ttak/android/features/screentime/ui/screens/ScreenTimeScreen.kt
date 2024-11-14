@@ -13,7 +13,7 @@ import com.ttak.android.features.screentime.ui.components.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ttak.android.features.screentime.viewmodel.ScreenTimeViewModel
 import com.ttak.android.features.screentime.viewmodel.ScreenTimeViewModelFactory
-import com.ttak.android.network.util.UserPreferences
+import com.ttak.android.utils.UserPreferences
 
 @Composable
 fun ScreenTimeScreen() {

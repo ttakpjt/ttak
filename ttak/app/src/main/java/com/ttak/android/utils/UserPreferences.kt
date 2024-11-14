@@ -1,4 +1,4 @@
-package com.ttak.android.network.util
+package com.ttak.android.utils
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -7,6 +7,16 @@ class UserPreferences(context: Context) {
 
     private val preferences: SharedPreferences =
         context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+
+    // 앱을 처음 실행했는지 유무를 확인하는 flag
+    var isFirstLaunch: Boolean
+        get() = preferences.getBoolean(IS_FIRST_LAUNCH_KEY, true)
+        set(value) = preferences.edit().putBoolean(IS_FIRST_LAUNCH_KEY, value).apply()
+
+    companion object {
+        private const val PREFS_NAME = "ttak_prefs"
+        private const val IS_FIRST_LAUNCH_KEY = "is_first_launch"
+    }
 
     // 백에서 받아온 유저 아이디 저장
     fun saveUserId(userId: String) {
