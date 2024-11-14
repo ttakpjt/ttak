@@ -55,6 +55,7 @@ android {
 dependencies {
     // firebase의 라이브러리 버전을 관리하는 역할
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
+
     // firebase를 통해 사용자 인증을 처리하는 역할
 
     // Add the dependency for the Firebase SDK for Google Analytics
