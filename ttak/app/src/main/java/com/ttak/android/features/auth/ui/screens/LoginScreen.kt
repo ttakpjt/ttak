@@ -66,7 +66,7 @@ fun LoginScreen(onLoginClick: () -> Unit) {
                     Text(
                         "Google로 시작하기",
                         color = Color.Black,
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.titleSmall
                     )
                 }
             }
