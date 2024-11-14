@@ -86,7 +86,7 @@
         android:value="false" />
     <meta-data
         android:name="com.google.firebase.messaging.default_notification_icon"
-        android:resource="@drawable/ttak_noti_logo2"
+        android:resource="@drawable/ttak_black_text"
         />
 
 </manifest>

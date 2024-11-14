@@ -159,7 +159,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 )
 
                 // 2. 이미지 설정
-                val largeIcon = BitmapFactory.decodeResource(resources, R.drawable.ttak_noti_logo2)
+                val largeIcon = BitmapFactory.decodeResource(resources, R.drawable.ttak_black_text)
 
                 // 3. 알림 스타일 설정
                 val style = NotificationCompat.BigTextStyle()
@@ -169,7 +169,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
                 // 4. 알림 빌더 설정
                 val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ttak_noti_logo2)
+                    .setSmallIcon(R.drawable.ttak_black_text)
                     .setLargeIcon(largeIcon)
                     .setContentTitle(notification.title)
                     .setContentText(notification.body)
@@ -186,7 +186,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     .setColor(ContextCompat.getColor(this, R.color.red))
                     .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
                     .addAction(
-                        R.drawable.ttak_noti_logo2,
+                        R.drawable.ttak_black_text,
                         "바로 확인",
                         pendingIntent
                     )
