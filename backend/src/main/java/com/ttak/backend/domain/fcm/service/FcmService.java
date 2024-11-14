@@ -68,24 +68,28 @@ public class FcmService{
 		// redis에 저장할 Unique Key 생성
 		String messageKey = "message_" + sendId + "_" + receiveId + "_" + data;
 
+		// Android 특정 설정
+		AndroidConfig androidConfig = AndroidConfig.builder()
+			.setPriority(AndroidConfig.Priority.HIGH)  // 높은 우선순위
+			.setNotification(AndroidNotification.builder()
+				.setChannelId("incoming_call_channel")  // 안드로이드와 동일한 채널 ID
+				.setBody(data)
+				.setPriority(AndroidNotification.Priority.HIGH)  // 알림 우선순위도 높게
+				.setVisibility(AndroidNotification.Visibility.PUBLIC)  // 잠금화면에서도 표시
+				.setDefaultVibrateTimings(true)
+				.setDefaultSound(true)
+				.build())
+			.build();
+
 		// message 객체 생성 (firebase)
 		Message message = Message.builder()
 			.setToken(getFcmToken(receiveId))
+			.setAndroidConfig(androidConfig)  // Android 설정 적용
 			.setNotification(Notification.builder()
 				.setBody(data)
 				.build())
-			.setAndroidConfig(
-				AndroidConfig.builder()
-					.setPriority(HIGH)
-					.setNotification(
-						AndroidNotification.builder()
-							.setChannelId("default_channel")
-							.setSound("default")
-							.setClickAction("OPEN_ACTIVITY")
-							.build()
-					)
-					.build()
-			)
+			.putData("channel_id", "incoming_call_channel")
+			.putData("priority", "high")
 			.build();
 
 
@@ -113,21 +117,28 @@ public class FcmService{
 		// redis에 저장할 Unique Key 생성
 		String messageKey = "message_" + sendId + "_" + receiveId + "_" + data;
 
+		// Android 특정 설정
+		AndroidConfig androidConfig = AndroidConfig.builder()
+			.setPriority(AndroidConfig.Priority.HIGH)  // 높은 우선순위
+			.setNotification(AndroidNotification.builder()
+				.setChannelId("incoming_call_channel")  // 안드로이드와 동일한 채널 ID
+				.setBody(data)
+				.setPriority(AndroidNotification.Priority.HIGH)  // 알림 우선순위도 높게
+				.setVisibility(AndroidNotification.Visibility.PUBLIC)  // 잠금화면에서도 표시
+				.setDefaultVibrateTimings(true)
+				.setDefaultSound(true)
+				.build())
+			.build();
+
 		// message 객체 생성 (firebase)
 		Message message = Message.builder()
 			.setToken(getFcmToken(receiveId))
-			.setAndroidConfig(
-				AndroidConfig.builder()
-					.setPriority(HIGH)
-					.setNotification(
-						AndroidNotification.builder()
-							.setChannelId("default_channel")
-							.setSound("default")
-							.setClickAction("OPEN_ACTIVITY")
-							.build()
-					)
-					.build()
-			)
+			.setAndroidConfig(androidConfig)  // Android 설정 적용
+			.setNotification(Notification.builder()
+				.setBody(data)
+				.build())
+			.putData("channel_id", "incoming_call_channel")
+			.putData("priority", "high")
 			.putData("animation", data)
 			.build();
 
