@@ -1,7 +1,6 @@
 package com.ttak.android.features.mypage.ui.screens
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.result.ActivityResultLauncher
@@ -25,9 +24,8 @@ import com.ttak.android.common.ui.components.AppButton
 import com.ttak.android.common.ui.components.AppSearchBar
 import com.ttak.android.common.ui.theme.Blue
 import com.ttak.android.common.ui.theme.Black
-import com.ttak.android.features.mypage.ui.components.ProfileImagePicker
 import com.ttak.android.features.mypage.viewmodel.NicknameViewModel
-import com.ttak.android.network.util.UserPreferences
+import com.ttak.android.utils.UserPreferences
 
 @Composable
 fun ProfileSetupScreen(

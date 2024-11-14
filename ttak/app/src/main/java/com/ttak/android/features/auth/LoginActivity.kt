@@ -24,7 +24,7 @@ import com.ttak.android.domain.model.MemberRequest
 import com.ttak.android.features.auth.viewmodel.MemberViewModel
 import com.ttak.android.features.auth.viewmodel.MemberViewModelFactory
 import com.ttak.android.features.mypage.ProfileSetupActivity
-import com.ttak.android.network.util.UserPreferences
+import com.ttak.android.utils.UserPreferences
 
 
 class LoginActivity : ComponentActivity() {
