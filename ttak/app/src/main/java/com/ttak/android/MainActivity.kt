@@ -32,6 +32,7 @@ import com.ttak.android.network.socket.SocketEvent
 import android.Manifest
 import android.app.KeyguardManager
 import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ttak.android.network.implementation.FriendApiImpl
@@ -40,6 +41,7 @@ import com.ttak.android.network.util.ApiConfig
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
+import android.provider.Settings
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import kotlinx.coroutines.delay
@@ -91,6 +93,32 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // 오버레이 권한 확인 및 요청 함수
+    private fun askOverlayPermission() {
+        if (!Settings.canDrawOverlays(this)) {
+            val intent = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:$packageName")
+            )
+            startActivityForResult(intent, OVERLAY_PERMISSION_REQUEST_CODE)
+        }
+    }
+
+    companion object {
+        private const val OVERLAY_PERMISSION_REQUEST_CODE = 1234
+    }
+
+    // onActivityResult 추가 (이미 있다면 수정)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == OVERLAY_PERMISSION_REQUEST_CODE) {
+            if (!Settings.canDrawOverlays(this)) {
+                Toast.makeText(this, "오버레이 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+                askOverlayPermission()
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate called")
@@ -127,6 +155,9 @@ class MainActivity : ComponentActivity() {
 
         // 알림 권한 요청
         askNotificationPermission()
+
+        // 오버레이 권한 요청 추가
+        askOverlayPermission()
 
         // UI 설정
         setContent {

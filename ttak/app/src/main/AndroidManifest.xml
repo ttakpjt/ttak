@@ -65,6 +65,14 @@
             </intent-filter>
         </activity>
 
+        <!--        오버레이-->
+        <service
+            android:name=".service.ColorOverlayService"
+            android:enabled="true"
+            android:exported="false"
+            android:showOnLockScreen="true"
+            android:permission="android.permission.SYSTEM_ALERT_WINDOW" />
+
         <!-- MainActivity는 네비게이션이 필요한 주요 화면만 관리 -->
         <activity android:name=".MainActivity" />
 
