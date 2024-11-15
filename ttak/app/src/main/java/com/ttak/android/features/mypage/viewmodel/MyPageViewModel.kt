@@ -59,4 +59,18 @@ class NicknameViewModel(application: Application) : AndroidViewModel(application
             }
         }
     }
+
+    //getPresignedUrl 메서드: presigned url 가져오기
+    fun getPresignedUrl(imageName: String) {
+        viewModelScope.launch {
+            myPageRepository.getPresignedImage(imageName)
+        }
+    }
+
+    //getPresignedUrl 메서드: presigned url 가져오기
+    fun registerProfileImage(url: String, image: Byte) {
+        viewModelScope.launch {
+            myPageRepository.registerProfileImage(url, image)
+        }
+    }
 }

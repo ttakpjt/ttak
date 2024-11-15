@@ -112,5 +112,4 @@ object ApiConfig {
     fun createObserverApi(context: Context): ObserverApi2 {
         return createRetrofit(context).create(ObserverApi2::class.java)
     }
-
 }
