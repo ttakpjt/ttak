@@ -1,4 +1,4 @@
-package com.ttak.backend.domain.observe.dto;
+package com.ttak.backend.domain.observe.dto.reqeust;
 
 
 import com.ttak.backend.domain.observe.entity.Friend;
@@ -9,19 +9,19 @@ import lombok.ToString;
 
 @Getter
 @ToString
-public class CreateFriendRequest {
+public class CreateFriendReq {
 	private Long userId;
 	private Long followingId;
 
-	private  CreateFriendRequest(){}
+	private CreateFriendReq(){}
 
-	private CreateFriendRequest(Long userId, Long followingId){
+	private CreateFriendReq(Long userId, Long followingId){
 		this.userId = userId;
 		this.followingId = followingId;
 	}
 
-	public static CreateFriendRequest of(Long userId, Long followingId){
-		return new CreateFriendRequest(userId, followingId);
+	public static CreateFriendReq of(Long userId, Long followingId){
+		return new CreateFriendReq(userId, followingId);
 	}
 
 	// DTO -> Entity
