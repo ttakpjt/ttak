@@ -5,6 +5,7 @@ import java.util.List;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.ttak.backend.domain.observe.dto.response.DeleteFriendsListResp;
 import com.ttak.backend.domain.observe.entity.QFriend;
 import com.ttak.backend.domain.user.dto.response.UserInfoResponse;
 import com.ttak.backend.domain.user.entity.QUser;
@@ -37,5 +38,4 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			.where(user.nickname.containsIgnoreCase(nickname))
 			.fetch();
 	}
-
 }

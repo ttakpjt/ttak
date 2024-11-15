@@ -1,4 +1,4 @@
-package com.ttak.backend.domain.observe.dto;
+package com.ttak.backend.domain.observe.dto.response;
 import com.querydsl.core.annotations.QueryProjection;
 
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.ToString;
 
 @Getter
 @ToString
-public class FriendInfoResponse {
+public class FriendInfoResp {
 	private String friendName;
 	private Long friendId;
 	private String friendImg;
@@ -14,7 +14,7 @@ public class FriendInfoResponse {
 
 
 	@QueryProjection
-	public FriendInfoResponse(String friendName, Long friendId, String friendImg) {
+	public FriendInfoResp(String friendName, Long friendId, String friendImg) {
 		this.friendName = friendName;
 		this.friendId = friendId;
 		this.friendImg = friendImg;

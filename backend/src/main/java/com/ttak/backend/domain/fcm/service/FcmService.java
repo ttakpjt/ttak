@@ -60,30 +60,29 @@ public class FcmService{
 	 * @param receiveId
 	 */
 	public void sendMessage(final Long sendId, final String data, final Long receiveId) {
-		// 유저가 존재하는지 우선 확인
 		if(!userRepository.existsById(sendId) || !userRepository.existsById(receiveId)) {
 			throw new NotFoundException(U001);
 		}
 
-		// redis에 저장할 Unique Key 생성
 		String messageKey = "message_" + sendId + "_" + receiveId + "_" + data;
 
-		// message 객체 생성 (firebase)
 		Message message = Message.builder()
-			.setToken(getFcmToken(receiveId))
-			.setAndroidConfig(makeAndroidConfig(data))  // Android 설정 적용
-			.setNotification(Notification.builder()
-				.setBody(data)
-				.build())
-			.putData("channel_id", "incoming_call_channel")
-			.putData("priority", "high")
-			.build();
+				.setToken(getFcmToken(receiveId))
+				.setAndroidConfig(AndroidConfig.builder()
+						.setPriority(AndroidConfig.Priority.HIGH)
+						.setDirectBootOk(true)
+						.build())
+				.putData("title", "새로운 알림")
+				.putData("body", data)
+				.putData("channel_id", "incoming_call_channel")
+				.putData("priority", "high")
+				.build();
 
-
-		// 멱등키가 존재하지 않는다면 히스토리 저장, 존재한다면 패스
 		try {
 			firebaseMessaging.send(message);
-			if(idempotencyUtil.addRequest(messageKey)) historyService.addAttackHistory(sendId, data, receiveId, Item.USER_MESSAGE);
+			if(idempotencyUtil.addRequest(messageKey)) {
+				historyService.addAttackHistory(sendId, data, receiveId, Item.USER_MESSAGE);
+			}
 		} catch (FirebaseMessagingException | com.google.firebase.messaging.FirebaseMessagingException e) {
 			throw new FirebaseMessagingException(FCM001);
 		}
@@ -95,31 +94,31 @@ public class FcmService{
 	 * @param data
 	 * @param receiveId
 	 */
-	public void sendEffect(final Long sendId, final String data, final Long receiveId)  {
-		// 유저가 존재하는지 우선 확인
+	public void sendEffect(final Long sendId, final String data, final Long receiveId) {
 		if(!userRepository.existsById(sendId) || !userRepository.existsById(receiveId)) {
 			throw new NotFoundException(U001);
 		}
 
-		// redis에 저장할 Unique Key 생성
 		String messageKey = "message_" + sendId + "_" + receiveId + "_" + data;
 
-		// message 객체 생성 (firebase)
 		Message message = Message.builder()
-			.setToken(getFcmToken(receiveId))
-			.setAndroidConfig(makeAndroidConfig(data))  // Android 설정 적용
-			.setNotification(Notification.builder()
-				.setBody(data)
-				.build())
-			.putData("channel_id", "incoming_call_channel")
-			.putData("priority", "high")
-			.putData("animation", data)
-			.build();
+				.setToken(getFcmToken(receiveId))
+				.setAndroidConfig(AndroidConfig.builder()
+						.setPriority(AndroidConfig.Priority.HIGH)
+						.setDirectBootOk(true)
+						.build())
+				.putData("title", "새로운 알림")
+				.putData("body", data)
+				.putData("channel_id", "incoming_call_channel")
+				.putData("priority", "high")
+				.putData("animation", data)
+				.build();
 
-		// 멱등키가 존재하지 않는다면 히스토리 저장, 존재한다면 패스
 		try {
 			firebaseMessaging.send(message);
-			if(idempotencyUtil.addRequest(messageKey)) historyService.addAttackHistory(sendId, data + "공격을 받았습니다.", receiveId, Item.valueOf(data));
+			if(idempotencyUtil.addRequest(messageKey)) {
+				historyService.addAttackHistory(sendId, data + "공격을 받았습니다.", receiveId, Item.valueOf(data));
+			}
 		} catch (FirebaseMessagingException | com.google.firebase.messaging.FirebaseMessagingException e) {
 			throw new FirebaseMessagingException(FCM001);
 		}
@@ -142,18 +141,10 @@ public class FcmService{
 		return fcm.getFcmToken();
 	}
 
-	private AndroidConfig makeAndroidConfig(String data) {
-		return AndroidConfig.builder()
-			.setPriority(AndroidConfig.Priority.HIGH)  // 높은 우선순위
-			.setNotification(AndroidNotification.builder()
-				.setChannelId("incoming_call_channel")  // 안드로이드와 동일한 채널 ID
-				.setBody(data)
-				.setPriority(AndroidNotification.Priority.HIGH)  // 알림 우선순위도 높게
-				.setVisibility(AndroidNotification.Visibility.PUBLIC)  // 잠금화면에서도 표시
-				.setDefaultVibrateTimings(true)
-				.setDefaultSound(true)
-				.build())
-			.build();
-	}
+//	private AndroidConfig makeAndroidConfig(String data) {
+//		return AndroidConfig.builder()
+//				.setPriority(AndroidConfig.Priority.HIGH)
+//				.build();
+//	}
 
 }
