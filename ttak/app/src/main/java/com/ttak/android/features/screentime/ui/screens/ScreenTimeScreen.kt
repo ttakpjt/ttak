@@ -11,9 +11,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.ttak.android.features.screentime.ui.components.*
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ttak.android.common.ui.components.AppButton
 import com.ttak.android.features.screentime.viewmodel.ScreenTimeViewModel
 import com.ttak.android.features.screentime.viewmodel.ScreenTimeViewModelFactory
-import com.ttak.android.network.util.UserPreferences
+import com.ttak.android.utils.UserPreferences
+import com.ttak.android.features.mypage.viewmodel.NicknameViewModel
 
 @Composable
 fun ScreenTimeScreen() {
@@ -24,6 +26,8 @@ fun ScreenTimeScreen() {
     val screenTimeData = viewModel.screenTimeData.collectAsState().value
     val nickname =
         UserPreferences(context.applicationContext).getNickname().toString() // nickname 가져오기
+
+    val testViewModel: NicknameViewModel = viewModel()
 
     screenTimeData?.let { data ->
         Column(
@@ -37,6 +41,10 @@ fun ScreenTimeScreen() {
                     .fillMaxWidth()
             )
 
+            AppButton(
+                text = "버튼",
+                onClick = { testViewModel.getPresignedUrl("test.png") }
+            )
             Spacer(modifier = Modifier.height(16.dp))
 
             // 2. 사용 시간 변화 표시

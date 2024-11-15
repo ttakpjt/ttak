@@ -112,6 +112,44 @@ class MyPageApiImpl(
             }
         }
 
+    // presigned url 가져오기
+    override suspend fun getPresignedImage(imageName: String): Response<MyPageResponse> =
+        try {
+            val response = api.getPresignedUrl(imageName)
+            if (response.isSuccessful) {
+                Log.d("귯", "${response.body()}")
+                response  // 200 OK 응답일 경우 응답 그대로 반환
+            } else {
+                // 실패한 경우, 에러 메시지를 포함한 Response 반환
+                Response.error(
+                    response.code(),
+                    response.errorBody() ?: "presigned url 가져오기 실패".toResponseBody()
+                )
+            }
+        } catch (e: Exception) {
+            // 예외 발생 시, 예외 메시지를 포함한 Response 반환
+            Response.error(500, "닉네임 중복 확인 중 예외 발생: ${e.message}".toResponseBody())
+        }
+
+
+    // 프로필 사진 등록하기
+    override suspend fun registerProfileImage(url: String, image: Byte): Response<MyPageResponse> =
+        try {
+            val response = api.registerProfileImage(url, image)
+            if (response.isSuccessful) {
+                response  // 200 OK 응답일 경우 응답 그대로 반환
+            } else {
+                // 실패한 경우, 에러 메시지를 포함한 Response 반환
+                Response.error(
+                    response.code(),
+                    response.errorBody() ?: "사진 등록 실패".toResponseBody()
+                )
+            }
+        } catch (e: Exception) {
+            // 예외 발생 시, 예외 메시지를 포함한 Response 반환
+            Response.error(500, "닉네임 중복 확인 중 예외 발생: ${e.message}".toResponseBody())
+        }
+
     // 공통 예외 처리
     private suspend fun <T> handleApiResponse(apiCall: suspend () -> Result<T>): Result<T> {
         return withContext(Dispatchers.IO) {

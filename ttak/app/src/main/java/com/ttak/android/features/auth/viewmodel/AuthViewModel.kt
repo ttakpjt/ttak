@@ -9,7 +9,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.ttak.android.network.implementation.MemberApiImpl
 import com.ttak.android.network.util.ApiConfig
-import com.ttak.android.network.util.UserPreferences
+import com.ttak.android.utils.UserPreferences
 
 class MemberViewModel(application: Application) : AndroidViewModel(application) {
     private val memberRepository: MemberRepository =

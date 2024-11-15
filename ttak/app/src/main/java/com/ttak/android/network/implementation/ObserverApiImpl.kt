@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.ttak.android.network.api.ObserverApi
 import com.ttak.android.network.util.ApiConfig
-import com.ttak.android.network.util.UserPreferences
+import com.ttak.android.utils.UserPreferences
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody

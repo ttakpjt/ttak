@@ -11,6 +11,7 @@ import com.ttak.android.network.api.MessageApi
 import com.ttak.android.network.api.MyPageApi
 import com.ttak.android.network.api.ObserverApi2
 import com.ttak.android.network.api.UserApi
+import com.ttak.android.utils.UserPreferences
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -111,5 +112,4 @@ object ApiConfig {
     fun createObserverApi(context: Context): ObserverApi2 {
         return createRetrofit(context).create(ObserverApi2::class.java)
     }
-
 }
