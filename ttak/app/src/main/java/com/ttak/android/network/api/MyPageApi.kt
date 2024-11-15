@@ -5,6 +5,10 @@ import com.ttak.android.domain.model.NicknameRequest
 import retrofit2.Response
 import retrofit2.http.POST
 import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.PUT
+import retrofit2.http.Query
+import retrofit2.http.Url
 
 
 interface MyPageApi {
@@ -15,4 +19,20 @@ interface MyPageApi {
     // 닉네임 등록
     @POST("user/register/nickname")
     suspend fun registerNickname(@Body nickname: NicknameRequest): Response<MyPageResponse>
+
+    // 프로필 사진 등록을 위한 URL 받아오기
+    // 우선은 profile로 설정(확장 시 변경 가능)
+    @GET("user/s3")
+    suspend fun getPresignedUrl(
+        @Query("imageName") imageName: String,
+        @Query("prefix") prefix: String = "profile"
+    ): Response<MyPageResponse>
+
+    //프로필 사진 등록
+    @PUT
+    suspend fun registerProfileImage(
+        @Url url: String,  // presigned URL
+        @Body image: Byte  // 이미지 바이너리 데이터
+    ): Response<MyPageResponse>
+
 }

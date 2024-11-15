@@ -24,7 +24,7 @@ import com.ttak.android.domain.model.MemberRequest
 import com.ttak.android.features.auth.viewmodel.MemberViewModel
 import com.ttak.android.features.auth.viewmodel.MemberViewModelFactory
 import com.ttak.android.features.mypage.ProfileSetupActivity
-import com.ttak.android.network.util.UserPreferences
+import com.ttak.android.utils.UserPreferences
 
 
 class LoginActivity : ComponentActivity() {
@@ -96,22 +96,22 @@ class LoginActivity : ComponentActivity() {
                                 memberViewModel.signIn(userModel) { isSignInSuccessful ->
                                     if (isSignInSuccessful) {
                                         // 기존 저장한 닉네임이 있다면 그것을 사용
-                                        // 기존 저장한 닉네임이 있다면 그것을 사용
                                         memberViewModel.existNickname { nickname ->
-                                            if (nickname != null) {
-                                                // 닉네임이 존재하면 MainActivity로 이동
-                                                UserPreferences(applicationContext).saveNickname(nickname)
-                                                navigateToActivity(MainActivity::class.java)
-                                            } else {
-                                                // 닉네임이 없으면 ProfileSetupActivity로 이동
-                                                navigateToActivity(ProfileSetupActivity::class.java)
-                                            }
+                                            navigateToActivity(ProfileSetupActivity::class.java)
+                                            finish()
+//                                            if (nickname != null) {
+//                                                // 닉네임이 존재하면 MainActivity로 이동
+//                                                UserPreferences(applicationContext).saveNickname(nickname)
+//                                                navigateToActivity(MainActivity::class.java)
+//                                            } else {
+//                                                // 닉네임이 없으면 ProfileSetupActivity로 이동
+//                                                navigateToActivity(ProfileSetupActivity::class.java)
+//                                            }
                                         }
                                     } else {
                                         // 서버 로그인 실패 처리
-                                        Toast.makeText(this, "서버 로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this, "기기 확인 실패로 로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
                                         auth.signOut() // Firebase 로그아웃
-
                                     }
                                 }
                             } else {

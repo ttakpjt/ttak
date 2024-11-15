@@ -57,7 +57,7 @@
         </service>
 
         <activity
-            android:name="com.ttak.android.features.auth.SplashActivity"
+            android:name="com.ttak.android.features.splash.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -73,6 +73,9 @@
 
         <!-- ProflieSetUpActivity는 사용자 정보 등록 화면 관리 -->
         <activity android:name=".features.mypage.ProfileSetupActivity" />
+
+        <!--OnboardingAcitivty는 첫 사용자 화면 관리 -->
+        <activity android:name=".features.splash.OnboardingActivity" />
     </application>
 
     <!--    <meta-data-->

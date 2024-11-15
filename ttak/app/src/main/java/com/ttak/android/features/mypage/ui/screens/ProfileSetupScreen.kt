@@ -1,9 +1,9 @@
 package com.ttak.android.features.mypage.ui.screens
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -27,14 +27,14 @@ import com.ttak.android.common.ui.theme.Blue
 import com.ttak.android.common.ui.theme.Black
 import com.ttak.android.features.mypage.ui.components.ProfileImagePicker
 import com.ttak.android.features.mypage.viewmodel.NicknameViewModel
-import com.ttak.android.network.util.UserPreferences
+import com.ttak.android.features.splash.OnboardingActivity
+import com.ttak.android.utils.UserPreferences
 
 @Composable
 fun ProfileSetupScreen(
     profileImageUri: MutableState<Uri?>,
     selectImageLauncher: ActivityResultLauncher<String>,
     viewModel: NicknameViewModel,
-    onNicknameCheck: (Boolean) -> Unit  // 닉네임 중복 여부 결과 콜백
 ) {
     val context = LocalContext.current
     var nickname by remember { mutableStateOf("") }  // 닉네임 상태 추가
@@ -59,10 +59,10 @@ fun ProfileSetupScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         // 프로필 사진 설정 화면
-//        ProfileImagePicker(
-//            profileImageUri = profileImageUri,
-//            selectImageLauncher = selectImageLauncher
-//        )
+        ProfileImagePicker(
+            profileImageUri = profileImageUri,
+            selectImageLauncher = selectImageLauncher
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -76,7 +76,6 @@ fun ProfileSetupScreen(
             onIconClick = { inputNickname ->
                 viewModel.checkNickname(inputNickname) { isAvailable, serverMessage ->
                     isError = !isAvailable  // 닉네임 중복 확인 결과에 따라 경고 문구 표시
-                    onNicknameCheck(isAvailable)  // 결과 콜백
                     isNicknameAvailable = isAvailable  // 닉네임 중복 결과 저장
                     if (isAvailable) {
                         nickname = inputNickname  // 사용 가능한 닉네임을 저장
@@ -99,9 +98,15 @@ fun ProfileSetupScreen(
                     viewModel.registerNickname(nickname) { isRegistered ->
                         if (isRegistered) {
                             UserPreferences(context.applicationContext).saveNickname(nickname)
-
-                            context.startActivity(Intent(context, MainActivity::class.java))
-                            (context as? Activity)?.finish()
+                            // 닉네임을 등록한다는 것은 처음 가입한 것과 진배없다.
+                            if (UserPreferences(context.applicationContext).isFirstLaunch) {
+                                UserPreferences(context.applicationContext).isFirstLaunch = false
+                                context.startActivity(Intent(context, OnboardingActivity::class.java))
+                                (context as? Activity)?.finish()
+                            } else {
+                                context.startActivity(Intent(context, MainActivity::class.java))
+                                (context as? Activity)?.finish()
+                            }
                         } else {
                             // 등록 실패 시 오류 메시지와 상태 설정
                             isError = true

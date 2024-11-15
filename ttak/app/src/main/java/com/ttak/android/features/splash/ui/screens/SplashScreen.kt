@@ -1,7 +1,9 @@
-package com.ttak.android.features.auth.ui.screens
+package com.ttak.android.features.splash.ui.screens
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
+import android.window.SplashScreen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,9 +21,10 @@ import coil.request.ImageRequest
 import com.ttak.android.MainActivity
 import com.ttak.android.R
 import com.ttak.android.features.auth.LoginActivity
-import com.ttak.android.features.auth.SplashActivity
+import com.ttak.android.features.splash.SplashActivity
+import com.ttak.android.features.splash.OnboardingActivity
 import com.ttak.android.features.mypage.ProfileSetupActivity
-import com.ttak.android.network.util.UserPreferences
+import com.ttak.android.utils.UserPreferences
 import kotlinx.coroutines.delay
 
 @Composable
@@ -49,6 +52,7 @@ fun SplashScreen(
                 UserPreferences(context.applicationContext).getNickname() != null
 
             val nextActivity = when {
+
                 isLoggedIn && isProfileSetupComplete -> MainActivity::class.java    // 로그인과 프로필 설정 완료
                 isLoggedIn && !isProfileSetupComplete -> ProfileSetupActivity::class.java   // 프로필 설정 미완료
                 else -> LoginActivity::class.java   // 로그인 미 완료
@@ -63,6 +67,14 @@ fun SplashScreen(
             }
             if (!hasOverlayPermission) {
                 onOverlayPermissionConfirmed()
+            }
+
+            // 첫 실행 여부 확인
+            val userPreferences = UserPreferences(context)
+            Log.d("귯", "${userPreferences.isFirstLaunch}")
+            if (userPreferences.isFirstLaunch) {
+                context.startActivity(Intent(context, OnboardingActivity::class.java))
+                (context as? SplashActivity)?.finish()
             }
         }
     }
@@ -84,18 +96,6 @@ fun SplashScreen(
                 contentDescription = "Ttak 로고",
                 modifier = Modifier.size(300.dp)
             )
-//            Spacer(modifier = Modifier.height(16.dp))
-//            Text(
-//                text = "King of Anyang",
-//                style = MaterialTheme.typography.titleLarge,
-//                color = White
-//            )
-//            Spacer(modifier = Modifier.height(8.dp))
-//            Text(
-//                text = "로딩 중..",
-//                style = MaterialTheme.typography.labelSmall,
-//                color = Grey
-//            )
         }
     }
 }

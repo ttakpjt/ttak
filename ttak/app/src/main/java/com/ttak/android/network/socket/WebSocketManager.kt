@@ -1,7 +1,7 @@
 import android.content.Context
 import android.util.Log
 import com.ttak.android.network.socket.SocketEvent
-import com.ttak.android.network.util.UserPreferences
+import com.ttak.android.utils.UserPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

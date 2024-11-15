@@ -1,4 +1,4 @@
-package com.ttak.android.features.auth
+package com.ttak.android.features.splash
 
 import android.app.AppOpsManager
 import android.content.Context
@@ -11,9 +11,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.google.firebase.auth.FirebaseAuth
 import com.ttak.android.MainActivity
-import com.ttak.android.features.auth.ui.screens.SplashScreen
+import com.ttak.android.features.splash.ui.screens.SplashScreen
 import com.ttak.android.common.ui.theme.TtakTheme
 import com.ttak.android.common.monitor.ForegroundAppMonitor
+import com.ttak.android.features.auth.LoginActivity
 
 class SplashActivity : ComponentActivity() {
     private lateinit var foregroundAppMonitor: ForegroundAppMonitor
@@ -22,9 +23,6 @@ class SplashActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // 앱 재설치 시 인증 상태 초기화
-//        FirebaseAuth.getInstance().signOut()
 
         foregroundAppMonitor = ForegroundAppMonitor(application)
 
