@@ -68,14 +68,6 @@ fun SplashScreen(
             if (!hasOverlayPermission) {
                 onOverlayPermissionConfirmed()
             }
-
-            // 첫 실행 여부 확인
-            val userPreferences = UserPreferences(context)
-            Log.d("귯", "${userPreferences.isFirstLaunch}")
-            if (userPreferences.isFirstLaunch) {
-                context.startActivity(Intent(context, OnboardingActivity::class.java))
-                (context as? SplashActivity)?.finish()
-            }
         }
     }
 
@@ -96,18 +88,6 @@ fun SplashScreen(
                 contentDescription = "Ttak 로고",
                 modifier = Modifier.size(300.dp)
             )
-//            Spacer(modifier = Modifier.height(16.dp))
-//            Text(
-//                text = "King of Anyang",
-//                style = MaterialTheme.typography.titleLarge,
-//                color = White
-//            )
-//            Spacer(modifier = Modifier.height(8.dp))
-//            Text(
-//                text = "로딩 중..",
-//                style = MaterialTheme.typography.labelSmall,
-//                color = Grey
-//            )
         }
     }
 }

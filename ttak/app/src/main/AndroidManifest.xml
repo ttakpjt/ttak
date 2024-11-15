@@ -73,6 +73,9 @@
 
         <!-- ProflieSetUpActivity는 사용자 정보 등록 화면 관리 -->
         <activity android:name=".features.mypage.ProfileSetupActivity" />
+
+        <!--OnboardingAcitivty는 첫 사용자 화면 관리 -->
+        <activity android:name=".features.splash.OnboardingActivity" />
     </application>
 
     <!--    <meta-data-->
