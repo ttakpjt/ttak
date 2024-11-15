@@ -35,17 +35,7 @@ class ProfileSetupActivity : ComponentActivity() {
                 ProfileSetupScreen(
                     profileImageUri = profileImageUri,
                     selectImageLauncher = selectImageLauncher,
-                    viewModel = viewModel,
-                    onNicknameCheck = { isNicknameAvailable ->
-                        // 닉네임 중복 여부 확인 후 필요한 동작 수행
-                        if (isNicknameAvailable) {
-                            // 사용 가능한 닉네임일 때 처리
-                            Log.d("귯", "사용 가능한 닉네임입니다.")
-                        } else {
-                            // 사용 불가할 때 처리
-                            Log.d("귯", "이미 사용 중인 닉네임입니다.")
-                        }
-                    }
+                    viewModel = viewModel
                 )
             }
         }
