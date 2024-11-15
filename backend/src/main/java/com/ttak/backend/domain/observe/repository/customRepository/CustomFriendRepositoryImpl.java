@@ -1,13 +1,12 @@
 package com.ttak.backend.domain.observe.repository.customRepository;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.ttak.backend.domain.observe.dto.FriendInfoResponse;
-import com.ttak.backend.domain.observe.dto.QFriendInfoResponse;
+import com.ttak.backend.domain.observe.dto.response.FriendInfoResp;
+import com.ttak.backend.domain.observe.dto.response.QFriendInfoResp;
 import com.ttak.backend.domain.observe.entity.QBanList;
 import com.ttak.backend.domain.observe.entity.QFriend;
 import com.ttak.backend.domain.user.entity.QUser;
@@ -52,13 +51,13 @@ public class CustomFriendRepositoryImpl implements CustomFriendRepository{
 	// }
 
 	@Override
-	public List<FriendInfoResponse> findBannedFriendsByLocalDateTime(User user, LocalDateTime currentTime) {
+	public List<FriendInfoResp> findBannedFriendsByLocalDateTime(User user, LocalDateTime currentTime) {
 		QFriend friend = QFriend.friend;
 		QBanList banList = QBanList.banList;
 		QUser followingUser = QUser.user;
 
 		return jpaQueryFactory
-			.select(new QFriendInfoResponse(
+			.select(new QFriendInfoResp(
 				followingUser.nickname,
 				followingUser.userId,
 				followingUser.profilePic

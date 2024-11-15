@@ -3,7 +3,6 @@ package com.ttak.backend.domain.observe.service;
 import static com.ttak.backend.global.common.ErrorCode.*;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.data.redis.core.RedisTemplate;
@@ -11,9 +10,9 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ttak.backend.domain.observe.dto.CreateFriendRequest;
+import com.ttak.backend.domain.observe.dto.reqeust.CreateFriendReq;
 import com.ttak.backend.domain.observe.entity.Friend;
-import com.ttak.backend.domain.observe.dto.FriendInfoResponse;
+import com.ttak.backend.domain.observe.dto.response.FriendInfoResp;
 import com.ttak.backend.domain.observe.dto.StatusUpdateMessage;
 import com.ttak.backend.domain.observe.repository.FriendRepository;
 import com.ttak.backend.domain.user.entity.User;
@@ -44,9 +43,9 @@ public class FriendService{
 	}
 
 	@Transactional
-	public void addFriend(CreateFriendRequest createFriendRequest) {
-		Long userId = createFriendRequest.getUserId();
-		Long followingId = createFriendRequest.getFollowingId();
+	public void addFriend(CreateFriendReq createFriendReq) {
+		Long userId = createFriendReq.getUserId();
+		Long followingId = createFriendReq.getFollowingId();
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new NotFoundException(U001));
 		User following = userRepository.findById(followingId)
@@ -57,7 +56,7 @@ public class FriendService{
 			throw new DuplicateException(F000);
 		}
 
-		Friend friend = CreateFriendRequest.toFriend(user, following);
+		Friend friend = CreateFriendReq.toFriend(user, following);
 		friendRepository.save(friend);
 
 
@@ -68,12 +67,12 @@ public class FriendService{
 		friendRepository.deleteByUserId_UserIdAndFollowingId_UserId(userId, followingId);
 	}
 
-	public List<FriendInfoResponse> getBannedFriends(User user){
+	public List<FriendInfoResp> getBannedFriends(User user){
 		LocalDateTime currentTime = LocalDateTime.now();
-		List<FriendInfoResponse> bannedFriends = friendRepository.findBannedFriendsByLocalDateTime(user, currentTime);
+		List<FriendInfoResp> bannedFriends = friendRepository.findBannedFriendsByLocalDateTime(user, currentTime);
 
 		//Redis에서 상태 값을 가져와서 응답 객체에 설정
-		for (FriendInfoResponse friend : bannedFriends) {
+		for (FriendInfoResp friend : bannedFriends) {
 			String redisKey = "user:status:" + friend.getFriendId(); // Redis에서 저장된 키 형식
 			Integer status = Integer.parseInt((String)redisTemplate.opsForValue().get(redisKey)); // 상태 값 조회
 			if (status != null) {
