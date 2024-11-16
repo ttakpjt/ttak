@@ -7,5 +7,15 @@ data class MyPageResponse(
     val data: String,
 )
 
+data class PresignUrlResponse(
+    val code: String,
+    val message: String,
+    val data: UrlData
+)
+
+data class UrlData(
+    val url: String
+)
+
 // 요청
 data class NicknameRequest(val nickname: String)
