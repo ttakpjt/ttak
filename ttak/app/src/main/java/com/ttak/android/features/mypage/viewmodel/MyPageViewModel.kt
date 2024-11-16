@@ -10,7 +10,10 @@ import com.ttak.android.network.implementation.MyPageApiImpl
 import com.ttak.android.network.util.ApiConfig
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.ttak.android.domain.model.PresignUrlResponse
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
+import retrofit2.Response
 
 class NicknameViewModel(application: Application) : AndroidViewModel(application) {
     // MyPageApi를 활용한 새로운 repository
@@ -61,16 +64,18 @@ class NicknameViewModel(application: Application) : AndroidViewModel(application
     }
 
     //getPresignedUrl 메서드: presigned url 가져오기
-    fun getPresignedUrl(imageName: String) {
+    fun getPresignedUrl(imageName: String, callback: (Response<PresignUrlResponse>) -> Unit) {
         viewModelScope.launch {
-            myPageRepository.getPresignedImage(imageName)
+            val response = myPageRepository.getPresignedImage(imageName)
+            callback(response)
         }
     }
 
     //getPresignedUrl 메서드: presigned url 가져오기
-    fun registerProfileImage(url: String, image: Byte) {
+    fun registerProfileImage(url: String, image: RequestBody, callback: (Response<Unit>) -> Unit) {
         viewModelScope.launch {
-            myPageRepository.registerProfileImage(url, image)
+            val response = myPageRepository.registerProfileImage(url, image)
+            callback(response)
         }
     }
 }

@@ -59,7 +59,9 @@ import android.util.Log
 import com.ttak.android.data.repository.MyPageRepository
 import com.ttak.android.domain.model.MyPageResponse
 import com.ttak.android.domain.model.NicknameRequest
+import com.ttak.android.domain.model.PresignUrlResponse
 import com.ttak.android.network.api.MyPageApi
+import okhttp3.RequestBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Response
 
@@ -113,7 +115,7 @@ class MyPageApiImpl(
         }
 
     // presigned url 가져오기
-    override suspend fun getPresignedImage(imageName: String): Response<MyPageResponse> =
+    override suspend fun getPresignedImage(imageName: String): Response<PresignUrlResponse> =
         try {
             val response = api.getPresignedUrl(imageName)
             if (response.isSuccessful) {
@@ -128,30 +130,35 @@ class MyPageApiImpl(
             }
         } catch (e: Exception) {
             // 예외 발생 시, 예외 메시지를 포함한 Response 반환
-            Response.error(500, "닉네임 중복 확인 중 예외 발생: ${e.message}".toResponseBody())
+            Response.error(600, "presigned url을 가져오던 중 예외 발생: ${e.message}".toResponseBody())
         }
 
 
     // 프로필 사진 등록하기
-    override suspend fun registerProfileImage(url: String, image: Byte): Response<MyPageResponse> =
+    override suspend fun registerProfileImage(url: String, image: RequestBody): Response<Unit> =
         try {
+            // API 호출
             val response = api.registerProfileImage(url, image)
+
             if (response.isSuccessful) {
-                response  // 200 OK 응답일 경우 응답 그대로 반환
+                // 200 OK 응답일 경우 그대로 반환
+                Response.success(Unit)
             } else {
-                // 실패한 경우, 에러 메시지를 포함한 Response 반환
+                // 실패한 경우 에러 메시지를 포함한 Response 반환
                 Response.error(
                     response.code(),
                     response.errorBody() ?: "사진 등록 실패".toResponseBody()
                 )
             }
         } catch (e: Exception) {
+            Log.e("귯", "API 호출 실패: ${e.localizedMessage}", e)
             // 예외 발생 시, 예외 메시지를 포함한 Response 반환
-            Response.error(500, "닉네임 중복 확인 중 예외 발생: ${e.message}".toResponseBody())
+            Response.error(600, "서버에 사진을 등록하던 중 예외 발생: ${e.message}".toResponseBody())
         }
 
+
     // 공통 예외 처리
-    private suspend fun <T> handleApiResponse(apiCall: suspend () -> Result<T>): Result<T> {
+    private suspend fun <T : Any> handleApiResponse(apiCall: suspend () -> Result<T>): Result<T> {
         return withContext(Dispatchers.IO) {
             try {
                 apiCall()

@@ -41,10 +41,6 @@ fun ScreenTimeScreen() {
                     .fillMaxWidth()
             )
 
-            AppButton(
-                text = "버튼",
-                onClick = { testViewModel.getPresignedUrl("test.png") }
-            )
             Spacer(modifier = Modifier.height(16.dp))
 
             // 2. 사용 시간 변화 표시

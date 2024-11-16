@@ -2,6 +2,8 @@ package com.ttak.android.network.api
 
 import com.ttak.android.domain.model.MyPageResponse
 import com.ttak.android.domain.model.NicknameRequest
+import com.ttak.android.domain.model.PresignUrlResponse
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.POST
 import retrofit2.http.Body
@@ -26,13 +28,12 @@ interface MyPageApi {
     suspend fun getPresignedUrl(
         @Query("imageName") imageName: String,
         @Query("prefix") prefix: String = "profile"
-    ): Response<MyPageResponse>
+    ): Response<PresignUrlResponse>
 
     //프로필 사진 등록
     @PUT
     suspend fun registerProfileImage(
         @Url url: String,  // presigned URL
-        @Body image: Byte  // 이미지 바이너리 데이터
-    ): Response<MyPageResponse>
-
+        @Body image: RequestBody  // 이미지 바이너리 데이터
+    ): Response<Unit>
 }
