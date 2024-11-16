@@ -71,7 +71,6 @@ fun SplashScreen(
 
             // 첫 실행 여부 확인
             val userPreferences = UserPreferences(context)
-            Log.d("귯", "${userPreferences.isFirstLaunch}")
             if (userPreferences.isFirstLaunch) {
                 context.startActivity(Intent(context, OnboardingActivity::class.java))
                 (context as? SplashActivity)?.finish()
