@@ -152,12 +152,15 @@ fun SetGoalCard(
             ) {
                 goalState.selectedApps.forEach { app ->
                     item {
-                        var isHovered by remember { mutableStateOf(false) }
+                        val isHovered by remember { mutableStateOf(false) }
                         var isSelected by remember { mutableStateOf(false) }
 
-                        val animatedScale by animateFloatAsState(targetValue = if (isHovered) 1.1f else 1f)
+                        val animatedScale by animateFloatAsState(targetValue = if (isHovered) 1.1f else 1f,
+                            label = ""
+                        )
                         val animatedBorderColor by animateColorAsState(
-                            targetValue = if (isSelected) Color(0xFF66B2FF) else Color(0x1AFFFFFF)
+                            targetValue = if (isSelected) Color(0xFF66B2FF) else Color(0x1AFFFFFF),
+                            label = ""
                         )
 
                         Surface(
@@ -188,7 +191,7 @@ fun SetGoalCard(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
             TimeProgress(
                 startTime = goalState.startTime,
