@@ -1,26 +1,26 @@
 import android.app.Application
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.ttak.android.data.local.AppDatabase
-import com.ttak.android.data.repository.FocusGoalRepository
 import com.ttak.android.data.repository.history.HistoryRepositoryImpl
-import com.ttak.android.domain.model.CountResponse
-import com.ttak.android.domain.model.CountResponseData
 import com.ttak.android.features.observer.ui.components.Dashboard
 import com.ttak.android.features.observer.ui.components.PageIndicator
 import com.ttak.android.features.observer.ui.components.SetGoalCard
@@ -29,7 +29,6 @@ import com.ttak.android.features.observer.viewmodel.GoalStateViewModel
 import com.ttak.android.features.observer.viewmodel.GoalStateViewModelFactory
 import com.ttak.android.features.observer.viewmodel.ObserverViewModel
 import com.ttak.android.features.observer.viewmodel.ObserverViewModelFactory
-import com.ttak.android.network.api.HistoryApi  // API 클래스 import 필요
 import com.ttak.android.network.util.ApiConfig
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -61,7 +60,8 @@ fun CardCarousel(
 
     HorizontalPager(
         state = pagerState,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
     ) { page ->
         Card(
             modifier = Modifier
@@ -71,7 +71,8 @@ fun CardCarousel(
             colors = CardDefaults.cardColors(
                 containerColor = Color(0xFF2F2F32)
             ),
-            shape = RoundedCornerShape(8.dp)
+            shape = RoundedCornerShape(12.dp),
+            elevation = CardDefaults.cardElevation(8.dp)
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 when (page) {
@@ -98,7 +99,9 @@ fun CardCarousel(
                 PageIndicator(
                     pageCount = 2,
                     currentPage = pagerState.currentPage,
-                    modifier = Modifier.align(Alignment.BottomCenter)
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 12.dp)
                 )
             }
         }
