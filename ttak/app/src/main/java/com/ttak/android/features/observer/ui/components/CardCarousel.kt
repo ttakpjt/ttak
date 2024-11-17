@@ -67,7 +67,7 @@ fun CardCarousel(
             modifier = Modifier
                 .padding(horizontal = 20.dp)
                 .fillMaxWidth()
-                .height(250.dp),
+                .height(240.dp),
             colors = CardDefaults.cardColors(
                 containerColor = Color(0xFF2F2F32)
             ),
@@ -101,7 +101,7 @@ fun CardCarousel(
                     currentPage = pagerState.currentPage,
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(bottom = 12.dp)
+                        .padding(bottom = 8.dp)
                 )
             }
         }
