@@ -63,8 +63,8 @@ public class FcmService{
 		if(!userRepository.existsById(sendId) || !userRepository.existsById(receiveId)) {
 			throw new NotFoundException(U001);
 		}
-
-		String messageKey = "message_" + sendId + "_" + receiveId + "_" + data;
+		String fcmKey = "fcmMessage_" + sendId + "_" + receiveId;
+		String historyKey = "history_" + sendId + "_" + receiveId + "_" + data;
 
 		Message message = Message.builder()
 				.setToken(getFcmToken(receiveId))
@@ -79,8 +79,11 @@ public class FcmService{
 				.build();
 
 		try {
-			firebaseMessaging.send(message);
-			if(idempotencyUtil.addRequest(messageKey)) {
+			// redis에 최근 공격기록이 존재한다면 fcm메세지를 날리지 않고, 존재하지 않는다면 redis에 기록 후 fcm메세지 전송
+			if(idempotencyUtil.addFcmRequest(fcmKey)) firebaseMessaging.send(message);
+
+			// redis에 최근 공격기록이 존재한다면 history를 저장하지 않고, 존재하지 않는다면 redis에 기록 후 history 저장
+			if(idempotencyUtil.addHistoryRequest(historyKey)) {
 				historyService.addAttackHistory(sendId, data, receiveId, Item.USER_MESSAGE);
 			}
 		} catch (FirebaseMessagingException | com.google.firebase.messaging.FirebaseMessagingException e) {
@@ -99,7 +102,8 @@ public class FcmService{
 			throw new NotFoundException(U001);
 		}
 
-		String messageKey = "message_" + sendId + "_" + receiveId + "_" + data;
+		String fcmKey = "fcmMessage_" + sendId + "_" + receiveId;
+		String historyKey = "history_" + sendId + "_" + receiveId + "_" + data;
 
 		Message message = Message.builder()
 				.setToken(getFcmToken(receiveId))
@@ -115,8 +119,11 @@ public class FcmService{
 				.build();
 
 		try {
-			firebaseMessaging.send(message);
-			if(idempotencyUtil.addRequest(messageKey)) {
+			// redis에 최근 공격기록이 존재한다면 fcm메세지를 날리지 않고, 존재하지 않는다면 redis에 기록 후 fcm메세지 전송
+			if(idempotencyUtil.addFcmRequest(fcmKey)) firebaseMessaging.send(message);
+
+			// redis에 최근 공격기록이 존재한다면 history를 저장하지 않고, 존재하지 않는다면 redis에 기록 후 history 저장
+			if(idempotencyUtil.addHistoryRequest(historyKey)) {
 				historyService.addAttackHistory(sendId, data + "공격을 받았습니다.", receiveId, Item.valueOf(data));
 			}
 		} catch (FirebaseMessagingException | com.google.firebase.messaging.FirebaseMessagingException e) {
@@ -140,11 +147,5 @@ public class FcmService{
 
 		return fcm.getFcmToken();
 	}
-
-//	private AndroidConfig makeAndroidConfig(String data) {
-//		return AndroidConfig.builder()
-//				.setPriority(AndroidConfig.Priority.HIGH)
-//				.build();
-//	}
 
 }
