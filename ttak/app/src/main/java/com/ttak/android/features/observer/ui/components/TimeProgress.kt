@@ -1,5 +1,6 @@
 package com.ttak.android.features.observer.ui.components
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +33,7 @@ fun formatTimeRange(startTime: Time, endTime: Time): String {
     return "${formatTime(startTime)} ~ ${formatTime(endTime)}"
 }
 
+@SuppressLint("DefaultLocale")
 private fun formatTime(time: Time): String {
     val hour = when {
         time.hour == 12 -> 12
@@ -40,7 +42,7 @@ private fun formatTime(time: Time): String {
         else -> time.hour
     }
 
-    val period = if (time.hour >= 12 && time.hour < 24) "PM" else "AM"
+    val period = if (time.hour in 12..23) "PM" else "AM"
     val minute = String.format("%02d", time.minute)  // 분을 두 자리 숫자로 표시 (예: 05)
 
     return "$hour:${minute}$period"
@@ -67,21 +69,19 @@ fun TimeProgress(
             Image(
                 painter = painterResource(id = R.drawable.prohibition_icon),
                 contentDescription = "Friends Icon",
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(18.dp)
             )
 
             Spacer(modifier = Modifier.width(12.dp))
 
             Text(
                 text = formatTimeRange(startTime, endTime),
-//                fontSize = 24.sp,
-//                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
                 style = MaterialTheme.typography.titleMedium,
-//                color = Color.White
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // calculateProgress 함수 사용
         val progress = calculateProgress(startTime, endTime, currentTime)
@@ -92,13 +92,15 @@ fun TimeProgress(
         Log.d("TimeProgress", "Current Time: ${formatTime(currentTime)}")
 
         LinearProgressIndicator(
-            progress = progress,  // 직접 계산하지 않고 calculateProgress 결과 사용
+            progress = {
+                progress
+            },
             modifier = Modifier
                 .fillMaxWidth(0.8f)
-                .height(12.dp)
+                .height(8.dp)
                 .clip(RoundedCornerShape(6.dp)),
             color = Color(0xFFFF4C3E),
-            trackColor = Color(0xFFEAEAEA)
+            trackColor = Color(0xFFEAEAEA),
         )
     }
 }
