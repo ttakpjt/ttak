@@ -17,10 +17,10 @@ import androidx.compose.ui.unit.dp
 fun PageIndicator(
     pageCount: Int,
     currentPage: Int,
-    modifier: Modifier = Modifier  // modifier 파라미터 추가
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier.padding(bottom = 16.dp),  // 기존 modifier에 추가
+        modifier = modifier.padding(bottom = 8.dp),
         horizontalArrangement = Arrangement.Center
     ) {
         repeat(pageCount) { iteration ->
