@@ -19,6 +19,7 @@
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
 
 
     <!-- Android 14 추가 권한 -->
@@ -64,6 +65,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--        오버레이-->
+        <service
+            android:name=".service.ColorOverlayService"
+            android:enabled="true"
+            android:exported="false"
+            android:showOnLockScreen="true"
+            android:permission="android.permission.SYSTEM_ALERT_WINDOW"
+            android:foregroundServiceType="mediaProjection" />
+
+        <service
+            android:name=".service.AnimationOverlayService"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.SYSTEM_ALERT_WINDOW" />
 
         <!-- MainActivity는 네비게이션이 필요한 주요 화면만 관리 -->
         <activity android:name=".MainActivity" />
