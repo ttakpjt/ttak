@@ -1,5 +1,6 @@
 package com.ttak.android.features.observer.ui.components
 
+import FriendStoryItem
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -121,7 +122,8 @@ fun ExpandableFriendListContainer(
                             onSearchUsers(query)
                         },
                         searchResults = searchResults,
-                        onUserSelect = onUserSelect
+                        onUserSelect = onUserSelect,
+                        modifier = Modifier.padding(top = 5.dp)
                     )
                 }
 

@@ -159,7 +159,15 @@ fun ProfileSetupScreen(
                 if (!isNicknameAvailable) {
                     setError("닉네임 중복을 확인해 주세요.")
                 } else if (profileImageUri.value == null) {
-                    setError("사진을 등록해 주세요.")
+                    viewModel.registerNickname(nickname) { isRegistered ->
+                        if (isRegistered) {
+                            UserPreferences(context.applicationContext).saveNickname(nickname)
+                            navigateToNextScreen()
+                        } else {
+                            setError("닉네임 등록에 실패했습니다. 다시 시도해 주세요.")
+                            isLoading = false
+                        }
+                    }
                 } else {
                     uploadImageAndRegisterNickname(profileImageUri.value!!, nickname)
                 }
