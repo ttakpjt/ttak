@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.ttak.backend.domain.observe.dto.response.DeleteFriendsListResp;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -295,13 +294,13 @@ public class UserService{
 		String[] parts = fullUrl.split("\\?");
 		User user = userRepository.findById(userId)
 			.orElseThrow(()->new NotFoundException(ErrorCode.U001));;
-		if(user.getProfilePic()!=null){
-			//delete 로직
-			String deleteFullUrl = user.getProfilePic();
-			String splitStr = ".com/";
-			String fileName = deleteFullUrl.substring(deleteFullUrl.lastIndexOf(splitStr) + splitStr.length());
-			amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileName));
-		}
+		// if(user.getProfilePic()!=null){
+		// 	//delete 로직
+		// 	String deleteFullUrl = user.getProfilePic();
+		// 	String splitStr = ".com/";
+		// 	String fileName = deleteFullUrl.substring(deleteFullUrl.lastIndexOf(splitStr) + splitStr.length());
+		// 	amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileName));
+		// }
 		user.changeProfilePic(parts[0]);
 		userRepository.save(user);
 	}
