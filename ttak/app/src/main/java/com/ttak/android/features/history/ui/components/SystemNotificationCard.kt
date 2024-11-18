@@ -3,6 +3,7 @@ package com.ttak.android.features.history.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,11 +16,14 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ttak.android.R
@@ -34,12 +38,22 @@ fun SystemNotificationCard(
             .fillMaxWidth()
             .padding(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFFF99B1)
-        )
+            containerColor = Color.Transparent
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF2E1065),  // 진한 보라
+                            Color(0xFF1E1B4B),  // 진한 남색
+                            Color(0xFF172554)   // 진한 파랑
+                        )
+                    )
+                )
                 .padding(16.dp)
         ) {
             Row(
@@ -54,24 +68,24 @@ fun SystemNotificationCard(
                     Image(
                         painter = painterResource(id = R.drawable.bullet_mark),
                         contentDescription = "총알 자국",
-                        modifier = Modifier.size(36.dp)
+                        modifier = Modifier.size(36.dp),
+                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.White)
                     )
                     Text(
                         text = notificationText,
                         style = MaterialTheme.typography.labelLarge,
-                        color = Color.Black,
+                        color = Color.White,
                         modifier = Modifier.padding(top = 8.dp),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        textAlign = TextAlign.Center,
                         lineHeight = 24.sp
                     )
                 }
 
-                HorizontalDivider(
+                VerticalDivider(
                     modifier = Modifier
                         .width(1.dp)
                         .height(100.dp)
-                        .background(Color.Black)
-                        .align(Alignment.CenterVertically)
+                        .background(Color.White.copy(alpha = 0.3f))
                 )
 
                 Column(
@@ -82,14 +96,15 @@ fun SystemNotificationCard(
                     Image(
                         painter = painterResource(id = R.drawable.observer),
                         contentDescription = "감시자",
-                        modifier = Modifier.size(36.dp)
+                        modifier = Modifier.size(32.dp),
+                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.White)
                     )
                     Text(
                         text = watchingCountText,
                         style = MaterialTheme.typography.labelLarge,
-                        color = Color.Black,
-                        modifier = Modifier.padding(top = 8.dp),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        color = Color.White,
+                        modifier = Modifier.padding(top = 14.dp),
+                        textAlign = TextAlign.Center,
                         lineHeight = 24.sp
                     )
                 }
