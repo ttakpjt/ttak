@@ -44,6 +44,7 @@ import android.os.PowerManager
 import android.provider.Settings
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
+import com.ttak.android.service.AnimationOverlayService
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
@@ -101,6 +102,18 @@ class MainActivity : ComponentActivity() {
                 Uri.parse("package:$packageName")
             )
             startActivityForResult(intent, OVERLAY_PERMISSION_REQUEST_CODE)
+        } else {
+//            startAnimationOverlayService()
+            Log.d(TAG, "Overlay permission already granted.")
+        }
+    }
+
+    private fun startAnimationOverlayService() {
+        val intent = Intent(this, AnimationOverlayService::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent)
+        } else {
+            startService(intent)
         }
     }
 
@@ -112,7 +125,10 @@ class MainActivity : ComponentActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == OVERLAY_PERMISSION_REQUEST_CODE) {
-            if (!Settings.canDrawOverlays(this)) {
+            if (Settings.canDrawOverlays(this)) {
+//                startAnimationOverlayService()
+                Log.d(TAG, "Overlay permission granted by user.")
+            } else {
                 Toast.makeText(this, "오버레이 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
                 askOverlayPermission()
             }

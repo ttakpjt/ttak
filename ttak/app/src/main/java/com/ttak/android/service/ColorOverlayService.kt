@@ -19,6 +19,7 @@ import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.os.VibrationEffect
 import android.os.Vibrator
+import com.ttak.android.R
 
 class ColorOverlayService : Service() {
     companion object {
@@ -31,6 +32,8 @@ class ColorOverlayService : Service() {
     private var fadeAnimator: ValueAnimator? = null
     private var wakeLock: PowerManager.WakeLock? = null
     private var vibrator: Vibrator? = null
+    // 애니메이션 상태
+    private var isAnimating = false
 
     override fun onCreate() {
         super.onCreate()
@@ -45,6 +48,18 @@ class ColorOverlayService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // startForeground 호출
+        Log.d("ColorOverlayService", "call startForeground")
+        startForeground(
+            1, // 고유 ID
+            createNotification() // 알림 생성
+        )
+        // 애니메이션 실행 중이면 새로운 요청 무시
+//        if (isAnimating) {
+            Log.d("ColorOverlayService", "Animation in progress.")
+//            return START_NOT_STICKY
+//        }
+
         wakeLock?.acquire(WAKE_LOCK_TIMEOUT)
 
         val color = intent?.getIntExtra("color", Color.BLUE) ?: Color.BLUE
@@ -65,7 +80,33 @@ class ColorOverlayService : Service() {
         return START_NOT_STICKY
     }
 
+    private fun createNotification(): Notification {
+        val channelId = "color_overlay_channel"
+        val channelName = "Color Overlay Notifications"
+
+        Log.d("ColorOverlayService", "call createNotification")
+        // 알림 채널 생성 (Android O 이상)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val channel = NotificationChannel(
+                channelId,
+                channelName,
+                NotificationManager.IMPORTANCE_LOW
+            )
+            notificationManager.createNotificationChannel(channel)
+        }
+        Log.d("ColorOverlayService", "return of createNotification")
+        return Notification.Builder(this, channelId)
+            .setContentTitle("Color Overlay Running")
+            .setContentText("Overlay effect is active.")
+            .setSmallIcon(R.drawable.ttak_black_text) // 적절한 아이콘으로 교체
+            .build()
+    }
+
+
     private fun showColorOverlay(color: Int, duration: Long) {
+        isAnimating = true
+
         overlayView = View(this).apply {
             setBackgroundColor(color)
             alpha = 0f
@@ -133,17 +174,25 @@ class ColorOverlayService : Service() {
     private fun removeOverlay() {
         try {
             fadeAnimator?.cancel()
-            windowManager?.removeView(overlayView)
+//            windowManager?.removeView(overlayView)
+            if (overlayView?.isAttachedToWindow == true) { // 뷰가 WindowManager에 연결된 상태인지 확인
+                windowManager?.removeView(overlayView)
+            }
             vibrator?.cancel()
         } catch (e: Exception) {
             Log.e(TAG, "Error removing overlay", e)
         } finally {
-            wakeLock?.release()
+            isAnimating = false // 오버레이 비활성화
+//            wakeLock?.release()
+            if (wakeLock?.isHeld == true) { // WakeLock이 활성 상태인지 확인
+                wakeLock?.release()
+            }
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        stopForeground(true)
         removeOverlay()
     }
 
