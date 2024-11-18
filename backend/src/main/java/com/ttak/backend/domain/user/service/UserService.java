@@ -197,6 +197,10 @@ public class UserService{
 		return findUserById(userId).getNickname();
 	}
 
+	public String getProfileImageUrl(Long userId){
+		return userRepository.findProfilePicByUserId(userId);
+	}
+
 	/**
 	 * User 객체 반환
 	 * @param userId
