@@ -37,7 +37,7 @@ fun WeeklyUsageBarChartComponent(dailyUsageList: List<Int>) {
                     .padding(top = 8.dp)
             ) {
                 dailyUsageList.forEachIndexed { index, usage ->
-                    val barColor = if (index == todayIndex) Color.Red else Grey
+                    val barColor = if (index == todayIndex) Color.Red else Color(0xFF4338CA).copy(alpha = 0.6f)
                     // 요일 가로축 위에 선 그리기
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -51,7 +51,6 @@ fun WeeklyUsageBarChartComponent(dailyUsageList: List<Int>) {
                                 .height(if (maxUsage > 0) (usage * maxHeight.value / maxUsage).dp else 0.dp)
                                 .width(30.dp)
                                 .background(barColor)
-//                            모서리 추가 좀 해주세요.
                         )
 //                      가로 선
                         Canvas(modifier = Modifier.fillMaxWidth().height(1.dp)) {
