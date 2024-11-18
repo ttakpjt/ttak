@@ -97,6 +97,15 @@ public class UserController {
 		return ResponseEntity.ok(CommonResponse.success(nickname));
 	}
 
+	@Operation(summary = "이미지 파일 반환", description = "로그인 시 기본 프로필사진 반환")
+	@GetMapping("/profile/image")
+	public ResponseEntity<CommonResponse<?>> profileImage(@UserPk final Long userId) {
+		log.info("========== 프로필사진 반환 시작 ==========");
+		String url = userService.getProfileImageUrl(userId);
+		log.info("========== 프로필사진 반환 종료 ==========");
+		return ResponseEntity.ok(CommonResponse.success(url));
+	}
+
 	@GetMapping("s3")
 	public ResponseEntity<CommonResponse<?>> getPresignedUrl(@UserPk Long userId, @RequestParam String prefix, @RequestParam String imageName) {
 		Map<String, String> presignedUrl = userService.getPresignedUrl( prefix, imageName, userId);
