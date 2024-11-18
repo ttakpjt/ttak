@@ -1,31 +1,41 @@
 import android.app.Application
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.ttak.android.R
 import com.ttak.android.common.navigation.AppScreens
 import com.ttak.android.common.navigation.NavigationManager
-import com.ttak.android.features.observer.ui.components.SetGoalCard
 import com.ttak.android.features.observer.viewmodel.GoalStateViewModel
 import com.ttak.android.features.observer.viewmodel.GoalStateViewModelFactory
 
@@ -40,10 +50,27 @@ fun SmallGoalCard(
     )
     val goalState by viewModel.goalState.collectAsState()
 
-    Card(
+    Box(
         modifier = Modifier
-            .padding(horizontal = 10.dp)
             .fillMaxWidth()
+            .padding(horizontal = 10.dp)
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF2E1065),
+                        Color(0xFF1E1B4B),
+                        Color(0xFF172554)
+                    ),
+                    startY = 0f,
+                    endY = Float.POSITIVE_INFINITY
+                ),
+                shape = RoundedCornerShape(16.dp)
+            )
+            .border(
+                width = 0.5.dp,
+                color = Color.White.copy(alpha = 0.1f),
+                shape = RoundedCornerShape(16.dp)
+            )
             .height(65.dp)
             .then(
                 if (!goalState.isSet) {
@@ -53,11 +80,7 @@ fun SmallGoalCard(
                 } else {
                     Modifier
                 }
-            ),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF2F2F32)
-        ),
-        shape = RoundedCornerShape(8.dp)
+            )
     ) {
         if (!goalState.isSet) {
             Row(
