@@ -33,7 +33,7 @@ fun PopupMenu(
     ) {
         Box(
             modifier = modifier
-                .width(50.dp) // 현재 동작 안하는 물풍선 제거를 위해 100 -> 50
+                .width(100.dp)
                 .shadow(
                     elevation = 8.dp,
                     shape = RoundedCornerShape(20.dp)
@@ -48,19 +48,19 @@ fun PopupMenu(
                     .padding(horizontal = 12.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-//                IconButton(
-//                    onClick = {
-//                        onWaterBubbleClick()
-//                        onDismiss()
-//                    },
-//                    modifier = Modifier.size(32.dp)
-//                ) {
-//                    Image(
-//                        painter = painterResource(id = R.drawable.water_bubble_icon),
-//                        contentDescription = "물방울",
-//                        modifier = Modifier.size(32.dp)
-//                    )
-//                }
+                IconButton(
+                    onClick = {
+                        onWaterBubbleClick()
+                        onDismiss()
+                    },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.water_bubble_icon),
+                        contentDescription = "물방울",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
 
                 IconButton(
                     onClick = {

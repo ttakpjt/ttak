@@ -8,7 +8,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,9 +20,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import androidx.compose.foundation.clickable
-import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun TimePickerButton(
@@ -57,9 +57,9 @@ fun TimePickerButton(
             .padding(4.dp)
             .clickable { showDialog = true },
         shape = MaterialTheme.shapes.medium,
-        color = Color(0xFF2F2F32)
+        color = Color.Gray.copy(alpha = 0.4f)
     ) {
-        androidx.compose.foundation.layout.Column(
+        Column(
             modifier = Modifier.padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -71,7 +71,7 @@ fun TimePickerButton(
 
             Text(
                 text = time.format(timeFormatter),
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,  // 흰색으로 변경
                 modifier = Modifier.padding(top = 8.dp)

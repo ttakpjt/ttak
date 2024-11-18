@@ -9,11 +9,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.ttak.android.domain.model.AppInfo
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
@@ -50,7 +52,12 @@ fun AppSelectItem(
         // Selection checkbox
         Checkbox(
             checked = isSelected,
-            onCheckedChange = { onSelectApp() }
+            onCheckedChange = { onSelectApp() },
+            colors = CheckboxDefaults.colors(
+                checkedColor = Color.Blue,
+                uncheckedColor = Color.Gray,
+                checkmarkColor = Color.White
+            )
         )
     }
 }

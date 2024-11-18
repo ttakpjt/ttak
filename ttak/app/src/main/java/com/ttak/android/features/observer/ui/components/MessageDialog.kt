@@ -1,27 +1,19 @@
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.ttak.android.common.ui.theme.Black
+import androidx.compose.ui.window.DialogProperties
 import com.ttak.android.domain.model.FriendStory
 
 @Composable
@@ -32,104 +24,146 @@ fun MessageDialog(
 ) {
     var message by remember { mutableStateOf("") }
 
-    Log.d("MessageDialog", "Dialog opened for friend: ${friendStory.friendName}")
+    // 각 버튼을 위한 interactionSource 생성
+    val cancelInteractionSource = remember { MutableInteractionSource() }
+    val sendInteractionSource = remember { MutableInteractionSource() }
+
+    // 호버 상태 추적
+    val isCancelHovered by cancelInteractionSource.collectIsHoveredAsState()
+    val isSendHovered by sendInteractionSource.collectIsHoveredAsState()
 
     AlertDialog(
         onDismissRequest = {
             Log.d("MessageDialog", "Dialog dismissed")
             onDismiss()
         },
-        modifier = Modifier.background(
-            color = Color(0xFF2F2F32),
-            shape = RoundedCornerShape(16.dp)
-        ),
-        containerColor = Color(0xFF2F2F32),
-        title = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-//                IconButton(
-//                    onClick = {
-//                        Log.d("MessageDialog", "Back button clicked")
-//                        onDismiss()
-//                    }
-//                ) {
-//                    Icon(
-//                        imageVector = Icons.Default.ArrowBack,
-//                        contentDescription = "뒤로가기",
-//                        tint = Color.White
-//                    )
-//                }
-//                Spacer(modifier = Modifier.weight(1f))
-                Row(
-                    verticalAlignment = Alignment.Bottom,
-                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+        modifier = Modifier
+            .fillMaxWidth(0.95f)
+            .background(
+                color = Color.Transparent,
+                shape = RoundedCornerShape(24.dp)
+            ),
+        containerColor = Color.Transparent,
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        title = null,
+        text = {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Box(
+                    modifier = Modifier
+                        .size(150.dp)
+                        .offset(x = (-20).dp, y = (-50).dp)
+                        .background(
+                            Color(0x33A855F7),
+                            RoundedCornerShape(100.dp)
+                        )
+                        .blur(radius = 50.dp)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(150.dp)
+                        .offset(x = 200.dp, y = 20.dp)
+                        .background(
+                            Color(0x333B82F6),
+                            RoundedCornerShape(100.dp)
+                        )
+                        .blur(radius = 50.dp)
+                )
+
+                // Content Column
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
                 ) {
-                    Text(
-                        text = friendStory.friendName,
-                        style = MaterialTheme.typography.titleLarge,  // 더 큰 글씨체로 변경
-                        color = Color.White,
+                    // Title Section
+                    Row(
+                        verticalAlignment = Alignment.Bottom,
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    ) {
+                        Text(
+                            text = friendStory.friendName,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color.White,
+                        )
+                        Text(
+                            text = "님에게",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.White.copy(alpha = 0.8f),
+                        )
+                    }
+
+                    // TextField Section
+                    val gradientBrush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF2E1065),
+                            Color(0xFF1E1B4B),
+                            Color(0xFF172554)
+                        )
                     )
-                    Text(
-                        text = "님에게",
-                        style = MaterialTheme.typography.bodySmall,  // 더 작은 글씨체로 변경
-                        color = Color.White,
+
+                    OutlinedTextField(
+                        value = message,
+                        onValueChange = {
+                            message = it
+                            Log.d("MessageDialog", "Message input: $it")
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(brush = gradientBrush),
+                        placeholder = {
+                            Text(
+                                "메시지를 입력하세요",
+                                color = Color.White.copy(alpha = 0.6f)
+                            )
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0x33A855F7),
+                            unfocusedBorderColor = Color(0x333B82F6),
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                        )
                     )
                 }
-
             }
         },
-        text = {
-            OutlinedTextField(
-                value = message,
-                onValueChange = {
-                    message = it
-                    Log.d("MessageDialog", "Message input: $it")
-                },
+        confirmButton = {
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp)
-                    .background(
-                        color = Color(0xFFF5F378),
-                        shape = RoundedCornerShape(8.dp)
-                    ),
-                placeholder = { Text("메시지를 입력하세요", color = Color.Gray) },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.Transparent,
-                    unfocusedBorderColor = Color.Transparent,
-                    focusedContainerColor = Color(0xFFF5F378),
-                    unfocusedContainerColor = Color(0xFFF5F378),
-                    focusedTextColor = Black,   // 박스 안의 텍스트
-                    unfocusedTextColor = Black, // 박스 밖의 텍스트
-                )
-            )
-        },
-        confirmButton = {
-            // 버튼 부분 수정
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Button(
                     onClick = {
                         Log.d("MessageDialog", "Cancel button clicked")
                         onDismiss()
                     },
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFB2B2B4)
-                    )
+                        containerColor = if (isCancelHovered) {
+                            Color(0x99A855F7)  // 호버 시 더 진한 색상
+                        } else {
+                            Color(0x66A855F7)  // 기본 색상
+                        }
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    interactionSource = cancelInteractionSource  // interactionSource 추가
                 ) {
                     Text(
                         text = "취소하기",
-                        color = Color.Black,
-//                        fontSize = 16.sp,
-//                        fontWeight = FontWeight.Bold
+                        color = Color.White,
                         style = MaterialTheme.typography.titleSmall
                     )
                 }
+
                 Button(
                     onClick = {
                         if (message.isNotBlank()) {
@@ -138,18 +172,24 @@ fun MessageDialog(
                             onDismiss()
                         }
                     },
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp),
                     enabled = message.isNotBlank(),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF7FEC93),
-                        disabledContainerColor = Color(0xFF7FEC93).copy(alpha = 0.5f)
-                    )
+                        containerColor = if (isSendHovered && message.isNotBlank()) {
+                            Color(0x993B82F6)  // 호버 시 더 진한 색상
+                        } else {
+                            Color(0x663B82F6)  // 기본 색상
+                        },
+                        disabledContainerColor = Color(0x333B82F6)
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    interactionSource = sendInteractionSource
                 ) {
                     Text(
                         text = "보내기",
-                        color = Color.Black,
-//                        fontSize = 16.sp,
-//                        fontWeight = FontWeight.Bold
+                        color = Color.White,
                         style = MaterialTheme.typography.titleSmall
                     )
                 }
