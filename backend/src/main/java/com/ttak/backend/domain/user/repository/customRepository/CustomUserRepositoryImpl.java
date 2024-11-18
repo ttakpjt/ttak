@@ -1,5 +1,8 @@
 package com.ttak.backend.domain.user.repository.customRepository;
 
+import static com.ttak.backend.domain.observe.entity.QFriend.*;
+import static com.ttak.backend.domain.user.entity.QUser.*;
+
 import java.util.List;
 
 import com.querydsl.core.types.Projections;
@@ -18,8 +21,6 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 	private final JPAQueryFactory jpaQueryFactory;
 
 	public List<UserInfoResponse> findUsersWithRelation(Long currentUserId, String nickname) {
-		QUser user = QUser.user;
-		QFriend friend = QFriend.friend;
 
 		return jpaQueryFactory
 			.select(Projections.constructor(
@@ -37,5 +38,14 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			.leftJoin(friend).on(friend.followingId.userId.eq(user.userId).and(friend.userId.userId.eq(currentUserId)))
 			.where(user.nickname.containsIgnoreCase(nickname))
 			.fetch();
+	}
+
+	@Override
+	public String findProfilePicByUserId(Long userId) {
+		return jpaQueryFactory
+			.select(user.profilePic)
+			.from(user)
+			.where(user.userId.eq(userId).and(user.deleteYn.eq(false)))
+			.fetchOne();
 	}
 }

@@ -35,6 +35,8 @@ import lombok.experimental.SuperBuilder;
 @SQLRestriction("delete_yn = false")
 public class User extends TimeBaseEntity {
 
+	private static final String basicPic = "https://ttak-s3-bucket-bbi-bbi.s3.ap-northeast-2.amazonaws.com/profile/icon/8.png";
+
 	@Id
 	@Column(name = "user_id")
 	private Long userId;
@@ -107,7 +109,7 @@ public class User extends TimeBaseEntity {
 			.userId(new RandomPkUtil().makeRandomPk())
 			.email(googleUserRequest.getEmail())
 			.role(Role.USER)
-			.profilePic(googleUserRequest.getProfileImage())
+			.profilePic(basicPic)
 			.socialDomain(SocialDomain.GOOGLE)
 			.socialIdentify(googleUserRequest.getId())
 			.build();
