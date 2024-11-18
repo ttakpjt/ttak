@@ -48,9 +48,9 @@ fun SystemNotificationCard(
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFF2E1065),  // 진한 보라
-                            Color(0xFF1E1B4B),  // 진한 남색
-                            Color(0xFF172554)   // 진한 파랑
+                            Color(0xFF1E1B4B).copy(alpha = 0.7f),  // 진한 남색
+                            Color(0xFF2E1065).copy(alpha = 0.5f),  // 보라색
+                            Color(0xFF172554).copy(alpha = 0.6f)   // 진한 파랑
                         )
                     )
                 )
@@ -75,7 +75,7 @@ fun SystemNotificationCard(
                         text = notificationText,
                         style = MaterialTheme.typography.labelLarge,
                         color = Color.White,
-                        modifier = Modifier.padding(top = 8.dp),
+                        modifier = Modifier.padding(top = 12.dp),
                         textAlign = TextAlign.Center,
                         lineHeight = 24.sp
                     )
@@ -103,7 +103,7 @@ fun SystemNotificationCard(
                         text = watchingCountText,
                         style = MaterialTheme.typography.labelLarge,
                         color = Color.White,
-                        modifier = Modifier.padding(top = 14.dp),
+                        modifier = Modifier.padding(top = 18.dp),
                         textAlign = TextAlign.Center,
                         lineHeight = 24.sp
                     )
