@@ -144,7 +144,7 @@ private fun ObserverScreenContent(
                         CoroutineScope(Dispatchers.IO).launch {
                             val messageData = MessageData(
                                 userId = selectedFriend!!.friendId,
-                                data = "WaterBalloon"
+                                data = "WATER_BOOM"
                             )
                             try {
                                 val response = messageApi.sendItem(messageData)

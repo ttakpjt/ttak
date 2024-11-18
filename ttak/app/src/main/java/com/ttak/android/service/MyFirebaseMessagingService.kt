@@ -1,7 +1,6 @@
 package com.ttak.android.service
 
 import android.Manifest
-import android.app.KeyguardManager
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -9,22 +8,18 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.media.AudioAttributes
 import android.media.RingtoneManager
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
-import android.os.PowerManager
-import android.provider.Settings
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.ttak.android.MainActivity
+import com.ttak.android.R
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -34,7 +29,6 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
-import com.ttak.android.R
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
     companion object {
@@ -118,108 +112,89 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     private fun getDeviceSerialNumber(): String {
-        return Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
+        return android.provider.Settings.Secure.getString(contentResolver, android.provider.Settings.Secure.ANDROID_ID)
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        // 채널 재생성
-        deleteAndCreateChannel()
+        val data = remoteMessage.data
 
-        Log.d("MyFirebaseMessagingService", """
-            |----------------------------------------
-            |           FCM Message Debug
-            |----------------------------------------
-            |[Notification]
-            |   Title: ${remoteMessage.notification?.title}
-            |   Body: ${remoteMessage.notification?.body}
-            |   Channel: ${remoteMessage.notification?.channelId}
-            |[Priority] ${remoteMessage.priority}
-            |[Data] ${remoteMessage.data}
-            |----------------------------------------
-        """.trimMargin())
+        if (data.containsKey("animation")) {
+            Log.d("MyFirebaseMessagingService", "Playing embedded video animation")
 
-        val notification = remoteMessage.notification
-        if (notification != null) {
-            try {
-                // 데이터 메시지 처리
-                if (remoteMessage.data.isNotEmpty()) {
-                    handleDataMessage(remoteMessage.data)
+            Intent(this, AnimationOverlayService::class.java).also { intent ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(intent)
+                } else {
+                    startService(intent)
                 }
-
-                // 1. 인텐트 설정
-                val intent = Intent(this, MainActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                }
-
-                val pendingIntent = PendingIntent.getActivity(
-                    this,
-                    System.currentTimeMillis().toInt(),
-                    intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
-
-                // 2. 이미지 설정
-                val largeIcon = BitmapFactory.decodeResource(resources, R.drawable.ttak_black_text)
-
-                // 3. 알림 스타일 설정
-                val style = NotificationCompat.BigTextStyle()
-                    .bigText(notification.body)
-                    .setBigContentTitle(notification.title)
-                    .setSummaryText("새로운 메시지")
-
-                // 4. 알림 빌더 설정
-                val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ttak_black_text)
-                    .setLargeIcon(largeIcon)
-                    .setContentTitle(notification.title)
-                    .setContentText(notification.body)
-                    .setAutoCancel(true)
-                    .setDefaults(NotificationCompat.DEFAULT_ALL)
-                    .setPriority(NotificationCompat.PRIORITY_MAX)
-                    .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                    .setContentIntent(pendingIntent)
-                    .setFullScreenIntent(pendingIntent, true)
-                    .setWhen(System.currentTimeMillis())
-                    .setShowWhen(true)
-                    .setStyle(style)
-                    .setColor(ContextCompat.getColor(this, R.color.red))
-                    .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
-                    .addAction(
-                        R.drawable.ttak_black_text,
-                        "바로 확인",
-                        pendingIntent
-                    )
-                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                    .setVibrate(longArrayOf(0, 500, 200, 500))
-
-                // 5. 알림 표시
-                if (ActivityCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.POST_NOTIFICATIONS
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    // 동일한 채널의 이전 알림 모두 제거
-                    val notificationManager = NotificationManagerCompat.from(this)
-                    notificationManager.cancelAll()
-
-                    // 새 알림 생성 - 고유한 ID 사용
-                    val notificationId = System.currentTimeMillis().toInt()
-
-                    // 메인 스레드에서 알림 표시
-                    Handler(Looper.getMainLooper()).post {
-                        notificationManager.notify(notificationId, notificationBuilder.build())
-                    }
-                }
-
-            } catch (e: Exception) {
-                Log.e("FCM", "Error showing notification", e)
             }
+        } else {
+            Log.d("MyFirebaseMessagingService", "No animation key found in data message.")
         }
     }
 
-    private fun handleDataMessage(data: Map<String, String>) {
-        val customData = data["animation"] ?: "waterBalloon"
-        Log.d("MyFirebaseMessagingService", "데이터 메시지 - customKey: $customData")
-    }
+//        when {
+//            // animation 키가 있으면 이펙트 실행
+//            data.containsKey("animation") -> {
+//                Log.d("MyFirebaseMessagingService", "Processing effect: ${data["animation"]}")
+//                when (data["animation"]?.uppercase()) {
+//                    "WATER_BOOM" -> {
+//                        Intent(this, AnimationOverlayService::class.java).apply {
+//                            putExtra("animation", data["animation"])
+//                        }.also { intent ->
+//                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                                startForegroundService(intent)
+//                            } else {
+//                                startService(intent)
+//                            }
+//                        }
+//                    }
+//                    else -> {
+//                        Log.d("MyFirebaseMessagingService", "No valid animation key in FCM data message.")
+//                    }
+//                }
+//            }
+//            // 일반 메시지 처리
+//            else -> {
+//                val title = data["title"] ?: "새로운 알림"
+//                val body = data["body"] ?: ""
+//                Log.d("MyFirebaseMessagingService", "Messsage: ${body}")
+//
+//                val intent = Intent(this, MainActivity::class.java).apply {
+//                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+//                }
+//
+//                val pendingIntent = PendingIntent.getActivity(
+//                    this,
+//                    System.currentTimeMillis().toInt(),
+//                    intent,
+//                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+//                )
+//
+//                val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
+//                    .setSmallIcon(R.drawable.ttak_black_text)
+//                    .setContentTitle(title)
+//                    .setContentText(body)
+//                    .setAutoCancel(true)
+//                    .setDefaults(NotificationCompat.DEFAULT_ALL)
+//                    .setPriority(NotificationCompat.PRIORITY_MAX)
+//                    .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+//                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+//                    .setContentIntent(pendingIntent)
+//                    .setFullScreenIntent(pendingIntent, true)
+//                    .setWhen(System.currentTimeMillis())
+//                    .setShowWhen(true)
+//
+//                if (ActivityCompat.checkSelfPermission(
+//                        this,
+//                        Manifest.permission.POST_NOTIFICATIONS
+//                    ) == PackageManager.PERMISSION_GRANTED
+//                ) {
+//                    val notificationManager = NotificationManagerCompat.from(this)
+//                    val notificationId = System.currentTimeMillis().toInt()
+//                    notificationManager.notify(notificationId, notificationBuilder.build())
+//                }
+//            }
+//        }
+//    }
 }
