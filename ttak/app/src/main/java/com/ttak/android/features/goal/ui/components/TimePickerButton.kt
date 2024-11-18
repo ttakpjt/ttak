@@ -59,7 +59,7 @@ fun TimePickerButton(
         shape = MaterialTheme.shapes.medium,
         color = Color(0xFF2F2F32)
     ) {
-        androidx.compose.foundation.layout.Column(
+        Column(
             modifier = Modifier.padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

@@ -20,7 +20,7 @@ class UserViewModel(
     val uiState = _uiState.asStateFlow()
 
     fun searchUsers(query: String) {
-        if (query.isBlank()) return  // 빈 검색어일 경우 아무 것도 하지 않음
+        if (query.isBlank()) return
 
         viewModelScope.launch {
             try {

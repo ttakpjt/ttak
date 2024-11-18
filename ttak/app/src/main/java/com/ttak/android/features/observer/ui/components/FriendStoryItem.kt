@@ -42,7 +42,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.ttak.android.domain.model.FriendStory
 import com.ttak.android.features.observer.ui.components.PopupMenu
-import kotlin.io.path.Path
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
