@@ -33,7 +33,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -129,7 +128,7 @@ fun FriendStoryItem(
             Canvas(modifier = Modifier.fillMaxSize()) {
                 drawCircle(
                     color = if (!friend.hasNewStory)
-                        Color(0xFF4CAF50).copy(alpha = 0.7f)
+                        Color(0xFF8C60D9).copy(alpha = 0.9f)
                     else
                         Color(0xFFFF5E5E).copy(alpha = 0.7f),
                     style = Stroke(width = 6.dp.toPx()),
@@ -198,7 +197,7 @@ fun FriendStoryItem(
 
             Box(
                 modifier = Modifier
-                    .offset(y = (-30).dp)
+                    .offset(y = (-70).dp)
                     .zIndex(1f)
                     .clickable { }
             ) {
