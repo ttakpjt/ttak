@@ -148,14 +148,10 @@ fun MessageDialog(
                         .weight(1f)
                         .height(48.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isCancelHovered) {
-                            Color(0x99A855F7)  // 호버 시 더 진한 색상
-                        } else {
-                            Color(0x66A855F7)  // 기본 색상
-                        }
+                        containerColor = Color(0x99A855F7),
+                        disabledContainerColor = Color(0x99A855F7)
                     ),
-                    shape = RoundedCornerShape(12.dp),
-                    interactionSource = cancelInteractionSource  // interactionSource 추가
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
                         text = "취소하기",
@@ -177,15 +173,10 @@ fun MessageDialog(
                         .height(48.dp),
                     enabled = message.isNotBlank(),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isSendHovered && message.isNotBlank()) {
-                            Color(0x993B82F6)  // 호버 시 더 진한 색상
-                        } else {
-                            Color(0x663B82F6)  // 기본 색상
-                        },
-                        disabledContainerColor = Color(0x333B82F6)
+                        containerColor = Color(0x663B82F6),
+                        disabledContainerColor = Color(0x663B82F6)
                     ),
-                    shape = RoundedCornerShape(12.dp),
-                    interactionSource = sendInteractionSource
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
                         text = "보내기",
