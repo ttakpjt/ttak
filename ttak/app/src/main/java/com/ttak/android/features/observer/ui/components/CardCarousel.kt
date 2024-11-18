@@ -1,13 +1,18 @@
 import android.app.Application
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -16,15 +21,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ttak.android.data.repository.history.HistoryRepositoryImpl
-import com.ttak.android.features.observer.ui.components.Dashboard
 import com.ttak.android.features.observer.ui.components.PageIndicator
 import com.ttak.android.features.observer.ui.components.SetGoalCard
-import com.ttak.android.features.observer.ui.components.UnsetGoalCard
 import com.ttak.android.features.observer.viewmodel.GoalStateViewModel
 import com.ttak.android.features.observer.viewmodel.GoalStateViewModelFactory
 import com.ttak.android.features.observer.viewmodel.ObserverViewModel
@@ -60,21 +65,54 @@ fun CardCarousel(
 
     HorizontalPager(
         state = pagerState,
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = Modifier.fillMaxWidth()
     ) { page ->
         Card(
             modifier = Modifier
                 .padding(horizontal = 20.dp)
                 .fillMaxWidth()
-                .height(250.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF2F2F32)
-            ),
+                .height(260.dp),
             shape = RoundedCornerShape(12.dp),
             elevation = CardDefaults.cardElevation(8.dp)
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    val colors = listOf(
+                        Color(0xFF2E1065),  // 진한 보라
+                        Color(0xFF1E1B4B),  // 진한 남색
+                        Color(0xFF172554)   // 진한 파랑
+                    )
+                    val brush = Brush.verticalGradient(colors)
+
+                    drawRect(
+                        brush = brush,
+                        size = size
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .size(200.dp)
+                        .offset(x = 150.dp, y = (-50).dp)
+                        .background(
+                            Color(0x33A855F7),
+                            CircleShape
+                        )
+                        .blur(radius = 70.dp)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(200.dp)
+                        .offset(x = (-50).dp, y = 150.dp)
+                        .background(
+                            Color(0x333B82F6),
+                            CircleShape
+                        )
+                        .blur(radius = 70.dp)
+                )
+
+                // 페이지 내용
                 when (page) {
                     0 -> {
                         if (!goalState.isSet) {
@@ -101,7 +139,7 @@ fun CardCarousel(
                     currentPage = pagerState.currentPage,
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(bottom = 12.dp)
+                        .padding(bottom = 16.dp)
                 )
             }
         }
