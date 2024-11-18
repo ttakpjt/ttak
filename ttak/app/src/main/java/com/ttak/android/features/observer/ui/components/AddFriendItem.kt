@@ -57,7 +57,7 @@ fun AddFriendItem(
                     color = Color.White,
                     shape = CircleShape
                 )
-                .padding(4.dp),
+                .padding(6.dp),
             contentAlignment = Alignment.Center
         ) {
             Image(
