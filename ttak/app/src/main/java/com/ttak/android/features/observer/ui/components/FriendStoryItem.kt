@@ -216,7 +216,7 @@ fun FriendStoryItem(
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 8.dp)
+                .offset(y = 8.dp)
         )
 
         if (showPopup) {

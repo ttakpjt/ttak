@@ -77,23 +77,6 @@ fun HistoryScreen(
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(16.dp)
                 )
-                // 이거 배포할 때 지우셈
-//                AppButton(
-//                    text = "로그아웃",
-//                    onClick = {
-//                        memberViewModel.logout()
-//                    }
-//                )
-                // 웃는 아이콘 추가
-//                 Image(
-//                     painter = painterResource(id = R.drawable.emoticon_cool),
-//                     contentDescription = "Empty History",
-//                     colorFilter = ColorFilter.tint(Grey),
-//                     modifier = Modifier
-//                         .padding(8.dp)
-//                         .fillMaxWidth(0.5f)
-//                         .size(50.dp)
-//                 )
             }
         } else {
             LazyColumn(
