@@ -52,7 +52,7 @@ fun FriendListFilter(
                         val nextId = if (option.id == 1) 2 else 1
                         onOptionSelected(nextId)
                     },
-                color = if (option.id == 1) Color(0xFF451f7f ) else Color(0xFFFF5E5E)
+                color = if (option.id == 1) Color(0xFF451f7f) else Color(0xFFFF5E5E)
             ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),

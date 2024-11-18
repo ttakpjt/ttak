@@ -1,7 +1,22 @@
 package com.ttak.android.features.observer.ui.components
 
 import android.util.Log
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -11,11 +26,28 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
@@ -26,11 +58,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
-import com.ttak.android.domain.model.User
-import kotlinx.coroutines.*
 import com.ttak.android.R
+import com.ttak.android.domain.model.User
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserSearchDialog(
     isVisible: Boolean,
@@ -48,14 +81,12 @@ fun UserSearchDialog(
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
 
-    // Dialog가 표시될 때마다 검색어만 초기화
     LaunchedEffect(isVisible) {
         if (isVisible) {
             searchQuery = ""
         }
     }
 
-    // 검색 실행 함수
     val performSearch = {
         if (searchQuery.length <= 20) {
             searchJob?.cancel()
@@ -63,10 +94,8 @@ fun UserSearchDialog(
                 try {
                     isLoading = true
                     Log.d("UserSearchDialog", "Starting search for query: $searchQuery")
-
                     delay(300)
                     searchUsers(searchQuery)
-
                     isLoading = false
                     focusManager.clearFocus()
                 } catch (e: Exception) {
@@ -88,152 +117,188 @@ fun UserSearchDialog(
             usePlatformDefaultWidth = false
         )
     ) {
-        Surface(
+        Box(
             modifier = modifier
                 .fillMaxWidth(0.8f)
-                .fillMaxHeight(0.5f),
-            shape = RoundedCornerShape(16.dp),
-            color = Color(0xFF2F2F32)
+                .fillMaxHeight(0.5f)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                // Header
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "친구 검색",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                    IconButton(
-                        onClick = {
-                            searchJob?.cancel()
-                            onDismiss()
-                        }
-                    ) {
-                        Icon(
-                            Icons.Default.Close,
-                            contentDescription = "Close",
-                            tint = Color.White
-                        )
-                    }
-                }
+            // Gradient Background with Blur Effects
+            Canvas(modifier = Modifier.matchParentSize()) {
+                val colors = listOf(
+                    Color(0xFF2E1065),
+                    Color(0xFF1E1B4B),
+                    Color(0xFF172554)
+                )
+                val brush = Brush.verticalGradient(colors)
+                drawRect(brush = brush)
+            }
 
-                // Search Bar
-                Row(
+            // Blur Effects
+            Box(
+                modifier = Modifier
+                    .size(200.dp)
+                    .offset(x = 150.dp, y = (-50).dp)
+                    .background(
+                        Color(0x33A855F7),
+                        CircleShape
+                    )
+                    .blur(radius = 70.dp)
+            )
+
+            Box(
+                modifier = Modifier
+                    .size(200.dp)
+                    .offset(x = (-50).dp, y = 150.dp)
+                    .background(
+                        Color(0x333B82F6),
+                        CircleShape
+                    )
+                    .blur(radius = 70.dp)
+            )
+
+            // Main Content
+            Surface(
+                modifier = Modifier
+                    .matchParentSize(),
+                color = Color.Transparent,
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        .fillMaxSize()
+                        .padding(16.dp)
                 ) {
-                    OutlinedTextField(
-                        value = searchQuery,
-                        onValueChange = { query ->
-                            if (query.length <= 20) {
-                                searchQuery = query
-                            }
-                        },
+                    // Header
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 16.dp),
-                        placeholder = { Text("닉네임을 입력해주세요") },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Default.Search,
-                                contentDescription = "Search",
-                                tint = Color.Black
-                            )
-                        },
-                        trailingIcon = if (searchQuery.isNotEmpty()) {
-                            {
-                                IconButton(
-                                    onClick = { searchQuery = "" }
-                                ) {
-                                    Icon(
-                                        Icons.Default.Close,
-                                        contentDescription = "Clear search",
-                                        tint = Color.Gray
-                                    )
-                                }
-                            }
-                        } else null,
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.Search
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onSearch = {
-                                if (searchQuery.isNotBlank()) {
-                                    performSearch()
-                                }
-                            }
-                        ),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = Color(0xFFD9D9D9),
-                            unfocusedContainerColor = Color(0xFFD9D9D9),
-                            focusedTextColor = Color.Black,
-                            unfocusedTextColor = Color.Black,
-                            focusedPlaceholderColor = Color.Gray,
-                            unfocusedPlaceholderColor = Color.Gray,
-                            focusedBorderColor = Color.Transparent,
-                            unfocusedBorderColor = Color.Transparent
-                        ),
-                        shape = RoundedCornerShape(8.dp),
-                        enabled = !isLoading
-                    )
-
-                    // 검색 버튼
-                    Button(
-                        onClick = {
-                            if (searchQuery.isNotBlank()) {
-                                performSearch()
-                            }
-                        },
-                        modifier = Modifier
-                            .height(56.dp)
-                            .width(56.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF7FEC93),
-                            disabledContainerColor = Color(0xFF7FEC93).copy(alpha = 0.5f)
-                        ),
-                        enabled = searchQuery.isNotBlank() && !isLoading,
-                        shape = RoundedCornerShape(8.dp)
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            Icons.Default.Search,
-                            contentDescription = "Perform search",
-                            tint = Color.Black
+                        Text(
+                            text = "친구 검색",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
                         )
-                    }
-                }
-
-                // Results or Loading
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                ) {
-                    when {
-                        isLoading -> {
-                            CircularProgressIndicator(
-                                modifier = Modifier
-                                    .size(36.dp)
-                                    .align(Alignment.Center),
-                                color = Color.White
+                        IconButton(
+                            onClick = {
+                                searchJob?.cancel()
+                                onDismiss()
+                            }
+                        ) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = "Close",
+                                tint = Color.White
                             )
                         }
-                        searchResults.isNotEmpty() -> {
-                            val filteredResults = searchResults.filter { it.relation != "Self" }
-                            if (filteredResults.isEmpty()) {
+                    }
+
+                    // Search Bar
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = searchQuery,
+                            onValueChange = { query ->
+                                if (query.length <= 20) {
+                                    searchQuery = query
+                                }
+                            },
+                            modifier = Modifier
+                                .weight(1f),
+                            placeholder = { Text("닉네임을 입력해주세요", color = Color.Gray) },
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Default.Search,
+                                    contentDescription = "Search",
+                                    tint = Color.White
+                                )
+                            },
+                            trailingIcon = if (searchQuery.isNotEmpty()) {
+                                {
+                                    IconButton(
+                                        onClick = { searchQuery = "" }
+                                    ) {
+                                        Icon(
+                                            Icons.Default.Close,
+                                            contentDescription = "Clear search",
+                                            tint = Color.White.copy(alpha = 0.7f)
+                                        )
+                                    }
+                                }
+                            } else null,
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                            keyboardActions = KeyboardActions(
+                                onSearch = {
+                                    if (searchQuery.isNotBlank()) {
+                                        performSearch()
+                                    }
+                                }
+                            ),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = Color(0x1AFFFFFF),
+                                unfocusedContainerColor = Color(0x1AFFFFFF),
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedBorderColor = Color.White.copy(alpha = 0.5f),
+                                unfocusedBorderColor = Color.White.copy(alpha = 0.3f)
+                            ),
+                            shape = RoundedCornerShape(8.dp),
+                            enabled = !isLoading
+                        )
+                    }
+
+                    // Results or Loading
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                    ) {
+                        when {
+                            isLoading -> {
+                                CircularProgressIndicator(
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                        .align(Alignment.Center),
+                                    color = Color.White
+                                )
+                            }
+                            searchResults.isNotEmpty() -> {
+                                val filteredResults = searchResults.filter { it.relation != "Self" }
+                                if (filteredResults.isEmpty()) {
+                                    Text(
+                                        text = "검색 결과가 없습니다",
+                                        color = Color.Gray,
+                                        modifier = Modifier
+                                            .align(Alignment.Center)
+                                            .padding(16.dp),
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                } else {
+                                    LazyColumn(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        items(
+                                            items = filteredResults,
+                                            key = { user -> user.userId }
+                                        ) { user ->
+                                            UserSearchItem(
+                                                user = user,
+                                                onUserSelect = onUserSelect
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            searchQuery.isNotBlank() && !isLoading -> {
                                 Text(
                                     text = "검색 결과가 없습니다",
                                     color = Color.Gray,
@@ -242,32 +307,7 @@ fun UserSearchDialog(
                                         .padding(16.dp),
                                     style = MaterialTheme.typography.bodyMedium
                                 )
-                            } else {
-                                LazyColumn(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    items(
-                                        items = filteredResults,
-                                        key = { user -> user.userId }
-                                    ) { user ->
-                                        UserSearchItem(
-                                            user = user,
-                                            onUserSelect = onUserSelect
-                                        )
-                                    }
-                                }
                             }
-                        }
-                        searchQuery.isNotBlank() && !isLoading -> {
-                            Text(
-                                text = "검색 결과가 없습니다",
-                                color = Color.Gray,
-                                modifier = Modifier
-                                    .align(Alignment.Center)
-                                    .padding(16.dp),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
                         }
                     }
                 }
@@ -298,8 +338,7 @@ private fun UserSearchItem(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape),
-                contentScale = ContentScale.Crop,
-//                error = painterResource(id = R.drawable.default_profile)
+                contentScale = ContentScale.Crop
             )
 
             Spacer(modifier = Modifier.width(12.dp))

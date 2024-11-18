@@ -24,8 +24,8 @@ import com.ttak.android.common.ui.theme.Grey
 fun BottomNavigationBar(navController: NavController) {
     val items = listOf(
         BottomNavItem("observer", R.drawable.account_multiple, AppScreens.Observer),
-        BottomNavItem("screen_time", R.drawable.home, AppScreens.ScreenTime),
-        BottomNavItem("history", R.drawable.bomb, AppScreens.History)
+        BottomNavItem("screen_time", R.drawable.home1, AppScreens.ScreenTime),
+        BottomNavItem("history", R.drawable.history, AppScreens.History)
     )
 
     // 하단 네비게이션 바 설정
@@ -67,7 +67,6 @@ fun BottomNavItem(
         modifier = Modifier
             .size(width = 82.dp, height = 60.dp)
             .padding(8.dp)
-            .background(if (isSelected) Color(0xFF515155) else Color.Transparent, shape = CircleShape)
             .clickable {
                 navController.navigate(item.screen.route) {
                     popUpTo(AppScreens.ScreenTime.route) { inclusive = false }
@@ -80,8 +79,8 @@ fun BottomNavItem(
         Icon(
             painter = painterResource(id = item.icon),
             contentDescription = item.label,
-            tint = Grey,
-            modifier = Modifier.size(60.dp)
+            tint = if (isSelected) Color.White else Grey,
+            modifier = Modifier.size(36.dp)
         )
     }
 }
