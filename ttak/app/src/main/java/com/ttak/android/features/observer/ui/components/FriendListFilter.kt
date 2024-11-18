@@ -2,22 +2,27 @@ package com.ttak.android.features.observer.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ttak.android.R
 import com.ttak.android.domain.model.FilterOption
 
@@ -47,7 +52,7 @@ fun FriendListFilter(
                         val nextId = if (option.id == 1) 2 else 1
                         onOptionSelected(nextId)
                     },
-                color = if (option.id == 1) Color(0xFFF5F378) else Color(0xFFFF5E5E)
+                color = if (option.id == 1) Color(0xFF451f7f ) else Color(0xFFFF5E5E)
             ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
@@ -58,15 +63,15 @@ fun FriendListFilter(
                         painter = painterResource(id = R.drawable.filter_icon),
                         contentDescription = "Filter",
                         tint = Color.Black,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = option.title,
-                        color = Color.Black,
-                        style = MaterialTheme.typography.titleSmall
-//                        fontSize = 20.sp,
+                        color = Color.White,
+                        style = MaterialTheme.typography.bodySmall
 //                        fontWeight = FontWeight.Bold
+//                        fontSize = 20.sp,
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Box(
@@ -81,9 +86,9 @@ fun FriendListFilter(
                         Text(
                             text = option.count.toString(),
                             color = Color.White,
+                            style = MaterialTheme.typography.bodySmall
 //                            fontSize = 16.sp,
 //                            fontWeight = FontWeight.Bold
-                            style = MaterialTheme.typography.bodySmall
                         )
                     }
                 }
