@@ -80,7 +80,7 @@ fun Dashboard(
             StatCard(
                 modifier = Modifier.weight(1f),
                 title = "전체",
-                count = countData.data.totalCount,
+                count = countData.data.friendsCount + countData.data.myCount,
                 color = Color(0xFF818CF8)
             )
 
@@ -97,7 +97,7 @@ fun Dashboard(
         // 나의 통계 카드
         MyStatsCard(
             myCount = countData.data.myCount,
-            totalCount = countData.data.totalCount
+            totalCount = countData.data.myCount + countData.data.friendsCount
         )
     }
 }
