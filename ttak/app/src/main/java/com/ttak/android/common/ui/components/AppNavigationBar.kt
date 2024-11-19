@@ -1,0 +1,86 @@
+package com.ttak.android.common.ui.components
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.ttak.android.R
+import com.ttak.android.common.navigation.AppScreens
+import com.ttak.android.common.ui.theme.Black
+import com.ttak.android.common.ui.theme.Grey
+
+@Composable
+fun BottomNavigationBar(navController: NavController) {
+    val items = listOf(
+        BottomNavItem("observer", R.drawable.account_multiple, AppScreens.Observer),
+        BottomNavItem("screen_time", R.drawable.home1, AppScreens.ScreenTime),
+        BottomNavItem("history", R.drawable.history, AppScreens.History)
+    )
+
+    // 하단 네비게이션 바 설정
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp),
+        tonalElevation = 8.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .background(Black)
+                .fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            // 현재 선택된 경로
+            val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+
+            items.forEach { item ->
+                val isSelected = currentRoute == item.screen.route
+                BottomNavItem(
+                    item = item,
+                    isSelected = isSelected,
+                    navController = navController
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun BottomNavItem(
+    item: BottomNavItem,
+    isSelected: Boolean,
+    navController: NavController
+) {
+    Column(
+        modifier = Modifier
+            .size(width = 82.dp, height = 60.dp)
+            .padding(8.dp)
+            .clickable {
+                navController.navigate(item.screen.route) {
+                    popUpTo(AppScreens.ScreenTime.route) { inclusive = false }
+                    launchSingleTop = true
+                }
+            }
+            .pointerInput(Unit) {},  // 호버 이벤트 무시
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            painter = painterResource(id = item.icon),
+            contentDescription = item.label,
+            tint = if (isSelected) Color.White else Grey,
+            modifier = Modifier.size(36.dp)
+        )
+    }
+}
