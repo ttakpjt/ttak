@@ -1,0 +1,93 @@
+spring:
+  jwt:
+    expiration:
+      access-token: ${SPRING_JWT_EXPIRATION_ACCESS_TOKEN}
+      refresh-token: ${SPRING_JWT_EXPIRATION_REFRESH_TOKEN}
+    secret: ${SPRING_JWT_SECRET}
+
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST}
+      port: ${SPRING_DATA_REDIS_PORT}
+      password: ${SPRING_DATA_REDIS_PASSWORD}
+      jedis:
+        pool:
+          max-active: ${SPRING_DATA_REDIS_JEDIS_POOL_MAX_ACTIVE}
+          max-idle: ${SPRING_DATA_REDIS_JEDIS_POOL_MAX_IDLE}
+          min-idle: ${SPRING_DATA_REDIS_JEDIS_POOL_MIN_IDLE}
+          max-wait: ${SPRING_DATA_REDIS_JEDIS_POOL_MAX_WAIT}
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME}
+
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
+    properties:
+      hibernate:
+        dialect: ${SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT}
+        show_sql: ${SPRING_JPA_PROPERTIES_HIBERNATE_SHOW_SQL}
+        format_sql: ${SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL}
+    defer-datasource-initialization: ${SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION}
+
+  sql:
+    init:
+      mode: ${SPRING_SQL_INIT_MODE}
+
+  login:
+    target-uri: ${SPRING_LOGIN_TARGET_URI}
+
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-name: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT_NAME}
+            client-id: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT_ID}
+            client-secret: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT_SECRET}
+            redirect-uri: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_REDIRECT_URI}
+            authorization-grant-type: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_AUTHORIZATION_GRANT_TYPE}
+            client-authentication-method: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT_AUTHENTICATION_METHOD}
+            scope:
+              - profile_nickname
+              - profile_image
+
+          google:
+            client-name: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_NAME}
+            client-id: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID}
+            client-secret: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET}
+            redirect-uri: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_REDIRECT_URI}
+            authorization-grant-type: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_AUTHORIZATION_GRANT_TYPE}
+            scope:
+              - email
+              - profile
+
+        provider:
+          kakao:
+            authorization-uri: ${SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_AUTHORIZATION_URI}
+            token-uri: ${SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_TOKEN_URI}
+            user-info-uri: ${SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_USER_INFO_URI}
+            user-name-attribute: ${SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_USER_NAME_ATTRIBUTE}
+
+aws:
+  s3:
+    bucket: ${AWS_S3_BUCKET}
+    access-key: ${AWS_ACCESS_KEY}
+    secret-key: ${AWS_SECRET_KEY}
+    region: ${AWS_REGION}
+
+springdoc:
+  api-docs:
+    path: ${SPRINGDOC_API_DOCS_PATH}  # API 문서 경로
+  swagger-ui:
+    path: ${SPRINGDOC_SWAGGER_UI_PATH}  # Swagger UI 경로
+  info:
+    title: ${SPRINGDOC_INFO_TITLE}
+    description: ${SPRINGDOC_INFO_DESCRIPTION}
+    version: ${SPRINGDOC_INFO_VERSION}
+    license:
+      name: ${SPRINGDOC_INFO_LICENSE_NAME}
+      url: ${SPRINGDOC_INFO_LICENSE_URL}
