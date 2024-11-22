@@ -1,6 +1,6 @@
 # TTAK
 
-딱 집중하고싶은 당신을 위한 어플리케이션
+👉 딱 집중하고싶은 당신을 위한 어플리케이션 💥
 
 <br>
 
@@ -11,13 +11,12 @@
 3. [주요기능](#3-주요기능)
 4. [개발환경](#4-개발환경)
 5. [팀원소개](#5-팀원소개)
-6. [느낀점](#6-느낀점)
 
 <br>
 
 ## 1. 기획배경
 
-숏폼을 필두로한 SNS 사용량 증가는 이제 단순히 트렌드를 넘어 중독까지 이르고 있습니다.
+📛 숏폼을 필두로한 SNS 사용량 증가는 이제 단순히 트렌드를 넘어 중독까지 이르고 있습니다.
 
 이와 같은 스마트폰, 특히 SNS중독에 대한 경각심은 단순히 우리나라만의 현상이 아니라 해외에서도 나타나고 있습니다.
 
@@ -56,7 +55,7 @@
 <img src="https://github.com/user-attachments/assets/cd9ffddf-d8ea-4ea5-88f6-ad42aa3f0945" alt="Screenshot 7" width="20%">
 <img src="https://github.com/user-attachments/assets/08b363de-6559-467a-ad78-09a24c590ba1" alt="Screenshot 8" width="20%">
 
-<br>
+<br/><br/>
 
 ## 4. 개발환경
 
@@ -67,7 +66,7 @@
         <!-- FrontEnd Stack -->
         <tr>
             <td rowspan="1" align="center"><b>FE</td>
-            <td><img src="https://gist.github.com/user-attachments/assets/b5fa567c-a17b-4b8a-a895-c623fbdea3b0" width="15px" alt="_icon" />&nbsp;&nbsp;<b>Kotlin</b></td>
+            <td><img src="https://github.com/user-attachments/assets/28fc6571-aeb4-4e3a-ba7a-f1f93faabbf4" width="15px" alt="_icon" />&nbsp;&nbsp;<b>Kotlin</b></td>
             <td>Android 11</tdi>
         </tr>
         <tr>
@@ -103,11 +102,11 @@
             <td>Collaborative Productivity Platform</td>
         </tr>
         <tr>
-            <td><img src="https://gist.github.com/user-attachments/assets/6e9697d2-acbb-48f6-931b-93ea0e93a57a" width="15px" alt="_icon" />&nbsp;&nbsp;<b>Jira</td>
+            <td><img src="https://github.com/user-attachments/assets/eb67b391-1eae-49c3-b94c-4f6dd4e8da6c" width="15px" alt="_icon" />&nbsp;&nbsp;<b>Jira</td>
             <td>Collaboration tool for project management and issue tracking</td>
         </tr>
         <tr>
-            <td><img src="https://gist.github.com/user-attachments/assets/4fc6097d-f654-4d4d-a601-71fcb2d502f5" width="15px" alt="_icon" />&nbsp;&nbsp;<b>ELK</td>
+            <td><img src="https://github.com/user-attachments/assets/933f54c4-c83c-47cf-b5b2-9206ca70dc70" width="15px" alt="_icon" />&nbsp;&nbsp;<b>ELK</td>
             <td>Toolset for centralized logging and data analysis</td>
         </tr>
         <tr>
@@ -148,42 +147,3 @@
         </tr>
     </table>
 </div>
-
-<br>
-
-## 6. 느낀점
-
-### 황정현
-
-> -
-> -
-
-### 송예진
-
-> -
-> -
-> -
-
-### 이치왕
-
-> -
-> -
-> -
-
-### 김명화
-
-> -
-> -
-> -
-
-### 원민혁
-
-> -
-> -
-> -
-
-### 이규석
-
-> -
-> -
-> -
